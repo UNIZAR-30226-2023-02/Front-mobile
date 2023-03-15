@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 class Fondo extends StatelessWidget{
-  const Fondo({super.key});
+  const Fondo({Key? key}) : super(key: key);
   @override
     Widget build(BuildContext context) {
     return Scaffold(
@@ -27,13 +27,15 @@ class Fondo extends StatelessWidget{
 
 
 class Form extends StatelessWidget {
+  const Form({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Formulario de dos campos',
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
-        accentColor: Colors.amber,
+        hintColor: Colors.amber,
         fontFamily: 'Quicksand',
       ),
       home: Scaffold(

@@ -3,13 +3,19 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/dentro.dart';
 
+import 'package:flutter_application_1/InicioSesion/home.dart';
+
 
 void main() {
-  runApp(const MyApp());
+  Paint.enableDithering = true;
+  runApp(const MaterialApp(
+    title: 'HOome',
+    home: Home()
+  ));
 } 
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
