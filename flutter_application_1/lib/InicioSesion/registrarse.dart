@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 
 
-class Home extends StatelessWidget{
-  const Home({Key? key}) : super(key: key);
+class   Registrarse extends StatelessWidget{
+  const Registrarse({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,16 +27,16 @@ class Home extends StatelessWidget{
                             style: TextStyle(fontFamily: "Baskerville",fontSize: 50.0, color: Color(0xFFc9c154),fontWeight: FontWeight.bold,decoration: TextDecoration.none ),),
                         Image.asset('assets/quesito.png')]),
             Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [Column(children:[SizedBox(height: 30),BotonHome("INICIAR SESIÓN")]),
-              Column(children:[SizedBox(height: 30),BotonHome("REGISTRARSE")])]
+              children: [Column(children:[SizedBox(height: 30),Boton("VOLVER")]),
+              Column(children:[SizedBox(height: 30),Boton("CONTINUAR")])]
             )]
             )
           );
   }
 }
 
-class BotonHome extends StatelessWidget{
-  const BotonHome(String t,{Key? key}) : text = t, super(key: key);
+class Boton extends StatelessWidget{
+  const Boton(String t,{Key? key}) : text = t, super(key: key);
   final String text;
   @override
   Widget build(BuildContext context) {
