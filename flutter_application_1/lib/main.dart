@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/InicioSesion/iniciarSesion.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion/home.dart';
+
+import 'Interfaz/InicioSesion/iniciarSesion.dart';
+import 'Interfaz/InicioSesion/inicioApp.dart';
 // import 'dart:convert';
 // import 'package:http/http.dart' as http;
 // import 'package:flutter_application_1/dentro.dart';
@@ -8,10 +11,11 @@ import 'package:flutter_application_1/InicioSesion/iniciarSesion.dart';
 // import 'package:flutter_application_1/InicioSesion/registrarse.dart';
 
 void main() {
-  Paint.enableDithering = true;
   runApp(const MaterialApp(
     title: 'Login',
-    home: InicioSesion()
+    home: Scaffold(
+      body: InicioApp()
+    )
   ));
 } 
 
@@ -235,3 +239,149 @@ class BotonHome extends StatelessWidget{
   }
 
 }
+/*
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart';
+
+void main() {
+  runApp(const MyApp());
+} 
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Formulario de dos campos',
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Formulario de dos campos'),
+        ),
+        body: Center(
+          child: MyForm(),
+        ),
+      ),
+    );
+  }
+}
+
+class MyForm extends StatefulWidget {
+  @override
+  // ignore: library_private_types_in_public_api
+  _MyFormState createState() => _MyFormState();
+}
+
+class _MyFormState extends State<MyForm> {
+  final _formKey = GlobalKey<FormState>();
+  late String _name;
+  late String _email;
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          TextFormField(
+            decoration: const InputDecoration(
+              hintText: 'Nombre',
+              icon: Icon(Icons.person),
+            ),
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Por favor ingresa tu nombre';
+              }
+              return null;
+            },
+            onSaved: (value) {
+              _name = value!;
+            },
+          ),
+          TextFormField(
+            decoration: const InputDecoration(
+              hintText: 'Email',
+              icon: Icon(Icons.email),
+            ),
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Por favor ingresa tu email';
+              }
+              return null;
+            },
+            onSaved: (value) {
+              _email = value!;
+            },
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Valores del formulario'),
+                      content: SingleChildScrollView(
+                        child: ListBody(
+                          children: <Widget>[
+                            Text('Nombre: $_name'),
+                            Text('Email: $_email'),
+                          ],
+                        ),
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('Aceptar'),
+                          onPressed: () {
+                            // Navigator.of(context).pop();
+                            createUser(_name, _email);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
+            },
+            child: const Text('Enviar'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+  }
+}
+
+
+
+Future<void> createUser(String username, String password) async {
+
+  HttpOverrides.global = MyHttpOverrides();
+
+  final url = Uri.parse('https://6e01-146-158-156-138.eu.ngrok.io/api/usuarios/login/');
+  final response = await post(url, body: {
+    'username': username,
+    'password': password,
+  });
+  if (response.statusCode == 200) {
+    // Successful API call
+    print('User loged successfully');
+    print(response.body);
+  } else {
+    // Failed API call
+    print('Failed to log user');
+  }
+}*/
