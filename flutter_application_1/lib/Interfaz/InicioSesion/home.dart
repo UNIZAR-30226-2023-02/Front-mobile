@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion/iniciarSesion.dart';
 
+import 'package:flutter_application_1/Interfaz/InicioSesion/registrarse.dart';
+
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -43,7 +45,7 @@ class Home extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const InicioSesion()),
+                            builder: (context) => const Registrarse()),
                       );
                     },
                   )

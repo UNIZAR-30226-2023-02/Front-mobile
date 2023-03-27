@@ -1,25 +1,29 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Api/api.dart';
-import 'package:flutter_application_1/Interfaz/InicioSesion/registrarse2.dart';
-
-class Registrarse extends StatefulWidget {
-  const Registrarse({Key? key}) : super(key: key);
-
+import 'package:flutter_application_1/Interfaz/InicioSesion/registrarse.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion/registrarse3.dart';
+class Registrarse2 extends StatefulWidget{
+  String datosR1 = "";
+  Registrarse2(this.datosR1, {Key? key}) : super(key: key);
+  
+  
   @override
   // ignore: library_private_types_in_public_api
-  _RegistrarseState createState() => _RegistrarseState();
+  _Registrarse2State createState() => _Registrarse2State(datos: datosR1);
 }
 
-class _RegistrarseState extends State<Registrarse> {
+class _Registrarse2State extends State<Registrarse2> {
+  String datos = "";
+  _Registrarse2State({required this.datos});
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String _usuario = "", _fecha = "";
+  String _contrasenya = "", _contrasenya2 = "";
 
   // ignore: non_constant_identifier_names
   // void Printear() {
-  //   LoginUserResponse r =
+  //   LoginUserResponse r =<
   //       iniciarSesionUsuario(LoginUserPetition(_usuario, _contrasenya))
   //           as LoginUserResponse;
   //   // ignore: avoid_print
@@ -28,6 +32,7 @@ class _RegistrarseState extends State<Registrarse> {
 
   @override
   Widget build(BuildContext context) {
+    print('arriba: ${datos}');
     return Scaffold(
         // body: SingleChildScrollView (  //SOLUCION FONDO DE PANTALLA SE ESTRECHA AL SACAR TECLADO
         body: Container(
@@ -50,6 +55,7 @@ class _RegistrarseState extends State<Registrarse> {
               padding: const EdgeInsets.all(16.0),
               child: const Text(
                 'Registrarse',
+                // 'Registrarse',
                 style: TextStyle(
                   fontSize: 30.0,
                   fontWeight: FontWeight.bold,
@@ -62,14 +68,14 @@ class _RegistrarseState extends State<Registrarse> {
 //TEXTO USUARIO-------------------------------------------------------------
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              margin: const EdgeInsets.only(right: 480, bottom: 5, top: 0),
+              margin: const EdgeInsets.only(right: 440, bottom: 5, top: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
                     padding: EdgeInsets.only(left: 8.0),
                     child: Text(
-                      'Usuario',
+                      'Contraseña',
                       style: TextStyle(
                           fontSize: 24.0,
                           fontFamily: "Baskerville",
@@ -97,7 +103,7 @@ class _RegistrarseState extends State<Registrarse> {
                     controller: _userController,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Ingrese su usuario',
+                      hintText: 'Ingrese su contraseña',
                       hintStyle: TextStyle(
                           fontFamily: "Baskerville",
                           fontSize: 18.0,
@@ -105,19 +111,19 @@ class _RegistrarseState extends State<Registrarse> {
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Por favor ingresa tu nombre';
+                        return 'Por favor ingresa tu contraseña';
                       }
                       return null;
                     },
                     onSaved: (value) {
-                      _usuario = value!;
+                      _contrasenya = value!;
                     },
                     style: const TextStyle(color: Colors.white),
                   ),
                 ],
               ),
             ),
-//TEXTO FECHA-------------------------------------------------------------
+//TEXTO CONTRASEÑA-------------------------------------------------------------
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               margin: const EdgeInsets.only(right: 350, left: 20, bottom: 5, top: 20),
@@ -127,7 +133,7 @@ class _RegistrarseState extends State<Registrarse> {
                   Padding(
                     padding: EdgeInsets.only(left: 8.0),
                     child: Text(
-                      'Fecha de nacimiento',
+                      'Repite la contraseña',
                       style: TextStyle(
                           fontSize: 24.0,
                           fontFamily: "Baskerville",
@@ -155,7 +161,7 @@ class _RegistrarseState extends State<Registrarse> {
                     controller: _passwordController,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Ingrese la fecha de nacimiento',
+                      hintText: 'Ingrese la contraseña de nuevo',
                       hintStyle: TextStyle(
                           fontFamily: "Baskerville",
                           fontSize: 18.0,
@@ -163,12 +169,12 @@ class _RegistrarseState extends State<Registrarse> {
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Por favor ingresa tu fecha de nacimiento';
+                        return 'Por favor ingresa tu contraseña';
                       }
                       return null;
                     },
                     onSaved: (value) {
-                      _fecha = value!;
+                      _contrasenya2 = value!;
                     },
                     style: const TextStyle(color: Colors.white),
                   ),
@@ -236,11 +242,13 @@ class _RegistrarseState extends State<Registrarse> {
                               //       'Hola ${r.OK} ${r.token} ${r.error_username} ${r.error_password}');
                               // }
                               // ;
-                              Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Registrarse2(_usuario)),
-                              );
+                              // Navigator.push(
+                              // context,
+                              // MaterialPageRoute(
+                              //   builder: (context) => const Registrarse3()
+                              // ),
+                              // );
+                              print('usuario: ${datos}');
                             },
                             child: Text("CONTINUAR"),
                           ),

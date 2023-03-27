@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-const String urlDir = 'https://6e01-146-158-156-138.eu.ngrok.io';
+const String urlDir = 'http://51.142.118.71:8000';
 
 class LoginUserPetition{
   final String username,password;
@@ -70,6 +70,11 @@ Future<LoginUserResponse> iniciarSesionUsuario(LoginUserPetition p) async {
   final url = Uri.parse('$urlDir/api/usuarios/login/');
 
   final response = await http.post(url, body: {
+    // 'username': "bhjfasd",
+    // 'password': "12345678",
+    // 'confirm_password': "12345678",
+    // 'fecha_nac': "22-01-22",
+    // 'correo': "urioew",
     'username': p.username,
     'password': p.password,
   });

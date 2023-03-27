@@ -62,7 +62,7 @@ class _InicioSesionState extends State<InicioSesion> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               margin: const EdgeInsets.only(right: 480, bottom: 5, top: 0),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
@@ -120,7 +120,7 @@ class _InicioSesionState extends State<InicioSesion> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               margin: const EdgeInsets.only(right: 445, bottom: 5, top: 20),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
