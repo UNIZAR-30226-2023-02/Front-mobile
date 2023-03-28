@@ -236,10 +236,17 @@ class _RegistrarseState extends State<Registrarse> {
                               //       'Hola ${r.OK} ${r.token} ${r.error_username} ${r.error_password}');
                               // }
                               // ;
+                              
+                              if (_formKey.currentState!.validate()) {
+                                //print("${_usuario} ${_fecha}"); //esto no lo imprime, sin embargo sin este if la variable no se envia bien a registrarse2
+                                _formKey.currentState!.save();
+                              }
+
                               Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Registrarse2(_usuario)),
+                                  builder: (context) => Registrarse2(usuarioR1: _usuario, fechaR1: _fecha)
+                                  ),
                               );
                             },
                             child: Text("CONTINUAR"),

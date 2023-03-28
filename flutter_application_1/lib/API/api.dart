@@ -83,3 +83,77 @@ Future<LoginUserResponse> iniciarSesionUsuario(LoginUserPetition p) async {
   r.FillFields(response);
   return r;
 }
+
+
+
+
+//REGISTRO
+
+class RegistroUserPetition{
+  final String username,password,confirm_password,fecha_nac,correo;
+  const RegistroUserPetition(String u,String p,String cp,String f,String c) : username = u, password = p, confirm_password = cp, fecha_nac=f, correo = c;
+}
+
+class RegistroUserResponse{
+
+  // ignore: constant_identifier_names
+  static const String OK_key = 'OK', eU_key = 'error_username',eP_key = 'error_password', eCP_key = 'error_confirm_password', eF_key = 'error_fecha', eC_key = 'error_correo';
+  // ignore: non_constant_identifier_names
+  String error_username = "",error_password = "", error_confirm_password  ="", error_fecha = "", error_correo = "";
+  // ignore: non_constant_identifier_names
+  bool OK = false;
+
+  RegistroUserResponse();
+
+  // ignore: non_constant_identifier_names
+  void FillFields(http.Response r){
+    print("statusReg");
+    print(r.statusCode);
+    if(r.statusCode <= 300){
+      print("statusReg2");
+      final responseJson = json.decode(r.body);
+
+      String parameterValue = responseJson[OK_key];
+
+      if(parameterValue == 'True'){
+        OK = true;
+        print("REGISTRO COMPLETADO CON EXITO");
+
+      }
+      else{
+        OK = false;
+        print("FALLO AL REGISTRARSE");
+        error_username = responseJson[eU_key];
+        error_password = responseJson[eP_key];
+        error_confirm_password = responseJson[eCP_key];
+        error_fecha = responseJson[eF_key];
+        error_correo = responseJson[eC_key];
+      }
+    }
+    else{
+      print("statusReg0");
+    }
+  }
+}
+
+Future<RegistroUserResponse> registroUsuario(RegistroUserPetition p) async {
+  
+  
+  HttpOverrides.global = MyHttpOverrides();
+
+  RegistroUserResponse r = RegistroUserResponse();
+
+  final url = Uri.parse('$urlDir/api/usuarios/register/');
+
+  final response = await http.post(url, body: {
+    'username': p.username,
+    'password': p.password,
+    'confirm_password': p.confirm_password,
+    'fecha_nac': p.fecha_nac,
+    'correo': p.correo,
+  });
+
+  
+  r.FillFields(response);
+  return r;
+}

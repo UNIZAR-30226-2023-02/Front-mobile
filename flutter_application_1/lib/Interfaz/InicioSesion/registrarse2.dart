@@ -4,18 +4,20 @@ import 'package:flutter_application_1/Api/api.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion/registrarse.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion/registrarse3.dart';
 class Registrarse2 extends StatefulWidget{
-  String datosR1 = "";
-  Registrarse2(this.datosR1, {Key? key}) : super(key: key);
+  String usuarioR1 = "";
+  String fechaR1 = "";
+  Registrarse2({Key? key, required this.usuarioR1, required this.fechaR1}) : super(key: key);
   
   
   @override
   // ignore: library_private_types_in_public_api
-  _Registrarse2State createState() => _Registrarse2State(datos: datosR1);
+  _Registrarse2State createState() => _Registrarse2State(usuarioR2: usuarioR1, fechaR2: fechaR1);
 }
 
 class _Registrarse2State extends State<Registrarse2> {
-  String datos = "";
-  _Registrarse2State({required this.datos});
+  String usuarioR2 = "";
+  String fechaR2 = "";
+  _Registrarse2State({required this.usuarioR2, required this.fechaR2});
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -32,7 +34,7 @@ class _Registrarse2State extends State<Registrarse2> {
 
   @override
   Widget build(BuildContext context) {
-    print('arriba: ${datos}');
+    print('arriba: ${usuarioR2}');
     return Scaffold(
         // body: SingleChildScrollView (  //SOLUCION FONDO DE PANTALLA SE ESTRECHA AL SACAR TECLADO
         body: Container(
@@ -242,13 +244,21 @@ class _Registrarse2State extends State<Registrarse2> {
                               //       'Hola ${r.OK} ${r.token} ${r.error_username} ${r.error_password}');
                               // }
                               // ;
-                              // Navigator.push(
-                              // context,
-                              // MaterialPageRoute(
-                              //   builder: (context) => const Registrarse3()
-                              // ),
-                              // );
-                              print('usuario: ${datos}');
+
+
+                              if (_formKey.currentState!.validate()) {
+                                 _formKey.currentState!.save();
+                              }
+
+                              Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Registrarse3(usuarioR2: usuarioR2, fechaR2: fechaR2, contrasenyaR2: _contrasenya)
+                              ),
+                              );
+                            
+                              //print("holaaaa");
+                              //print('usuario en reg2: ${usuarioR2}, fecha: ${fechaR2}');
                             },
                             child: Text("CONTINUAR"),
                           ),
