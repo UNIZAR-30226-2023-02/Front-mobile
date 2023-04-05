@@ -1,66 +1,73 @@
-
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion/iniciarSesion.dart';
 
-import 'package:flutter_application_1/Interfaz/InicioSesion/registrarse.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion/registrarse1.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        //margin: EdgeInsets.symmetric(horizontal: w*0.01,vertical: h*0.01 ),
-        // ignore: prefer_const_constructors
-        decoration: BoxDecoration(
-          image: const DecorationImage(
-              image: AssetImage('assets/tapete.png'), fit: BoxFit.fill),
-        ),
-        // ignore: prefer_const_constructors
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    const Text(
-                      "Trivial B2B",
-                      style: TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 50.0,
-                          color: Color(0xFFc9c154),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none),
-                    ),
-                    Image.asset('assets/quesito.png')
-                  ]),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                Column(children: [
-                  const SizedBox(height: 30),
-                  BotonHome(
-                    "REGISTRARSE",
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Registrarse()),
-                      );
-                    },
-                  )
-                ]),
-                Column(children: [
-                  const SizedBox(height: 30),
-                  BotonHome("INICIAR SESIÓN", onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const InicioSesion()));
-                  })
-                ])
-              ])
-            ]));
+    return WillPopScope(
+        onWillPop: () async {
+          exit(0);
+        },
+        child: Container(
+            //margin: EdgeInsets.symmetric(horizontal: w*0.01,vertical: h*0.01 ),
+            // ignore: prefer_const_constructors
+            decoration: BoxDecoration(
+              image: const DecorationImage(
+                  image: AssetImage('assets/tapete.png'), fit: BoxFit.fill),
+            ),
+            // ignore: prefer_const_constructors
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        const Text(
+                          "Trivial B2B",
+                          style: TextStyle(
+                              fontFamily: "Baskerville",
+                              fontSize: 50.0,
+                              color: Color(0xFFc9c154),
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.none),
+                        ),
+                        Image.asset('assets/quesito.png')
+                      ]),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Column(children: [
+                          const SizedBox(height: 30),
+                          BotonHome(
+                            "REGISTRARSE",
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Registrarse1()),
+                              );
+                            },
+                          )
+                        ]),
+                        Column(children: [
+                          const SizedBox(height: 30),
+                          BotonHome("INICIAR SESIÓN", onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const InicioSesion()));
+                          })
+                        ])
+                      ])
+                ])));
   }
 }
 

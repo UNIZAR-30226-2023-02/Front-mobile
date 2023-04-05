@@ -1,6 +1,8 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Api/api.dart';
+import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion/Estilo/index.dart';
 
 class InicioSesion extends StatefulWidget {
   const InicioSesion({Key? key}) : super(key: key);
@@ -15,239 +17,290 @@ class _InicioSesionState extends State<InicioSesion> {
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _usuario = "", _contrasenya = "";
+  String _errorUsuario = "", _errorContrasena = "";
+  bool _errorUsuarioVisible = false, _errorContrasenaVisible = false;
 
-  // ignore: non_constant_identifier_names
-  void Printear() {
-    LoginUserResponse r =
-        iniciarSesionUsuario(LoginUserPetition(_usuario, _contrasenya))
-            as LoginUserResponse;
-    // ignore: avoid_print
-    print('Hola ${r.OK} ${r.token} ${r.error_username} ${r.error_password}');
+  void _comprobarDatos(BuildContext context) async {
+    if (_userController.text == "") {
+      setState(() {
+        _errorUsuarioVisible = true;
+        _errorUsuario =
+            "El nombre de usuario esta vacío.\nPor favor, introduzca un nombre de usuario";
+        _errorContrasenaVisible = false;
+        _passwordController.text = "";
+      });
+    } else if (_passwordController.text == "") {
+      setState(() {
+        _errorUsuarioVisible = false;
+        _errorContrasenaVisible = true;
+        _errorContrasena =
+            "La contraseña esta vacía.\nPor favor, introduzca la contraseña";
+      });
+    } else {
+      _errorUsuarioVisible = false;
+      _errorContrasenaVisible = false;
+    }
+
+    if (!_errorContrasenaVisible && !_errorUsuarioVisible) {
+      print("Campos no vacíos\n");
+      _formKey.currentState!.save();
+      Future<LoginUserResponse> f =
+          iniciarSesionUsuario(LoginUserPetition(_usuario, _contrasenya));
+      LoginUserResponse r = await f;
+      if (r.OK) {
+        // ignore: use_build_context_synchronously
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomeMenu()));
+      } else {
+        if (r.error_username != "") {
+          setState(() {
+            _errorUsuarioVisible = true;
+            _errorUsuario =
+                "El nombre de usuario introducido no existe.\nPor favor, introduzca otro";
+            _errorContrasenaVisible = false;
+            _userController.text = "";
+            _passwordController.text = "";
+          });
+        } else {
+          if (r.error_password != "") {
+            setState(() {
+              _errorUsuarioVisible = false;
+              _errorContrasenaVisible = true;
+              _errorContrasena =
+                  "La contraseña introducida no es correcta.\nPor favor, introdúzcala de nuevo";
+            });
+          } else {
+            setState(() {
+              _errorUsuarioVisible = false;
+              _errorContrasenaVisible = false;
+            });
+          }
+        }
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // body: SingleChildScrollView (  //SOLUCION FONDO DE PANTALLA SE ESTRECHA AL SACAR TECLADO
-        body: Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/tapete.png'),
-          fit: BoxFit.fill,
-          // contentMode = .ScaleAspectFill,
-          // alignment: Alignment.topCenter,
+      // body: SingleChildScrollView (  //SOLUCION FONDO DE PANTALLA SE ESTRECHA AL SACAR TECLADO
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/tapete.png'),
+            fit: BoxFit.fill,
+            // contentMode = .ScaleAspectFill,
+            // alignment: Alignment.topCenter,
+          ),
         ),
-      ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(top: 20),
-              padding: const EdgeInsets.all(16.0),
-              child: const Text(
-                'Iniciar sesión',
-                style: TextStyle(
-                  fontSize: 30.0,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFc9c154),
-                  fontFamily: "Baskerville",
+        child: Form(
+          key: _formKey,
+          child: Stack(
+            children: [
+              Container(
+                alignment: Alignment.topCenter,
+                margin: const EdgeInsets.only(top: 20),
+                padding: const EdgeInsets.all(16.0),
+                child: const Text(
+                  'Iniciar sesión',
+                  style: TextStyle(
+                    fontSize: 30.0,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFc9c154),
+                    fontFamily: "Baskerville",
+                  ),
                 ),
               ),
-            ),
-
-//TEXTO USUARIO-------------------------------------------------------------
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              margin: const EdgeInsets.only(right: 480, bottom: 5, top: 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 8.0),
-                    child: Text(
-                      'Usuario',
-                      style: TextStyle(
-                          fontSize: 24.0,
-                          fontFamily: "Baskerville",
-                          color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              margin: const EdgeInsets.only(left: 60, right: 280),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.white,
-                  width: 2,
-                ),
-                color: Colors.white.withOpacity(0),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextFormField(
-                    controller: _userController,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Ingrese su usuario',
-                      hintStyle: TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 18.0,
-                          color: Colors.white),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Por favor ingresa tu nombre';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      _usuario = value!;
-                    },
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-//TEXTO CONTRASEÑA-------------------------------------------------------------
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              margin: const EdgeInsets.only(right: 445, bottom: 5, top: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 8.0),
-                    child: Text(
-                      'Contraseña',
-                      style: TextStyle(
-                          fontSize: 24.0,
-                          fontFamily: "Baskerville",
-                          color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              margin: const EdgeInsets.only(left: 60, right: 280),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.white,
-                  width: 2,
-                ),
-                color: Colors.white.withOpacity(0),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Ingrese la contraseña',
-                      hintStyle: TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 18.0,
-                          color: Colors.white),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Por favor ingresa tu contraseña';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      _contrasenya = value!;
-                    },
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 32),
-            Container(
-              margin: const EdgeInsets.only(top: 0),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+              Padding(
+                padding: const EdgeInsets.only(top: 100, left: 40),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                     Column(
-                        children: [SizedBox(height: 5), BotonHome("VOLVER",onPressed: (){Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const InicioSesion()));})]),
-                    Column(children: [
-                      const SizedBox(height: 5),
-                      Stack(
-                        children: <Widget>[
-                          Positioned.fill(
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ContainerLabelForm('USUARIO'),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Container(
+                            height: 45,
+                            width: 250,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                              color: Colors.white.withOpacity(0),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: TextFormField(
+                                controller: _userController,
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Ingrese su usuario',
+                                  hintStyle: TextStyle(
+                                      fontFamily: "Baskerville",
+                                      fontSize: 18.0,
+                                      color: Colors.white),
+                                ),
+                                onSaved: (value) {
+                                  if (!_errorUsuarioVisible) {
+                                    _usuario = value!;
+                                  }
+                                },
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 70),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ContainerLabelForm('CONTRASEÑA'),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20),
                             child: Container(
+                              height: 45,
+                              width: 250,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: <Color>[
-                                    Color(0xFFdee8eb),
-                                    Color(0xFFb0c7d0)
-                                  ],
-                                  stops: [0.4, 1.0],
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                                color: Colors.white.withOpacity(0),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: TextFormField(
+                                  controller: _passwordController,
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Ingrese la contraseña',
+                                    hintStyle: TextStyle(
+                                        fontFamily: "Baskerville",
+                                        fontSize: 18.0,
+                                        color: Colors.white),
+                                  ),
+                                  onSaved: (value) {
+                                    if (!_errorContrasenaVisible) {
+                                      _contrasenya = value!;
+                                    }
+                                  },
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                               ),
                             ),
                           ),
-                          TextButton(
-                            style: TextButton.styleFrom(
-                              foregroundColor: const Color(0xFF004461),
-                              // padding: const EdgeInsets.all(16.0),
-                              padding: const EdgeInsets.only(
-                                  top: 4, bottom: 4, left: 15, right: 15),
-                              textStyle: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  fontFamily: "Georgia"),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 30, top: 210),
+                child: Stack(
+                  children: [
+                    Visibility(
+                      visible: _errorUsuarioVisible,
+                      child: Stack(
+                        children: [
+                          const ContainerError1(),
+                          Padding(
+                            padding: const EdgeInsets.only(),
+                            child: SizedBox(
+                              width: 300,
+                              height: 60,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 15, top: 15),
+                                child: Text(_errorUsuario,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12.0,
+                                        fontFamily: "Baskerville",
+                                        color: Color(0xFFb13636))),
+                              ),
                             ),
-                            onPressed: () async {
-                              print("mirando estado");
-                              if (_formKey.currentState!.validate()) {
-                                print("${_usuario} ${_contrasenya}");
-                                _formKey.currentState!.save();
-
-                                print("${_usuario} ${_contrasenya}");
-                                Future<LoginUserResponse> f =
-                                    iniciarSesionUsuario(LoginUserPetition(
-                                        _usuario, _contrasenya));
-                                LoginUserResponse r = await f;
-
-                                print("Peticion");
-
-                                print(
-                                    'Hola ${r.OK} ${r.token} ${r.error_username} ${r.error_password}');
-                              }
-                              ;
-                            },
-                            child: Text("Entrar"),
                           ),
                         ],
-                      )
-                    ])
-                  ]),
-            ),
-          ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 320),
+                      child: Visibility(
+                        visible: _errorContrasenaVisible,
+                        child: Stack(
+                          children: [
+                            const ContainerError1(),
+                            Padding(
+                              padding: const EdgeInsets.only(),
+                              child: SizedBox(
+                                width: 300,
+                                height: 60,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 15, top: 15),
+                                  child: Text(_errorContrasena,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12.0,
+                                          fontFamily: "Baskerville",
+                                          color: Color(0xFFb13636))),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 320,
+                left: 130,
+                child: Container(
+                  margin: const EdgeInsets.only(top: 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Boton(
+                        "VOLVER",
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 200),
+                        child: Boton(
+                          "Entrar",
+                          onPressed: () {
+                            _comprobarDatos(context);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-      // ),
-    ));
+    );
   }
 
   @override
@@ -255,52 +308,5 @@ class _InicioSesionState extends State<InicioSesion> {
     _userController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-}
-
-class BotonHome extends StatelessWidget {
-  final String textContrasenya;
-  final VoidCallback onPressed;
-  const BotonHome(String t, {Key? key, required this.onPressed})
-      : textContrasenya = t,
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // ignore: dead_code
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: <Color>[Color(0xFFdee8eb), Color(0xFFb0c7d0)],
-                  stops: [0.4, 1.0],
-                ),
-              ),
-            ),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF004461),
-              // padding: const EdgeInsets.all(16.0),
-              padding:
-                  const EdgeInsets.only(top: 4, bottom: 4, left: 15, right: 15),
-              textStyle: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  fontFamily: "Georgia"),
-            ),
-            onPressed: onPressed,
-            child: Text(textContrasenya),
-          ),
-        ],
-      ),
-    );
   }
 }
