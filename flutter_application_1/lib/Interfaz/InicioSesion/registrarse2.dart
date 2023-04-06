@@ -29,22 +29,37 @@ class _Registrarse2State extends State<Registrarse2>
 
   bool _isKeyboardVisible = false;
   bool _isVisible = false;
-  bool _isFocus = false;
-  final _focusNode = FocusNode();
+  bool _isFocus1 = false, _isFocus2 = false;
+  final _focusNode1 = FocusNode(), _focusNode2 = FocusNode();
+
+  bool _password1Visible = false, _password2Visible = false;
 
   _Registrarse2State(this.r);
 
   @override
   void initState() {
     super.initState();
+    if (r.getField(RegistroFieldsCodes.contrasena) != "") {
+      _passwordController.text = r.getField(RegistroFieldsCodes.contrasena);
+      _confirmPasswordController.text =
+          r.getField(RegistroFieldsCodes.confirmarContrasena);
+    }
     WidgetsBinding.instance.addObserver(this);
-    _focusNode.addListener(_handleFocusChange);
+    _focusNode1.addListener(_handleFocus1Change);
+    _focusNode2.addListener(_handleFocus2Change);
   }
 
-  void _handleFocusChange() {
-    if (_focusNode.hasFocus) {
+  void _handleFocus1Change() {
+    if (_focusNode1.hasFocus) {
       // The text form field has focus, so the keyboard is being displayed.
-      _isFocus = true;
+      _isFocus1 = true;
+    }
+  }
+
+  void _handleFocus2Change() {
+    if (_focusNode2.hasFocus) {
+      // The text form field has focus, so the keyboard is being displayed.
+      _isFocus2 = true;
     }
   }
 
@@ -54,13 +69,18 @@ class _Registrarse2State extends State<Registrarse2>
     // Check whether the keyboard is currently visible.
     final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
     _isKeyboardVisible = bottomInset > 500.0;
-    if (_isKeyboardVisible && _isFocus) {
+    if (_isKeyboardVisible && (_isFocus1 || _isFocus2)) {
       _isVisible = true;
       setState(() {});
-      _isFocus = false;
-    } else if (!_isKeyboardVisible && !_isFocus) {
+      if (_isFocus1) {
+        _isFocus1 = false;
+      } else {
+        _isFocus2 = false;
+      }
+    } else if (!_isKeyboardVisible && !_isFocus1 && !_isFocus2) {
       _isVisible = false;
-      _focusNode.unfocus();
+      _focusNode1.unfocus();
+      _focusNode2.unfocus();
       setState(() {});
     }
   }
@@ -70,8 +90,10 @@ class _Registrarse2State extends State<Registrarse2>
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     WidgetsBinding.instance.removeObserver(this);
-    _focusNode.removeListener(_handleFocusChange);
-    _focusNode.dispose();
+    _focusNode1.removeListener(_handleFocus1Change);
+    _focusNode1.dispose();
+    _focusNode2.removeListener(_handleFocus2Change);
+    _focusNode2.dispose();
     super.dispose();
   }
 
@@ -110,11 +132,6 @@ class _Registrarse2State extends State<Registrarse2>
 
   @override
   Widget build(BuildContext context) {
-    if (r.getField(RegistroFieldsCodes.contrasena) != "") {
-      _passwordController.text = r.getField(RegistroFieldsCodes.contrasena);
-      _confirmPasswordController.text =
-          r.getField(RegistroFieldsCodes.confirmarContrasena);
-    }
     return Scaffold(
       resizeToAvoidBottomInset: false,
       // body: SingleChildScrollView (  //SOLUCION FONDO DE PANTALLA SE ESTRECHA AL SACAR TECLADO
@@ -143,7 +160,7 @@ class _Registrarse2State extends State<Registrarse2>
                       children: [
                         ContainerLabelForm('CONTRASEÑA'),
                         Padding(
-                          padding: const EdgeInsets.only(top: 20),
+                          padding: const EdgeInsets.only(top: 10),
                           child: Container(
                             height: 45,
                             width: 250,
@@ -156,23 +173,37 @@ class _Registrarse2State extends State<Registrarse2>
                               color: Colors.white.withOpacity(0),
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: TextFormField(
-                                controller: _passwordController,
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Introduzca la contraseña',
-                                  hintStyle: TextStyle(
-                                      fontFamily: "Baskerville",
-                                      fontSize: 16.0,
-                                      color: Colors.white),
+                            child: TextFormField(
+                              obscureText: !_password1Visible,
+                              controller: _passwordController,
+                              keyboardType: TextInputType.visiblePassword,
+                              decoration: InputDecoration(
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    // Based on passwordVisible state choose the icon
+                                    !_password1Visible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    // Update the state i.e. toogle the state of passwordVisible variable
+                                    setState(() {
+                                      _password1Visible = !_password1Visible;
+                                    });
+                                  },
                                 ),
-                                onSaved: (value) {
-                                  _contrasena = value!;
-                                },
-                                style: const TextStyle(color: Colors.white),
+                                border: InputBorder.none,
+                                hintText: 'Introduzca la contraseña',
+                                hintStyle: const TextStyle(
+                                    fontFamily: "Baskerville",
+                                    fontSize: 16.0,
+                                    color: Colors.white),
                               ),
+                              onSaved: (value) {
+                                _contrasena = value!;
+                              },
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
@@ -190,10 +221,10 @@ class _Registrarse2State extends State<Registrarse2>
                   children: [
                     ContainerLabelForm('CONFIRMAR CONTRASEÑA'),
                     Padding(
-                      padding: const EdgeInsets.only(top: 20),
+                      padding: const EdgeInsets.only(top: 10),
                       child: Container(
                         height: 45,
-                        width: 320,
+                        width: 340,
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
                           border: Border.all(
@@ -203,24 +234,38 @@ class _Registrarse2State extends State<Registrarse2>
                           color: Colors.white.withOpacity(0),
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: TextFormField(
-                            controller: _confirmPasswordController,
-                            focusNode: _focusNode,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Introduzca la contraseña de nuevo',
-                              hintStyle: TextStyle(
-                                  fontFamily: "Baskerville",
-                                  fontSize: 16.0,
-                                  color: Colors.white),
+                        child: TextFormField(
+                          controller: _confirmPasswordController,
+                          focusNode: _focusNode1,
+                          keyboardType: TextInputType.visiblePassword,
+                          obscureText: !_password2Visible,
+                          decoration: InputDecoration(
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                // Based on passwordVisible state choose the icon
+                                !_password2Visible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                // Update the state i.e. toogle the state of passwordVisible variable
+                                setState(() {
+                                  _password2Visible = !_password2Visible;
+                                });
+                              },
                             ),
-                            onSaved: (value) {
-                              _confirmarContrasena = value!;
-                            },
-                            style: const TextStyle(color: Colors.white),
+                            border: InputBorder.none,
+                            hintText: 'Introduzca de nuevo la contraseña',
+                            hintStyle: const TextStyle(
+                                fontFamily: "Baskerville",
+                                fontSize: 16.0,
+                                color: Colors.white),
                           ),
+                          onSaved: (value) {
+                            _confirmarContrasena = value!;
+                          },
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
@@ -262,26 +307,42 @@ class _Registrarse2State extends State<Registrarse2>
               Visibility(
                 visible: _isVisible,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 165),
+                  padding: const EdgeInsets.only(top: 160),
                   child: Container(
-                    height: 35,
+                    height: 40,
                     decoration: const BoxDecoration(
                       color: Colors.grey,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 5),
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-                        controller: _confirmPasswordController,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          hintStyle: TextStyle(
-                              fontFamily: "Baskerville",
-                              fontSize: 16.0,
-                              color: Colors.white),
+                    child: TextFormField(
+                      textAlign: TextAlign.center,
+                      controller: _confirmPasswordController,
+                      focusNode: _focusNode2,
+                      keyboardType: TextInputType.visiblePassword,
+                      obscureText: !_password2Visible,
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            // Based on passwordVisible state choose the icon
+                            !_password2Visible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            // Update the state i.e. toogle the state of passwordVisible variable
+                            setState(() {
+                              _password2Visible = !_password2Visible;
+                            });
+                          },
                         ),
-                        style: const TextStyle(color: Colors.white),
+                        border: InputBorder.none,
+                        hintText: 'Introduzca de nuevo la contraseña',
+                        hintStyle: const TextStyle(
+                            fontFamily: "Baskerville",
+                            fontSize: 16.0,
+                            color: Colors.white),
                       ),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),

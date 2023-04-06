@@ -43,7 +43,7 @@ class ContainerError2 extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 1),
           child: Container(
-            width: 300,
+            width: 290,
             height: 60,
             decoration: BoxDecoration(
               color: Colors.white,
