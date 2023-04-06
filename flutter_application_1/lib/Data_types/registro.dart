@@ -1,6 +1,5 @@
 class Registro {
   String _usuario,
-      _nombre,
       _contrasena,
       _confirmarContrasena,
       _fechaNacimiento,
@@ -9,14 +8,12 @@ class Registro {
 
   Registro(
       {String usuario = "",
-      nombre = "",
       contrasena = "",
       confirmarContrasena = "",
       fechaNacimiento = "",
       correoElectronico = "",
       telefonoMovil = ""})
       : _usuario = usuario,
-        _nombre = nombre,
         _contrasena = contrasena,
         _confirmarContrasena = confirmarContrasena,
         _fechaNacimiento = fechaNacimiento,
@@ -37,8 +34,6 @@ class Registro {
         return _correoElectronico;
       case RegistroFieldsCodes.telefonoMovil:
         return _telefonoMovil;
-      case RegistroFieldsCodes.nombre:
-        return _nombre;
     }
   }
 
@@ -62,9 +57,6 @@ class Registro {
       case RegistroFieldsCodes.telefonoMovil:
         _telefonoMovil = s;
         break;
-      case RegistroFieldsCodes.nombre:
-        _nombre = s;
-        break;
     }
   }
 }
@@ -76,5 +68,4 @@ enum RegistroFieldsCodes {
   fechaNacimiento,
   correoElectronico,
   telefonoMovil,
-  nombre
 }

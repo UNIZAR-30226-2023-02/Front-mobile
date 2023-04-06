@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-//import 'package:flutter_application_1/Interfaz/InicioSesion/home.dart';
-import 'pruebas.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion/index.dart';
+
+import 'package:flutter_application_1/Data_types/registro.dart';
+//import 'pruebas.dart';
 //import 'Interfaz/InicioSesion/iniciarSesion.dart';
 //import 'Interfaz/InicioSesion/inicioApp.dart';
 // import 'dart:convert';
@@ -13,9 +15,15 @@ import 'pruebas.dart';
 // import 'package:flutter_application_1/InicioSesion/registrarse.dart';
 
 void main() {
-  runApp(const MaterialApp(
+  Registro r = Registro();
+  r.setField(RegistroFieldsCodes.usuario, "rober");
+  r.setField(RegistroFieldsCodes.contrasena, "es");
+  r.setField(RegistroFieldsCodes.fechaNacimiento, "una");
+  r.setField(RegistroFieldsCodes.correoElectronico, "puta");
+  r.setField(RegistroFieldsCodes.telefonoMovil, "guarra");
+  runApp(MaterialApp(
     title: 'Login',
-    home: Registrarse1(),
+    home: ConfirmarRegistro(r),
   ));
 }
 

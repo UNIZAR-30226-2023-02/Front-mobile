@@ -1,57 +1,11 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Api/api.dart';
-import 'package:flutter_application_1/Interfaz/InicioSesion/index.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion/registrarse2.dart';
+import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
 import 'package:flutter_application_1/Data_types/registro.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion/Estilo/index.dart';
-
-class ScaleRoute extends PageRouteBuilder {
-  final Widget page;
-
-  ScaleRoute({required this.page})
-      : super(
-          pageBuilder: (context, animation, secondaryAnimation) => page,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              ScaleTransition(
-            scale: Tween<double>(
-              begin: 0.0,
-              end: 1.0,
-            ).animate(animation),
-            child: child,
-          ),
-        );
-}
-
-class FadeRoute<T> extends PageRouteBuilder<T> {
-  final Widget page;
-
-  FadeRoute({required this.page})
-      : super(
-          pageBuilder: (context, animation, secondaryAnimation) => page,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              FadeTransition(
-            opacity: animation,
-            child: child,
-          ),
-        );
-}
-
-class SlideRoute extends PageRouteBuilder {
-  final Widget page;
-
-  SlideRoute({required this.page})
-      : super(
-          pageBuilder: (context, animation, secondaryAnimation) => page,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(1.0, 0.0),
-              end: Offset.zero,
-            ).animate(animation),
-            child: child,
-          ),
-        );
-}
+import 'package:http/http.dart';
 
 class Registrarse1 extends StatefulWidget {
   const Registrarse1({Key? key}) : super(key: key);
@@ -61,13 +15,76 @@ class Registrarse1 extends StatefulWidget {
   _Registrarse1State createState() => _Registrarse1State();
 }
 
-class _Registrarse1State extends State<Registrarse1> {
+class _Registrarse1State extends State<Registrarse1>
+    with WidgetsBindingObserver {
   Registro r = Registro();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _userController = TextEditingController();
-  String _usuario = "";
-  String _errorUsuario = "";
-  bool _errorUsuarioVisible = false;
+  final TextEditingController _mailController = TextEditingController();
+  String _usuario = "", _correoElectronico = "";
+  String _errorUsuario = "", _errorCorreoElectronico = "";
+  bool _errorUsuarioVisible = false, _errorCorreoElectronicoVisible = false;
+
+  bool _isKeyboardVisible = false;
+  bool _isVisible = false;
+  bool _isFocus1 = false, _isFocus2 = false;
+  final _focusNode1 = FocusNode(), _focusNode2 = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _focusNode1.addListener(_handleFocus1Change);
+    _focusNode2.addListener(_handleFocus2Change);
+  }
+
+  void _handleFocus1Change() {
+    if (_focusNode1.hasFocus) {
+      // The text form field has focus, so the keyboard is being displayed.
+      _isFocus1 = true;
+    }
+  }
+
+  void _handleFocus2Change() {
+    if (_focusNode2.hasFocus) {
+      // The text form field has focus, so the keyboard is being displayed.
+      _isFocus2 = true;
+    }
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    // Check whether the keyboard is currently visible.
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    _isKeyboardVisible = bottomInset > 500.0;
+    if (_isKeyboardVisible && (_isFocus1 || _isFocus2)) {
+      _isVisible = true;
+      setState(() {});
+      if (_isFocus1) {
+        _isFocus1 = false;
+      } else {
+        _isFocus2 = false;
+      }
+    } else if (!_isKeyboardVisible && !_isFocus1 && !_isFocus2) {
+      _isVisible = false;
+      _focusNode1.unfocus();
+      _focusNode2.unfocus();
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    _userController.dispose();
+    _mailController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    _focusNode1.removeListener(_handleFocus1Change);
+    _focusNode1.dispose();
+    _focusNode2.removeListener(_handleFocus2Change);
+    _focusNode2.dispose();
+    super.dispose();
+  }
 
   void _comprobarDatos(BuildContext context) async {
     if (_userController.text == "") {
@@ -120,7 +137,7 @@ class _Registrarse1State extends State<Registrarse1> {
             children: [
               ContainerTitle('Registrarse'),
               Padding(
-                padding: const EdgeInsets.only(top: 100, left: 40),
+                padding: const EdgeInsets.only(top: 80, left: 40),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -130,10 +147,10 @@ class _Registrarse1State extends State<Registrarse1> {
                       children: [
                         ContainerLabelForm('USUARIO'),
                         Padding(
-                          padding: const EdgeInsets.only(top: 20),
+                          padding: const EdgeInsets.only(top: 10),
                           child: Container(
                             height: 45,
-                            width: 320,
+                            width: 270,
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -143,23 +160,21 @@ class _Registrarse1State extends State<Registrarse1> {
                               color: Colors.white.withOpacity(0),
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: TextFormField(
-                                controller: _userController,
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Introduzca el nombre de usuario',
-                                  hintStyle: TextStyle(
-                                      fontFamily: "Baskerville",
-                                      fontSize: 18.0,
-                                      color: Colors.white),
-                                ),
-                                onSaved: (value) {
-                                  _usuario = value!;
-                                },
-                                style: const TextStyle(color: Colors.white),
+                            child: TextFormField(
+                              controller: _userController,
+                              keyboardType: TextInputType.visiblePassword,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Introduzca el nombre de usuario',
+                                hintStyle: TextStyle(
+                                    fontFamily: "Baskerville",
+                                    fontSize: 16.0,
+                                    color: Colors.white),
                               ),
+                              onSaved: (value) {
+                                _usuario = value!;
+                              },
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
@@ -168,15 +183,59 @@ class _Registrarse1State extends State<Registrarse1> {
                   ],
                 ),
               ),
+              Positioned(
+                top: 200,
+                left: 40,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ContainerLabelForm('CORREO ELECTRONICO'),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Container(
+                        height: 45,
+                        width: 340,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
+                          ),
+                          color: Colors.white.withOpacity(0),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: TextFormField(
+                          controller: _mailController,
+                          focusNode: _focusNode1,
+                          keyboardType: TextInputType.visiblePassword,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Introduzca su correo electrónico',
+                            hintStyle: TextStyle(
+                                fontFamily: "Baskerville",
+                                fontSize: 16.0,
+                                color: Colors.white),
+                          ),
+                          onSaved: (value) {
+                            _correoElectronico = value!;
+                          },
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               Padding(
-                padding: const EdgeInsets.only(left: 50, top: 210),
+                padding: const EdgeInsets.only(left: 350, top: 110),
                 child: Stack(
                   children: [
                     Visibility(
                       visible: _errorUsuarioVisible,
                       child: Stack(
                         children: [
-                          const ContainerError1(),
+                          const ContainerError2(),
                           Padding(
                             padding: const EdgeInsets.only(),
                             child: SizedBox(
@@ -200,6 +259,65 @@ class _Registrarse1State extends State<Registrarse1> {
                   ],
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(left: 350, top: 230),
+                child: Stack(
+                  children: [
+                    Visibility(
+                      visible: _errorCorreoElectronicoVisible,
+                      child: Stack(
+                        children: [
+                          const ContainerError2(),
+                          Padding(
+                            padding: const EdgeInsets.only(),
+                            child: SizedBox(
+                              width: 300,
+                              height: 60,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 15, top: 15),
+                                child: Text(_errorCorreoElectronico,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12.0,
+                                        fontFamily: "Baskerville",
+                                        color: Color(0xFFb13636))),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Visibility(
+                visible: _isVisible,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 160),
+                  child: Container(
+                    height: 40,
+                    decoration: const BoxDecoration(
+                      color: Colors.grey,
+                    ),
+                    child: TextFormField(
+                      textAlign: TextAlign.center,
+                      controller: _mailController,
+                      focusNode: _focusNode2,
+                      keyboardType: TextInputType.visiblePassword,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Introduzca su correo electrónico',
+                        hintStyle: TextStyle(
+                            fontFamily: "Baskerville",
+                            fontSize: 16.0,
+                            color: Colors.white),
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
               Positioned(
                 top: 320,
                 left: 130,
@@ -208,22 +326,19 @@ class _Registrarse1State extends State<Registrarse1> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Boton(
+                      Boton1(
                         "VOLVER",
                         onPressed: () {
-                          Navigator.pop(context);
+                          Navigator.pop(context, r);
                         },
                       ),
-                      Visibility(
-                        visible: true,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 180),
-                          child: Boton(
-                            "CONTINUAR",
-                            onPressed: () {
-                              _comprobarDatos(context);
-                            },
-                          ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 200),
+                        child: Boton1(
+                          "CONTINUAR",
+                          onPressed: () {
+                            _comprobarDatos(context);
+                          },
                         ),
                       ),
                     ],
@@ -235,11 +350,5 @@ class _Registrarse1State extends State<Registrarse1> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _userController.dispose();
-    super.dispose();
   }
 }

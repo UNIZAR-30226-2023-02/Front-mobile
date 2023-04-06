@@ -277,7 +277,7 @@ class _InicioSesionState extends State<InicioSesion> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Boton(
+                      Boton1(
                         "VOLVER",
                         onPressed: () {
                           Navigator.pop(context);
@@ -285,7 +285,7 @@ class _InicioSesionState extends State<InicioSesion> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 200),
-                        child: Boton(
+                        child: Boton1(
                           "Entrar",
                           onPressed: () {
                             _comprobarDatos(context);

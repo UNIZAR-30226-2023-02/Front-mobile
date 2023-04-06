@@ -21,12 +21,12 @@ class _Registrarse3State extends State<Registrarse3>
     with WidgetsBindingObserver {
   Registro r;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _birthDateController = TextEditingController();
 
-  String _nombre = "", _fechaNacimiento = "";
-  String _errorNombre = "", _errorFechaNacimiento = "";
-  bool _errorNombreVisible = false, _errorFechaNacimientoVisible = false;
+  String _telefonoMovil = "", _fechaNacimiento = "";
+  String _errorTelefonoMovil = "", _errorFechaNacimiento = "";
+  bool _errorTelefonoMovilVisible = false, _errorFechaNacimientoVisible = false;
 
   _Registrarse3State(this.r);
 
@@ -38,8 +38,9 @@ class _Registrarse3State extends State<Registrarse3>
   @override
   void initState() {
     super.initState();
-    if (r.getField(RegistroFieldsCodes.nombre) != "") {
-      _nameController.text = r.getField(RegistroFieldsCodes.nombre);
+    if (r.getField(RegistroFieldsCodes.telefonoMovil) != "") {
+      _phoneNumberController.text =
+          r.getField(RegistroFieldsCodes.telefonoMovil);
     }
     if (r.getField(RegistroFieldsCodes.fechaNacimiento) != "") {
       _birthDateController.text =
@@ -87,7 +88,7 @@ class _Registrarse3State extends State<Registrarse3>
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _phoneNumberController.dispose();
     _birthDateController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     _focusNode1.removeListener(_handleFocus1Change);
@@ -97,48 +98,42 @@ class _Registrarse3State extends State<Registrarse3>
     super.dispose();
   }
 
-  bool fechaValida(String fecha) {
-    try {
-      final dateformat = DateFormat('yyyy/MM/dd');
-      dateformat.parseStrict(fecha);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
   void _comprobarDatos(BuildContext context) async {
     _formKey.currentState!.save();
-    if (_nombre == "") {
-      _errorNombreVisible = true;
-      _errorNombre = "El nombre está vacío.\nPor favor, introduzca el nombre.";
-    } else {
-      _errorNombreVisible = false;
-      r.setField(RegistroFieldsCodes.nombre, _nombre);
-    }
+    Future<RegistroUserResponse> f = registroUsuario(
+        RegistroUserPetition("", "", "", _fechaNacimiento, "", _telefonoMovil));
+    RegistroUserResponse re = await f;
 
-    if (_fechaNacimiento == "") {
+    if (re.error_fecha != "") {
       _errorFechaNacimientoVisible = true;
       _errorFechaNacimiento =
-          "La fecha de nacimiento está vacío.\nPor favor, introduzca la fecha.";
-      setState(() {});
+          "${re.error_fecha}\nPor favor, introdúzcala de nuevo.";
     } else {
-      Future<RegistroUserResponse> f = registroUsuario(
-          RegistroUserPetition("", "", "", _fechaNacimiento, "", ""));
-      RegistroUserResponse re = await f;
-      if (re.error_fecha != "") {
-        _errorFechaNacimientoVisible = true;
-        _errorFechaNacimiento =
-            "La fecha de nacimiento no es váida.\nPor favor, introduzca una fecha válida.";
-        setState(() {});
-      } else {
-        _errorFechaNacimientoVisible = false;
-        r.setField(RegistroFieldsCodes.fechaNacimiento, _fechaNacimiento);
-        setState(() {});
-        // ignore: use_build_context_synchronously
-        r = await Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Registrarse4(r)));
-      }
+      _errorFechaNacimientoVisible = false;
+      r.setField(RegistroFieldsCodes.fechaNacimiento, _fechaNacimiento);
+    }
+
+    if (re.error_telefono != "") {
+      _errorTelefonoMovilVisible = true;
+      _errorTelefonoMovil =
+          "${re.error_telefono}\nPor favor, introdúzcalo de nuevo.";
+    } else {
+      _errorTelefonoMovilVisible = false;
+      r.setField(RegistroFieldsCodes.telefonoMovil, _telefonoMovil);
+    }
+
+    setState(() {});
+
+    if (!_errorTelefonoMovilVisible && !_errorFechaNacimientoVisible) {
+      // ignore: use_build_context_synchronously
+      r = await Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ConfirmarRegistro(r)));
+      setState(() {
+        _phoneNumberController.text =
+            r.getField(RegistroFieldsCodes.telefonoMovil);
+        _birthDateController.text =
+            r.getField(RegistroFieldsCodes.fechaNacimiento);
+      });
     }
   }
 
@@ -170,12 +165,12 @@ class _Registrarse3State extends State<Registrarse3>
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ContainerLabelForm('NOMBRE'),
+                        ContainerLabelForm('TELEFONO'),
                         Padding(
                           padding: const EdgeInsets.only(top: 10),
                           child: Container(
                             height: 45,
-                            width: 250,
+                            width: 300,
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -186,17 +181,18 @@ class _Registrarse3State extends State<Registrarse3>
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: TextFormField(
-                              controller: _nameController,
+                              controller: _phoneNumberController,
+                              keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
                                 border: InputBorder.none,
-                                hintText: 'Introduzca su nombre',
+                                hintText: 'Introduzca su número de télefono',
                                 hintStyle: TextStyle(
                                     fontFamily: "Baskerville",
                                     fontSize: 16.0,
                                     color: Colors.white),
                               ),
                               onSaved: (value) {
-                                _nombre = value!;
+                                _telefonoMovil = value!;
                               },
                               style: const TextStyle(color: Colors.white),
                             ),
@@ -255,11 +251,11 @@ class _Registrarse3State extends State<Registrarse3>
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 350, top: 110),
+                padding: const EdgeInsets.only(left: 360, top: 110),
                 child: Stack(
                   children: [
                     Visibility(
-                      visible: _errorNombreVisible,
+                      visible: _errorTelefonoMovilVisible,
                       child: Stack(
                         children: [
                           const ContainerError2(),
@@ -271,7 +267,7 @@ class _Registrarse3State extends State<Registrarse3>
                               child: Padding(
                                 padding:
                                     const EdgeInsets.only(left: 15, top: 15),
-                                child: Text(_errorNombre,
+                                child: Text(_errorTelefonoMovil,
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 12.0,
@@ -353,7 +349,7 @@ class _Registrarse3State extends State<Registrarse3>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Boton(
+                      Boton1(
                         "VOLVER",
                         onPressed: () {
                           Navigator.pop(context, r);
@@ -361,7 +357,7 @@ class _Registrarse3State extends State<Registrarse3>
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 200),
-                        child: Boton(
+                        child: Boton1(
                           "CONTINUAR",
                           onPressed: () {
                             _comprobarDatos(context);

@@ -6,6 +6,8 @@ import 'package:flutter_application_1/Data_types/registro.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion/Estilo/index.dart';
 import 'package:http/http.dart';
 
+import '../../API/api.dart';
+
 class Registrarse2 extends StatefulWidget {
   Registro r;
   Registrarse2(this.r, {Key? key}) : super(key: key);
@@ -98,35 +100,32 @@ class _Registrarse2State extends State<Registrarse2>
   }
 
   void _comprobarDatos(BuildContext context) async {
-    if (_passwordController.text == "" &&
-        _confirmPasswordController.text == "") {
+    _formKey.currentState!.save();
+    Future<RegistroUserResponse> f = registroUsuario(RegistroUserPetition(
+        "", _contrasena, _confirmarContrasena, "", "", ""));
+    RegistroUserResponse re = await f;
+
+    if (re.error_password != "") {
       _errorContrasenasVisible = true;
       _errorContrasenas =
-          "Las contraseñas están vacías.\nPor favor, introdúzcalas.";
-      setState(() {});
-    } else if (_passwordController.text != _confirmPasswordController.text) {
-      _errorContrasenasVisible = true;
-      _errorContrasenas =
-          "Las contraseñas no coinciden.\nPor favor, introdúzcalas de nuevo.";
-      setState(() {});
-    } else if (_passwordController.text.length < 9) {
-      _errorContrasenasVisible = true;
-      _errorContrasenas =
-          "La contraseña debe ser de 9 carácteres o más.\nPor favor, introdúzcala de nuevo.";
-      setState(() {});
+          "${re.error_password}\nPor favor, introdúzcalas de nuevo.";
     } else {
       _errorContrasenasVisible = false;
-
-      setState(() {});
-
-      _formKey.currentState!.save();
-
       r.setField(RegistroFieldsCodes.contrasena, _contrasena);
       r.setField(RegistroFieldsCodes.confirmarContrasena, _confirmarContrasena);
+    }
 
+    setState(() {});
+
+    if (!_errorContrasenasVisible) {
       // ignore: use_build_context_synchronously
       r = await Navigator.push(
           context, MaterialPageRoute(builder: (context) => Registrarse3(r)));
+      setState(() {
+        _passwordController.text = r.getField(RegistroFieldsCodes.contrasena);
+        _confirmPasswordController.text =
+            r.getField(RegistroFieldsCodes.contrasena);
+      });
     }
   }
 
@@ -163,7 +162,7 @@ class _Registrarse2State extends State<Registrarse2>
                           padding: const EdgeInsets.only(top: 10),
                           child: Container(
                             height: 45,
-                            width: 250,
+                            width: 270,
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -355,7 +354,7 @@ class _Registrarse2State extends State<Registrarse2>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Boton(
+                      Boton1(
                         "VOLVER",
                         onPressed: () {
                           Navigator.pop(context, r);
@@ -363,7 +362,7 @@ class _Registrarse2State extends State<Registrarse2>
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 200),
-                        child: Boton(
+                        child: Boton1(
                           "CONTINUAR",
                           onPressed: () {
                             _comprobarDatos(context);

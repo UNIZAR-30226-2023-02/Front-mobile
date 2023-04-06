@@ -131,7 +131,7 @@ class RegistroUserResponse {
     print(r.statusCode);
     if (r.statusCode <= 300) {
       print("statusReg2");
-      final responseJson = json.decode(r.body);
+      final responseJson = json.decode(utf8.decode(r.bodyBytes));
 
       String parameterValue = responseJson[OK_key];
 
@@ -146,6 +146,8 @@ class RegistroUserResponse {
         error_confirm_password = responseJson[eCP_key];
         error_fecha = responseJson[eF_key];
         error_correo = responseJson[eC_key];
+        error_telefono = responseJson[eT_key];
+        print("${error_telefono}");
       }
     } else {
       print("statusReg0");
