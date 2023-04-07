@@ -6,3 +6,4 @@ export 'registrarse2.dart';
 export 'registrarse3.dart';
 export 'confirmarRegistro.dart';
 export 'registrandoUsuario.dart';
+export 'errorRegistro.dart';

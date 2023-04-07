@@ -24,7 +24,7 @@ void main() {
   r.setField(RegistroFieldsCodes.telefonoMovil, "guarra");
   runApp(MaterialApp(
     title: 'Login',
-    home: ConfirmarRegistro(r),
+    home: Home(),
   ));
 }
 

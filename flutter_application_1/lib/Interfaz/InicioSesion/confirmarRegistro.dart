@@ -150,7 +150,7 @@ class _ConfirmarRegistroState extends State<ConfirmarRegistro>
                                   Padding(
                                     padding: const EdgeInsets.only(
                                         left: 30, top: 40),
-                                    child: ContainerDatosRegistro(
+                                    child: ContainerContrasenaRegistro(
                                       "Contraseña :",
                                       r.getField(
                                           RegistroFieldsCodes.contrasena),

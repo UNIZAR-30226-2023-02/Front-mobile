@@ -3,8 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class AnimacionImagen extends StatefulWidget {
+  const AnimacionImagen({Key? key}) : super(key: key);
+
   @override
-  _AnimacionImagenState createState() => new _AnimacionImagenState();
+  // ignore: library_private_types_in_public_api
+  _AnimacionImagenState createState() => _AnimacionImagenState();
 }
 
 class _AnimacionImagenState extends State<AnimacionImagen>
@@ -15,9 +18,9 @@ class _AnimacionImagenState extends State<AnimacionImagen>
   @override
   void initState() {
     super.initState();
-    animationController = new AnimationController(
+    animationController = AnimationController(
       vsync: this,
-      duration: new Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1000),
     )..repeat();
 
     _animation =

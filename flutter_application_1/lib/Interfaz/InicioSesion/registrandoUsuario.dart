@@ -6,82 +6,118 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter_application_1/Api/api.dart';
+
 import 'package:flutter_application_1/Interfaz/InicioSesion/Estilo/index.dart';
 
 import 'package:flutter_application_1/Data_types/registro.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion/index.dart';
+import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 
 class RegistrandoUsuario extends StatefulWidget {
   Registro r;
   RegistrandoUsuario(this.r, {Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
-  _RegistrandoUsuario createState() => _RegistrandoUsuario();
+  // ignore: library_private_types_in_public_api, no_logic_in_create_state
+  _RegistrandoUsuario createState() => _RegistrandoUsuario(r);
 }
 
 class _RegistrandoUsuario extends State<RegistrandoUsuario> {
-  late Timer _timer;
-  UnsignedInt contador = 0 as UnsignedInt;
+  Registro r;
+  late Timer _timer1, _timer2;
+
+  int contador = 0;
+  bool registrado = false;
+
+  _RegistrandoUsuario(this.r);
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer(const Duration(seconds: 1), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const Home()),
-      );
-    });
+    _setTimer();
+    _comprobarRegistrarUsuario();
   }
 
-  void setTimer() {}
+  void _comprobarRegistrarUsuario() async {
+    if (contador < 7) {
+      Future<RegistroUserResponse> f = registroUsuario(RegistroUserPetition(
+          r.getField(RegistroFieldsCodes.usuario),
+          r.getField(RegistroFieldsCodes.contrasena),
+          r.getField(RegistroFieldsCodes.confirmarContrasena),
+          r.getField(RegistroFieldsCodes.fechaNacimiento),
+          r.getField(RegistroFieldsCodes.correoElectronico),
+          r.getField(RegistroFieldsCodes.telefonoMovil)));
+      RegistroUserResponse re = await f;
+
+      if (re.OK) {
+        registrado = true;
+      } else {
+        _timer1 = Timer(
+            const Duration(milliseconds: 500), _comprobarRegistrarUsuario);
+      }
+    }
+  }
+
+  void _setTimer() {
+    if (registrado) {
+      _timer1.cancel();
+      _timer2.cancel();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Menu()),
+      );
+    } else if (contador < 7) {
+      contador++;
+      _timer2 = Timer(const Duration(seconds: 1), _setTimer);
+    } else {
+      _timer1.cancel();
+      _timer2.cancel();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ErrorRegistro()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
-        //margin: EdgeInsets.symmetric(horizontal: w*0.01,vertical: h*0.01 ),
         // ignore: prefer_const_constructors
         decoration: BoxDecoration(
           image: const DecorationImage(
               image: AssetImage('assets/tapete.png'), fit: BoxFit.fill),
         ),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 40, right: 80),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Padding(
-                        padding: EdgeInsets.only(top: 12),
-                        child: Text(
-                          "Cargando...",
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFf7f6f6),
-                            fontFamily: "Bona Nova",
-                          ),
-                        )),
-                    const SizedBox(width: 8, height: 0),
-                    SizedBox(width: 32, height: 33, child: AnimacionImagen())
-                  ],
+        child: Align(
+          alignment: Alignment.center,
+          child: Stack(
+            children: const [
+              Padding(
+                padding: EdgeInsets.only(top: 15),
+                child: Text(
+                  "Registrando usuario...",
+                  style: TextStyle(
+                    fontSize: 30.0,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFf7f6f6),
+                    fontFamily: "Bona Nova",
+                  ),
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: EdgeInsets.only(left: 295),
+                child: SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: AnimacionImagen(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    //_timer.cancel();
-    super.dispose();
   }
 }
