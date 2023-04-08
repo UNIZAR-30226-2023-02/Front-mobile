@@ -178,7 +178,8 @@ class ContainerDatosRegistro extends StatelessWidget {
                   border: Border.all(color: Colors.white),
                   borderRadius: BorderRadius.circular(12)),
               child: Padding(
-                padding: const EdgeInsets.only(left: 10, top: 0, bottom: 0),
+                padding: const EdgeInsets.only(
+                    left: 10, right: 0, top: 0, bottom: 0),
                 child: TextField(
                   keyboardType: TextInputType.none,
                   controller: _textController,

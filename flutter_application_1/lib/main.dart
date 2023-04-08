@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Api/api.dart';
-import 'package:flutter_application_1/Interfaz/InicioSesion/index.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/InicioSesion/iniciandoSesion.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/index.dart';
 
 import 'package:flutter_application_1/Data_types/registro.dart';
+
+import 'Data_types/sesion.dart';
 //import 'pruebas.dart';
 //import 'Interfaz/InicioSesion/iniciarSesion.dart';
 //import 'Interfaz/InicioSesion/inicioApp.dart';
@@ -17,14 +20,16 @@ import 'package:flutter_application_1/Data_types/registro.dart';
 
 void main() {
   Registro r = Registro();
-  r.setField(RegistroFieldsCodes.usuario, "rober");
-  r.setField(RegistroFieldsCodes.contrasena, "es");
-  r.setField(RegistroFieldsCodes.fechaNacimiento, "una");
-  r.setField(RegistroFieldsCodes.correoElectronico, "puta");
-  r.setField(RegistroFieldsCodes.telefonoMovil, "guarra");
+  r.setField(RegistroFieldsCodes.usuario, "pruebaRegistro3");
+  r.setField(RegistroFieldsCodes.contrasena, "pruebaRegistro3");
+  r.setField(RegistroFieldsCodes.confirmarContrasena, "pruebaRegistro3");
+  r.setField(RegistroFieldsCodes.fechaNacimiento, "2002-01-01");
+  r.setField(
+      RegistroFieldsCodes.correoElectronico, "pruebaregistro3@gmail.com");
+  r.setField(RegistroFieldsCodes.telefonoMovil, "787678987");
   runApp(MaterialApp(
     title: 'Login',
-    home: Home(),
+    home: IniciandoSesion(Sesion()), //Registrarse1(reg: r,),
   ));
 }
 

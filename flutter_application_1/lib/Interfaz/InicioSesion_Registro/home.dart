@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Interfaz/InicioSesion/iniciarSesion.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/InicioSesion/iniciarSesion.dart';
 
-import 'package:flutter_application_1/Interfaz/InicioSesion/registrarse1.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Registro/registrarse1.dart';
+
+import '../../Data_types/registro.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
@@ -11,7 +14,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () async {
+        onWillPop: () {
           exit(0);
         },
         child: Container(
@@ -45,20 +48,36 @@ class Home extends StatelessWidget {
                       children: [
                         Column(children: [
                           const SizedBox(height: 30),
-                          BotonHome(
+                          Boton1(
                             "REGISTRARSE",
                             onPressed: () {
+                              Registro r = Registro();
+                              r.setField(RegistroFieldsCodes.usuario,
+                                  "pruebaRegistro3");
+                              r.setField(RegistroFieldsCodes.contrasena,
+                                  "pruebaRegistro3");
+                              r.setField(
+                                  RegistroFieldsCodes.confirmarContrasena,
+                                  "pruebaRegistro3");
+                              r.setField(RegistroFieldsCodes.fechaNacimiento,
+                                  "2002-01-01");
+                              r.setField(RegistroFieldsCodes.correoElectronico,
+                                  "pruebaregistro3@gmail.com");
+                              r.setField(RegistroFieldsCodes.telefonoMovil,
+                                  "787678987");
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const Registrarse1()),
+                                    builder: (context) => Registrarse1(
+                                          reg: r,
+                                        )),
                               );
                             },
                           )
                         ]),
                         Column(children: [
                           const SizedBox(height: 30),
-                          BotonHome("INICIAR SESIÓN", onPressed: () {
+                          Boton1("INICIAR SESIÓN", onPressed: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -68,49 +87,5 @@ class Home extends StatelessWidget {
                         ])
                       ])
                 ])));
-  }
-}
-
-class BotonHome extends StatelessWidget {
-  const BotonHome(String t, {Key? key, required this.onPressed})
-      : text = t,
-        super(key: key);
-  final String text;
-  final VoidCallback onPressed;
-  @override
-  Widget build(BuildContext context) {
-    // ignore: dead_code
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: <Color>[Color(0xFFdee8eb), Color(0xFFb0c7d0)],
-                  stops: [0.4, 1.0],
-                ),
-              ),
-            ),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF004461),
-              padding: const EdgeInsets.all(16.0),
-              textStyle: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  fontFamily: "Georgia"),
-            ),
-            onPressed: onPressed,
-            child: Text(text),
-          ),
-        ],
-      ),
-    );
   }
 }

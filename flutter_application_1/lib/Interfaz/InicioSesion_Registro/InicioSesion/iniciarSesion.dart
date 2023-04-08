@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Api/api.dart';
 import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
-import 'package:flutter_application_1/Interfaz/InicioSesion/Estilo/index.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
 
 class InicioSesion extends StatefulWidget {
   const InicioSesion({Key? key}) : super(key: key);
@@ -16,73 +16,43 @@ class _InicioSesionState extends State<InicioSesion> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String _usuario = "", _contrasenya = "";
+  String _usuario = "", _contrasena = "";
   String _errorUsuario = "", _errorContrasena = "";
   bool _errorUsuarioVisible = false, _errorContrasenaVisible = false;
 
   void _comprobarDatos(BuildContext context) async {
-    if (_userController.text == "") {
-      setState(() {
-        _errorUsuarioVisible = true;
-        _errorUsuario =
-            "El nombre de usuario esta vacío.\nPor favor, introduzca un nombre de usuario";
-        _errorContrasenaVisible = false;
-        _passwordController.text = "";
-      });
-    } else if (_passwordController.text == "") {
-      setState(() {
-        _errorUsuarioVisible = false;
-        _errorContrasenaVisible = true;
-        _errorContrasena =
-            "La contraseña esta vacía.\nPor favor, introduzca la contraseña";
-      });
+    _formKey.currentState!.save();
+    Future<LoginUserResponse> f =
+        iniciarSesionUsuario(LoginUserPetition(_usuario, _contrasena));
+    LoginUserResponse r = await f;
+    if (r.OK) {
+      // ignore: use_build_context_synchronously
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => HomeMenu()),
+          (Route<dynamic> route) => false);
     } else {
-      _errorUsuarioVisible = false;
-      _errorContrasenaVisible = false;
-    }
-
-    if (!_errorContrasenaVisible && !_errorUsuarioVisible) {
-      print("Campos no vacíos\n");
-      _formKey.currentState!.save();
-      Future<LoginUserResponse> f =
-          iniciarSesionUsuario(LoginUserPetition(_usuario, _contrasenya));
-      LoginUserResponse r = await f;
-      if (r.OK) {
-        // ignore: use_build_context_synchronously
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomeMenu()));
+      if (r.error_username != "") {
+        _errorUsuarioVisible = true;
+        _errorUsuario = r.error_username;
       } else {
-        if (r.error_username != "") {
-          setState(() {
-            _errorUsuarioVisible = true;
-            _errorUsuario =
-                "El nombre de usuario introducido no existe.\nPor favor, introduzca otro";
-            _errorContrasenaVisible = false;
-            _userController.text = "";
-            _passwordController.text = "";
-          });
-        } else {
-          if (r.error_password != "") {
-            setState(() {
-              _errorUsuarioVisible = false;
-              _errorContrasenaVisible = true;
-              _errorContrasena =
-                  "La contraseña introducida no es correcta.\nPor favor, introdúzcala de nuevo";
-            });
-          } else {
-            setState(() {
-              _errorUsuarioVisible = false;
-              _errorContrasenaVisible = false;
-            });
-          }
-        }
+        _errorUsuarioVisible = false;
       }
+
+      if (r.error_password != "") {
+        _errorContrasenaVisible = true;
+        _errorContrasena = r.error_password;
+      } else {
+        _errorContrasenaVisible = false;
+      }
+      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       // body: SingleChildScrollView (  //SOLUCION FONDO DE PANTALLA SE ESTRECHA AL SACAR TECLADO
       body: Container(
         decoration: const BoxDecoration(
@@ -97,22 +67,9 @@ class _InicioSesionState extends State<InicioSesion> {
           key: _formKey,
           child: Stack(
             children: [
-              Container(
-                alignment: Alignment.topCenter,
-                margin: const EdgeInsets.only(top: 20),
-                padding: const EdgeInsets.all(16.0),
-                child: const Text(
-                  'Iniciar sesión',
-                  style: TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFc9c154),
-                    fontFamily: "Baskerville",
-                  ),
-                ),
-              ),
+              const ContainerTitle('Iniciar sesión'),
               Padding(
-                padding: const EdgeInsets.only(top: 100, left: 40),
+                padding: const EdgeInsets.only(top: 110, left: 40),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -120,7 +77,7 @@ class _InicioSesionState extends State<InicioSesion> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ContainerLabelForm('USUARIO'),
+                        const ContainerLabelForm('USUARIO'),
                         Padding(
                           padding: const EdgeInsets.only(top: 20),
                           child: Container(
@@ -135,25 +92,20 @@ class _InicioSesionState extends State<InicioSesion> {
                               color: Colors.white.withOpacity(0),
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: TextFormField(
-                                controller: _userController,
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Ingrese su usuario',
-                                  hintStyle: TextStyle(
-                                      fontFamily: "Baskerville",
-                                      fontSize: 18.0,
-                                      color: Colors.white),
-                                ),
-                                onSaved: (value) {
-                                  if (!_errorUsuarioVisible) {
-                                    _usuario = value!;
-                                  }
-                                },
-                                style: const TextStyle(color: Colors.white),
+                            child: TextFormField(
+                              controller: _userController,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Ingrese su usuario',
+                                hintStyle: TextStyle(
+                                    fontFamily: "Baskerville",
+                                    fontSize: 18.0,
+                                    color: Colors.white),
                               ),
+                              onSaved: (value) {
+                                _usuario = value!;
+                              },
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
@@ -165,7 +117,7 @@ class _InicioSesionState extends State<InicioSesion> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ContainerLabelForm('CONTRASEÑA'),
+                          const ContainerLabelForm('CONTRASEÑA'),
                           Padding(
                             padding: const EdgeInsets.only(top: 20),
                             child: Container(
@@ -181,25 +133,20 @@ class _InicioSesionState extends State<InicioSesion> {
                                 color: Colors.white.withOpacity(0),
                                 borderRadius: BorderRadius.circular(15),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: TextFormField(
-                                  controller: _passwordController,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Ingrese la contraseña',
-                                    hintStyle: TextStyle(
-                                        fontFamily: "Baskerville",
-                                        fontSize: 18.0,
-                                        color: Colors.white),
-                                  ),
-                                  onSaved: (value) {
-                                    if (!_errorContrasenaVisible) {
-                                      _contrasenya = value!;
-                                    }
-                                  },
-                                  style: const TextStyle(color: Colors.white),
+                              child: TextFormField(
+                                controller: _passwordController,
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Ingrese la contraseña',
+                                  hintStyle: TextStyle(
+                                      fontFamily: "Baskerville",
+                                      fontSize: 18.0,
+                                      color: Colors.white),
                                 ),
+                                onSaved: (value) {
+                                  _contrasena = value!;
+                                },
+                                style: const TextStyle(color: Colors.white),
                               ),
                             ),
                           ),
@@ -210,7 +157,7 @@ class _InicioSesionState extends State<InicioSesion> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 30, top: 210),
+                padding: const EdgeInsets.only(left: 30, top: 220),
                 child: Stack(
                   children: [
                     Visibility(

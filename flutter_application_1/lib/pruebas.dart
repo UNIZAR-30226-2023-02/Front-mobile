@@ -1,10 +1,10 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Api/api.dart';
-import 'package:flutter_application_1/Interfaz/InicioSesion/registrarse2.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Registro/registrarse2.dart';
 import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
 import 'package:flutter_application_1/Data_types/registro.dart';
-import 'package:flutter_application_1/Interfaz/InicioSesion/Estilo/index.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
 import 'package:http/http.dart';
 
 class Registrarse1 extends StatefulWidget {

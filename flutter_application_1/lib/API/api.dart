@@ -33,7 +33,7 @@ class LoginUserResponse {
     print(r.statusCode);
     if (r.statusCode <= 300) {
       print("status2");
-      final responseJson = json.decode(r.body);
+      final responseJson = json.decode(utf8.decode(r.bodyBytes));
 
       String parameterValue = responseJson[OK_key];
 
