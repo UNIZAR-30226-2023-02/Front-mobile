@@ -51,26 +51,10 @@ class Home extends StatelessWidget {
                           Boton1(
                             "REGISTRARSE",
                             onPressed: () {
-                              Registro r = Registro();
-                              r.setField(RegistroFieldsCodes.usuario,
-                                  "pruebaRegistro3");
-                              r.setField(RegistroFieldsCodes.contrasena,
-                                  "pruebaRegistro3");
-                              r.setField(
-                                  RegistroFieldsCodes.confirmarContrasena,
-                                  "pruebaRegistro3");
-                              r.setField(RegistroFieldsCodes.fechaNacimiento,
-                                  "2002-01-01");
-                              r.setField(RegistroFieldsCodes.correoElectronico,
-                                  "pruebaregistro3@gmail.com");
-                              r.setField(RegistroFieldsCodes.telefonoMovil,
-                                  "787678987");
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Registrarse1(
-                                          reg: r,
-                                        )),
+                                    builder: (context) => Registrarse1()),
                               );
                             },
                           )

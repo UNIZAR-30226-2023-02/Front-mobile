@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter_application_1/Api/api.dart';
+import 'package:flutter_application_1/Data_types/sesion.dart';
 
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
 
@@ -24,13 +25,13 @@ class RegistrandoUsuario extends StatefulWidget {
 }
 
 class _RegistrandoUsuario extends State<RegistrandoUsuario> {
-  Registro r;
+  Registro _r;
   late Timer _timer1, _timer2;
 
   int contador = 0;
   bool registrado = false;
 
-  _RegistrandoUsuario(this.r);
+  _RegistrandoUsuario(this._r);
 
   @override
   void initState() {
@@ -40,14 +41,14 @@ class _RegistrandoUsuario extends State<RegistrandoUsuario> {
   }
 
   void _comprobarRegistrarUsuario() async {
-    if (contador < 7) {
+    if (contador < 3) {
       Future<RegistroUserResponse> f = registroUsuario(RegistroUserPetition(
-          r.getField(RegistroFieldsCodes.usuario),
-          r.getField(RegistroFieldsCodes.contrasena),
-          r.getField(RegistroFieldsCodes.confirmarContrasena),
-          r.getField(RegistroFieldsCodes.fechaNacimiento),
-          r.getField(RegistroFieldsCodes.correoElectronico),
-          r.getField(RegistroFieldsCodes.telefonoMovil)));
+          _r.getField(RegistroFieldsCodes.usuario),
+          _r.getField(RegistroFieldsCodes.contrasena),
+          _r.getField(RegistroFieldsCodes.confirmarContrasena),
+          _r.getField(RegistroFieldsCodes.fechaNacimiento),
+          _r.getField(RegistroFieldsCodes.correoElectronico),
+          _r.getField(RegistroFieldsCodes.telefonoMovil)));
       RegistroUserResponse re = await f;
 
       if (re.OK) {
@@ -63,15 +64,18 @@ class _RegistrandoUsuario extends State<RegistrandoUsuario> {
     if (registrado) {
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => Menu()),
+          MaterialPageRoute(
+              builder: (context) => IniciandoSesionRegistro(Sesion(
+                  usuario: _r.getField(RegistroFieldsCodes.usuario),
+                  contrasena: _r.getField(RegistroFieldsCodes.contrasena)))),
           (Route<dynamic> route) => false);
-    } else if (contador < 7) {
+    } else if (contador < 3) {
       contador++;
-      _timer2 = Timer(const Duration(seconds: 1), _setTimer);
+      _timer2 = Timer(const Duration(seconds: 2), _setTimer);
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ErrorRegistro(r)),
+        MaterialPageRoute(builder: (context) => ErrorRegistro(_r)),
       );
     }
   }

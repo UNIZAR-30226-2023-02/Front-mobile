@@ -44,3 +44,44 @@ class _AnimacionImagenState extends State<AnimacionImagen>
     ));
   }
 }
+
+class ColorChangingText extends StatefulWidget {
+  @override
+  _ColorChangingTextState createState() => _ColorChangingTextState();
+}
+
+class _ColorChangingTextState extends State<ColorChangingText>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<Color> _colorAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 2),
+    )..repeat(reverse: true);
+    _colorAnimation = ColorTween(begin: Colors.red, end: Colors.blue)
+        .animate(_animationController) as Animation<Color>;
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _colorAnimation,
+      builder: (context, child) {
+        return Text(
+          'Color changing text',
+          style: TextStyle(color: _colorAnimation.value),
+        );
+      },
+    );
+  }
+}

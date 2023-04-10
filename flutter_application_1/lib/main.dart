@@ -19,10 +19,9 @@ import 'Data_types/sesion.dart';
 // import 'package:flutter_application_1/InicioSesion/registrarse.dart';
 
 void main() {
-  runApp(MaterialApp(
-    title: 'Login',
-    home: InicioApp(), //Registrarse1(reg: r,),
-  ));
+  runApp(
+    MaterialApp(title: 'Login', home: Home()), //Registrarse1(reg: r,),
+  );
 }
 
 /*void main() {
