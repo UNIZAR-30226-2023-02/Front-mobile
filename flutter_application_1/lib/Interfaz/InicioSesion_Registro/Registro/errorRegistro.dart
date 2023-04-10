@@ -15,7 +15,8 @@ import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/index.dart'
 import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 
 class ErrorRegistro extends StatelessWidget {
-  ErrorRegistro({Key? key}) : super(key: key);
+  Registro r;
+  ErrorRegistro(this.r, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,33 +37,49 @@ class ErrorRegistro extends StatelessWidget {
                 image: AssetImage('assets/tapete.png'), fit: BoxFit.fill),
           ),
           child: Align(
-            alignment: Alignment.topCenter,
+            alignment: Alignment.topLeft,
             child: Stack(
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 100),
-                  child: SizedBox(
-                    width: 350,
-                    child: Text(
-                      "No se ha podido completar el registro correctamente",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 35.0,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFf7f6f6),
-                        fontFamily: "Bona Nova",
+                const Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 100),
+                    child: SizedBox(
+                      width: 350,
+                      child: Text(
+                        "No se ha podido completar el registro correctamente",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 35.0,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFf7f6f6),
+                          fontFamily: "Bona Nova",
+                        ),
                       ),
                     ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 300, left: 80),
+                  padding: const EdgeInsets.only(top: 300, left: 70),
                   child: Boton1(
                     "VOLVER A INICIO",
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => Home()),
+                          (Route<dynamic> route) => false);
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 300, left: 360),
+                  child: Boton1(
+                    "REINTENTAR REGISTRO",
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RegistrandoUsuario(r)),
                           (Route<dynamic> route) => false);
                     },
                   ),

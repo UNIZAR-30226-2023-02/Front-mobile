@@ -32,7 +32,8 @@ class _Menu extends StatelessWidget {
             MyPainter.updatePosition(localPosition);
 
             int section = getSection(localPosition);
-            String message = "Has pulsado la sección ${getSectionColorName(section)}";
+            String message =
+                "Has pulsado la sección ${getSectionColorName(section)}";
             final snackBar = SnackBar(content: Text(message));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           },
@@ -49,7 +50,7 @@ class MyPainter extends CustomPainter {
   static Paint yellowPaint = Paint()..color = Colors.yellow;
   static Paint pinkPaint = Paint()..color = Colors.pink;
   static Paint purplePaint = Paint()..color = Colors.purple;
-  
+
   static Offset position = Offset.zero;
 
   static void updatePosition(Offset newPosition) {
@@ -71,11 +72,8 @@ class MyPainter extends CustomPainter {
       final path = Path()
         ..moveTo(0, 0)
         ..lineTo(radius * math.cos(startAngle), radius * math.sin(startAngle))
-        ..arcTo(
-            Rect.fromCircle(center: Offset.zero, radius: radius),
-            startAngle,
-            angle,
-            false)
+        ..arcTo(Rect.fromCircle(center: Offset.zero, radius: radius),
+            startAngle, angle, false)
         ..lineTo(0, 0);
 
       switch (i) {
@@ -110,13 +108,6 @@ class MyPainter extends CustomPainter {
     return true;
   }
 }
-
-
-
-
-
-
-
 
 int getSection(Offset position) {
   final double radius = 100;

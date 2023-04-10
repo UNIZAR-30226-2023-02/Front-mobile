@@ -147,7 +147,6 @@ class RegistroUserResponse {
         error_fecha = responseJson[eF_key];
         error_correo = responseJson[eC_key];
         error_telefono = responseJson[eT_key];
-        print("${error_telefono}");
       }
     } else {
       print("statusReg0");

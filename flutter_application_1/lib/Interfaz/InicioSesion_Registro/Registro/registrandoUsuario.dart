@@ -71,7 +71,7 @@ class _RegistrandoUsuario extends State<RegistrandoUsuario> {
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ErrorRegistro()),
+        MaterialPageRoute(builder: (context) => ErrorRegistro(r)),
       );
     }
   }

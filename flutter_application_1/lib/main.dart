@@ -19,17 +19,9 @@ import 'Data_types/sesion.dart';
 // import 'package:flutter_application_1/InicioSesion/registrarse.dart';
 
 void main() {
-  Registro r = Registro();
-  r.setField(RegistroFieldsCodes.usuario, "pruebaRegistro3");
-  r.setField(RegistroFieldsCodes.contrasena, "pruebaRegistro3");
-  r.setField(RegistroFieldsCodes.confirmarContrasena, "pruebaRegistro3");
-  r.setField(RegistroFieldsCodes.fechaNacimiento, "2002-01-01");
-  r.setField(
-      RegistroFieldsCodes.correoElectronico, "pruebaregistro3@gmail.com");
-  r.setField(RegistroFieldsCodes.telefonoMovil, "787678987");
   runApp(MaterialApp(
     title: 'Login',
-    home: IniciandoSesion(Sesion()), //Registrarse1(reg: r,),
+    home: InicioApp(), //Registrarse1(reg: r,),
   ));
 }
 

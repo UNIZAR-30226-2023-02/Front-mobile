@@ -26,7 +26,7 @@ class _InicioAppState extends State<InicioApp> {
     _timer = Timer(const Duration(seconds: 6), () {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => HomeMenu()),
+        MaterialPageRoute(builder: (context) => Home()),
       );
     });
   }

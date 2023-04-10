@@ -1,8 +1,11 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Api/api.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/index.dart';
 import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
+
+import '../../../Data_types/sesion.dart';
 
 class InicioSesion extends StatefulWidget {
   const InicioSesion({Key? key}) : super(key: key);
@@ -29,7 +32,9 @@ class _InicioSesionState extends State<InicioSesion> {
       // ignore: use_build_context_synchronously
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => HomeMenu()),
+          MaterialPageRoute(
+              builder: (context) => IniciandoSesion(Sesion(
+                  usuario: _usuario, contrasena: _contrasena, token: r.token))),
           (Route<dynamic> route) => false);
     } else {
       if (r.error_username != "") {
