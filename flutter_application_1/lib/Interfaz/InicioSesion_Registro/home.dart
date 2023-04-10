@@ -69,7 +69,7 @@ class Home extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => Registrarse1(
-                                          reg: r,
+                                          reg: Registro(),
                                         )),
                               );
                             },

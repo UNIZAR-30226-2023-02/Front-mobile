@@ -36,7 +36,7 @@ class _IniciandoSesion extends State<IniciandoSesion> {
   @override
   void initState() {
     super.initState();
-    //_setTimer();
+    _setTimer();
   }
 
   void _setTimer() {
@@ -63,11 +63,47 @@ class _IniciandoSesion extends State<IniciandoSesion> {
                 image: AssetImage('assets/tapete.png'), fit: BoxFit.fill),
           ),
           child: Align(
-            alignment: Alignment.center,
+            alignment: Alignment.topLeft,
             child: Stack(
-              children: const [
-                Padding(
-                  padding: EdgeInsets.only(left: 200, top: 200),
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 15),
+                    child: Container(
+                      width: 550,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text.rich(
+                          TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: 'Bienvenido de nuevo ',
+                                style: TextStyle(
+                                  fontSize: 30.0,
+                                  fontWeight: FontWeight.normal,
+                                  color: Color(0xFFf7f6f6),
+                                  fontFamily: "Bona Nova",
+                                ),
+                              ),
+                              TextSpan(
+                                text: s.getField(SesionFieldsCodes.usuario),
+                                style: const TextStyle(
+                                  fontSize: 30.0,
+                                  fontStyle: FontStyle.italic,
+                                  color: Color(0xFFf7f6f6),
+                                  fontFamily: "Baskerville",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 450, top: 350),
                   child: Text(
                     "Iniciando sesión...",
                     style: TextStyle(
@@ -78,8 +114,8 @@ class _IniciandoSesion extends State<IniciandoSesion> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(left: 295, top: 200),
+                const Padding(
+                  padding: EdgeInsets.only(left: 600, top: 340),
                   child: SizedBox(
                     width: 32,
                     height: 33,

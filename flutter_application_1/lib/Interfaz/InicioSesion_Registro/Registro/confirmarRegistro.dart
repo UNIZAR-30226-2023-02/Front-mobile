@@ -50,6 +50,22 @@ class _ConfirmarRegistroState extends State<ConfirmarRegistro>
           ),
           child: Stack(
             children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 40, left: 630),
+                child: Text(
+                  "6/6",
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xfff7f6f6),
+                    fontFamily: "Georgia",
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 60, left: 520),
+                child: ContainerQuesitos(List<bool>.filled(6, true)),
+              ),
               const ContainerTitle('Registrarse'),
               const Padding(
                 padding: EdgeInsets.only(bottom: 100),

@@ -10,16 +10,22 @@ import 'package:intl/intl.dart';
 
 class Registrarse3 extends StatefulWidget {
   Registro r;
-  Registrarse3(this.r, {Key? key}) : super(key: key);
+
+  List<bool> _quesitos;
+  Registrarse3(this.r, this._quesitos, {Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api, no_logic_in_create_state
-  _Registrarse3State createState() => _Registrarse3State(r);
+  _Registrarse3State createState() => _Registrarse3State(r, _quesitos);
 }
 
 class _Registrarse3State extends State<Registrarse3>
     with WidgetsBindingObserver {
   Registro r;
+
+  List<bool> _quesitos;
+  int _nQuesitos = 0;
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _birthDateController = TextEditingController();
@@ -28,7 +34,7 @@ class _Registrarse3State extends State<Registrarse3>
   String _errorTelefonoMovil = "", _errorFechaNacimiento = "";
   bool _errorTelefonoMovilVisible = false, _errorFechaNacimientoVisible = false;
 
-  _Registrarse3State(this.r);
+  _Registrarse3State(this.r, this._quesitos);
 
   bool _isKeyboardVisible = false;
   bool _isVisible = false;
@@ -46,6 +52,9 @@ class _Registrarse3State extends State<Registrarse3>
       _birthDateController.text =
           r.getField(RegistroFieldsCodes.fechaNacimiento);
     }
+
+    _nQuesitos = _quesitos.where((element) => element == true).length;
+    setState(() {});
     WidgetsBinding.instance.addObserver(this);
     _focusNode1.addListener(_handleFocus1Change);
     _focusNode2.addListener(_handleFocus2Change);
@@ -100,40 +109,42 @@ class _Registrarse3State extends State<Registrarse3>
 
   void _comprobarDatos(BuildContext context) async {
     _formKey.currentState!.save();
+
+    r.setField(RegistroFieldsCodes.fechaNacimiento, _fechaNacimiento);
+    r.setField(RegistroFieldsCodes.telefonoMovil, _telefonoMovil);
+
     Future<RegistroUserResponse> f = registroUsuario(
         RegistroUserPetition("", "", "", _fechaNacimiento, "", _telefonoMovil));
     RegistroUserResponse re = await f;
-
-    if (re.error_fecha != "") {
-      _errorFechaNacimientoVisible = true;
-      _errorFechaNacimiento =
-          "${re.error_fecha}\nPor favor, introdúzcala de nuevo.";
-    } else {
-      _errorFechaNacimientoVisible = false;
-      r.setField(RegistroFieldsCodes.fechaNacimiento, _fechaNacimiento);
-    }
 
     if (re.error_telefono != "") {
       _errorTelefonoMovilVisible = true;
       _errorTelefonoMovil =
           "${re.error_telefono}\nPor favor, introdúzcalo de nuevo.";
+      _quesitos[4] = false;
     } else {
       _errorTelefonoMovilVisible = false;
-      r.setField(RegistroFieldsCodes.telefonoMovil, _telefonoMovil);
+      _quesitos[4] = true;
     }
 
+    if (re.error_fecha != "") {
+      _errorFechaNacimientoVisible = true;
+      _errorFechaNacimiento =
+          "${re.error_fecha}\nPor favor, introdúzcala de nuevo.";
+
+      _quesitos[5] = false;
+    } else {
+      _errorFechaNacimientoVisible = false;
+      _quesitos[5] = true;
+    }
+
+    _nQuesitos = _quesitos.where((element) => element == true).length;
     setState(() {});
 
     if (!_errorTelefonoMovilVisible && !_errorFechaNacimientoVisible) {
       // ignore: use_build_context_synchronously
       r = await Navigator.push(context,
           MaterialPageRoute(builder: (context) => ConfirmarRegistro(r)));
-      setState(() {
-        _phoneNumberController.text =
-            r.getField(RegistroFieldsCodes.telefonoMovil);
-        _birthDateController.text =
-            r.getField(RegistroFieldsCodes.fechaNacimiento);
-      });
     }
   }
 
@@ -160,6 +171,22 @@ class _Registrarse3State extends State<Registrarse3>
             key: _formKey,
             child: Stack(
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 40, left: 630),
+                  child: Text(
+                    "$_nQuesitos/6",
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xfff7f6f6),
+                      fontFamily: "Georgia",
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 60, left: 520),
+                  child: ContainerQuesitos(_quesitos),
+                ),
                 const ContainerTitle('Registrarse'),
                 Padding(
                   padding: const EdgeInsets.only(top: 80, left: 40),

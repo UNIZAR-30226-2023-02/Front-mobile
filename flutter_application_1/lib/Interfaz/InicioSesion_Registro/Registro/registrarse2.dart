@@ -9,17 +9,22 @@ import 'package:http/http.dart';
 import '../../../API/api.dart';
 
 class Registrarse2 extends StatefulWidget {
-  Registro r;
-  Registrarse2(this.r, {Key? key}) : super(key: key);
+  Registro _r;
+  List<bool> _quesitos;
+  Registrarse2(this._r, this._quesitos, {Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api, no_logic_in_create_state
-  _Registrarse2State createState() => _Registrarse2State(r);
+  _Registrarse2State createState() => _Registrarse2State(_r, _quesitos);
 }
 
 class _Registrarse2State extends State<Registrarse2>
     with WidgetsBindingObserver {
-  Registro r;
+  Registro _r;
+
+  List<bool> _quesitos;
+  int _nQuesitos = 0;
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -36,16 +41,19 @@ class _Registrarse2State extends State<Registrarse2>
 
   bool _password1Visible = false, _password2Visible = false;
 
-  _Registrarse2State(this.r);
+  _Registrarse2State(this._r, this._quesitos);
 
   @override
   void initState() {
     super.initState();
-    if (r.getField(RegistroFieldsCodes.contrasena) != "") {
-      _passwordController.text = r.getField(RegistroFieldsCodes.contrasena);
+
+    _nQuesitos = _quesitos.where((element) => element == true).length;
+    if (_r.getField(RegistroFieldsCodes.contrasena) != "") {
+      _passwordController.text = _r.getField(RegistroFieldsCodes.contrasena);
       _confirmPasswordController.text =
-          r.getField(RegistroFieldsCodes.confirmarContrasena);
+          _r.getField(RegistroFieldsCodes.confirmarContrasena);
     }
+    setState(() {});
     WidgetsBinding.instance.addObserver(this);
     _focusNode1.addListener(_handleFocus1Change);
     _focusNode2.addListener(_handleFocus2Change);
@@ -101,6 +109,8 @@ class _Registrarse2State extends State<Registrarse2>
 
   void _comprobarDatos(BuildContext context) async {
     _formKey.currentState!.save();
+    _r.setField(RegistroFieldsCodes.contrasena, _contrasena);
+    _r.setField(RegistroFieldsCodes.confirmarContrasena, _confirmarContrasena);
     Future<RegistroUserResponse> f = registroUsuario(RegistroUserPetition(
         "", _contrasena, _confirmarContrasena, "", "", ""));
     RegistroUserResponse re = await f;
@@ -109,22 +119,23 @@ class _Registrarse2State extends State<Registrarse2>
       _errorContrasenasVisible = true;
       _errorContrasenas =
           "${re.error_password}\nPor favor, introdúzcalas de nuevo.";
+      _quesitos[2] = false;
+      _quesitos[3] = false;
     } else {
       _errorContrasenasVisible = false;
-      r.setField(RegistroFieldsCodes.contrasena, _contrasena);
-      r.setField(RegistroFieldsCodes.confirmarContrasena, _confirmarContrasena);
+      _quesitos[2] = true;
+      _quesitos[3] = true;
     }
 
+    _nQuesitos = _quesitos.where((element) => element == true).length;
     setState(() {});
 
     if (!_errorContrasenasVisible) {
       // ignore: use_build_context_synchronously
-      r = await Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Registrarse3(r)));
+      _r = await Navigator.push(context,
+          MaterialPageRoute(builder: (context) => Registrarse3(_r, _quesitos)));
       setState(() {
-        _passwordController.text = r.getField(RegistroFieldsCodes.contrasena);
-        _confirmPasswordController.text =
-            r.getField(RegistroFieldsCodes.contrasena);
+        _nQuesitos = _quesitos.where((element) => element == true).length;
       });
     }
   }
@@ -133,7 +144,7 @@ class _Registrarse2State extends State<Registrarse2>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context, r);
+        Navigator.pop(context, _r);
         return false;
       },
       child: Scaffold(
@@ -152,6 +163,22 @@ class _Registrarse2State extends State<Registrarse2>
             key: _formKey,
             child: Stack(
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 40, left: 630),
+                  child: Text(
+                    "$_nQuesitos/6",
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xfff7f6f6),
+                      fontFamily: "Georgia",
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 60, left: 520),
+                  child: ContainerQuesitos(_quesitos),
+                ),
                 const ContainerTitle('Registrarse'),
                 Padding(
                   padding: const EdgeInsets.only(top: 80, left: 40),
@@ -363,7 +390,7 @@ class _Registrarse2State extends State<Registrarse2>
                         Boton1(
                           "VOLVER",
                           onPressed: () {
-                            Navigator.pop(context, r);
+                            Navigator.pop(context, _r);
                           },
                         ),
                         Padding(

@@ -9,19 +9,22 @@ import 'package:http/http.dart';
 
 class Registrarse1 extends StatefulWidget {
   Registro r;
+  List<bool> quesitos = List<bool>.filled(6, false);
   Registrarse1({Key? key, required Registro reg})
       : r = reg,
         super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _Registrarse1State createState() => _Registrarse1State(r);
+  _Registrarse1State createState() => _Registrarse1State(r, quesitos);
 }
 
 class _Registrarse1State extends State<Registrarse1>
     with WidgetsBindingObserver {
-  Registro r;
-  _Registrarse1State(this.r);
+  Registro _r;
+  List<bool> _quesitos;
+  int _nQuesitos = 0;
+  _Registrarse1State(this._r, this._quesitos);
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _mailController = TextEditingController();
@@ -37,9 +40,9 @@ class _Registrarse1State extends State<Registrarse1>
   @override
   void initState() {
     super.initState();
-    if (r.getField(RegistroFieldsCodes.usuario) != "") {
-      _userController.text = r.getField(RegistroFieldsCodes.usuario);
-      _mailController.text = r.getField(RegistroFieldsCodes.correoElectronico);
+    if (_r.getField(RegistroFieldsCodes.usuario) != "") {
+      _userController.text = _r.getField(RegistroFieldsCodes.usuario);
+      _mailController.text = _r.getField(RegistroFieldsCodes.correoElectronico);
     }
     WidgetsBinding.instance.addObserver(this);
     _focusNode1.addListener(_handleFocus1Change);
@@ -96,6 +99,8 @@ class _Registrarse1State extends State<Registrarse1>
 
   void _comprobarDatos(BuildContext context) async {
     _formKey.currentState!.save();
+    _r.setField(RegistroFieldsCodes.correoElectronico, _correoElectronico);
+    _r.setField(RegistroFieldsCodes.usuario, _usuario);
     Future<RegistroUserResponse> f = registroUsuario(
         RegistroUserPetition(_usuario, "", "", "", _correoElectronico, ""));
     RegistroUserResponse re = await f;
@@ -103,30 +108,30 @@ class _Registrarse1State extends State<Registrarse1>
     if (re.error_username != "") {
       _errorUsuarioVisible = true;
       _errorUsuario = "${re.error_username}\nPor favor, introdúzcalo de nuevo.";
+      _quesitos[0] = false;
     } else {
       _errorUsuarioVisible = false;
-      r.setField(RegistroFieldsCodes.usuario, _usuario);
+      _quesitos[0] = true;
     }
 
     if (re.error_correo != "") {
       _errorCorreoElectronicoVisible = true;
       _errorCorreoElectronico =
           "${re.error_correo}\nPor favor, introdúzcalo de nuevo.";
+      _quesitos[1] = false;
     } else {
       _errorCorreoElectronicoVisible = false;
-      r.setField(RegistroFieldsCodes.correoElectronico, _correoElectronico);
+      _quesitos[1] = true;
     }
-
+    _nQuesitos = _quesitos.where((element) => element == true).length;
     setState(() {});
 
     if (!_errorUsuarioVisible && !_errorCorreoElectronicoVisible) {
       // ignore: use_build_context_synchronously
-      r = await Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Registrarse2(r)));
+      _r = await Navigator.push(context,
+          MaterialPageRoute(builder: (context) => Registrarse2(_r, _quesitos)));
       setState(() {
-        _userController.text = r.getField(RegistroFieldsCodes.usuario);
-        _mailController.text =
-            r.getField(RegistroFieldsCodes.correoElectronico);
+        _nQuesitos = _quesitos.where((element) => element == true).length;
       });
     }
   }
@@ -154,7 +159,23 @@ class _Registrarse1State extends State<Registrarse1>
             key: _formKey,
             child: Stack(
               children: [
-                ContainerTitle('Registrarse'),
+                Padding(
+                  padding: const EdgeInsets.only(top: 40, left: 630),
+                  child: Text(
+                    "$_nQuesitos/6",
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xfff7f6f6),
+                      fontFamily: "Georgia",
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 60, left: 520),
+                  child: ContainerQuesitos(_quesitos),
+                ),
+                const ContainerTitle('Registrarse'),
                 Padding(
                   padding: const EdgeInsets.only(top: 80, left: 40),
                   child: Row(
@@ -164,7 +185,7 @@ class _Registrarse1State extends State<Registrarse1>
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ContainerLabelForm('USUARIO'),
+                          const ContainerLabelForm('USUARIO'),
                           Padding(
                             padding: const EdgeInsets.only(top: 10),
                             child: Container(
