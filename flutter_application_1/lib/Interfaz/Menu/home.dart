@@ -1,12 +1,3 @@
-import 'dart:math';
-
-import 'package:flutter/material.dart';
-
-void main(){
-  debugDisableShadows = true;
-  runApp(Menu());
-} 
-
 class Menu extends StatelessWidget {
   const Menu({Key? key}) : super(key: key);
 
@@ -275,7 +266,6 @@ class CirclePainter extends CustomPainter {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 class TriangleButtonAMARILLO extends StatelessWidget {
   final Color color;
   final VoidCallback onPressed;
@@ -392,7 +382,6 @@ class TrianglePainterVERDE extends CustomPainter {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-
 class TriangleButton extends StatelessWidget {
   final Color color;
   final VoidCallback onPressed;
