@@ -21,9 +21,7 @@ class _ConfirmarRegistroState extends State<ConfirmarRegistro>
     with WidgetsBindingObserver {
   Registro r;
 
-  _ConfirmarRegistroState(this.r) {
-    r.setField(RegistroFieldsCodes.telefonoMovil, "787678987f");
-  }
+  _ConfirmarRegistroState(this.r);
 
   bool _DataVisible = false;
 

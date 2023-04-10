@@ -8,15 +8,12 @@ import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/inde
 import 'package:http/http.dart';
 
 class Registrarse1 extends StatefulWidget {
-  Registro r;
   List<bool> quesitos = List<bool>.filled(6, false);
-  Registrarse1({Key? key, required Registro reg})
-      : r = reg,
-        super(key: key);
+  Registrarse1({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _Registrarse1State createState() => _Registrarse1State(r, quesitos);
+  _Registrarse1State createState() => _Registrarse1State(Registro(), quesitos);
 }
 
 class _Registrarse1State extends State<Registrarse1>
@@ -231,7 +228,7 @@ class _Registrarse1State extends State<Registrarse1>
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ContainerLabelForm('CORREO ELECTRONICO'),
+                      const ContainerLabelForm('CORREO ELECTRONICO'),
                       Padding(
                         padding: const EdgeInsets.only(top: 10),
                         child: Container(

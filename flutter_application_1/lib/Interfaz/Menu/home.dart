@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/index.dart';
 
 class Menu extends StatelessWidget {
   const Menu({Key? key}) : super(key: key);
@@ -16,8 +17,15 @@ class Menu extends StatelessWidget {
 class _Menu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Home()),
+            (Route<dynamic> route) => false);
+        return false;
+      },
+      child: Scaffold(
         body: Stack(
           children: [
             Container(

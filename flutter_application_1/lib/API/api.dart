@@ -29,10 +29,7 @@ class LoginUserResponse {
 
   // ignore: non_constant_identifier_names
   void FillFields(http.Response r) {
-    print("status");
-    print(r.statusCode);
     if (r.statusCode <= 300) {
-      print("status2");
       final responseJson = json.decode(utf8.decode(r.bodyBytes));
 
       String parameterValue = responseJson[OK_key];
@@ -40,17 +37,13 @@ class LoginUserResponse {
       if (parameterValue == 'True') {
         OK = true;
         token = responseJson[t_key];
-        print("OK1");
       } else {
         OK = false;
-        print("OK2");
         error_username = responseJson[eU_key];
         error_password = responseJson[eP_key];
         print(error_username);
         print(error_password);
       }
-    } else {
-      print("status0");
     }
   }
 }
@@ -127,20 +120,15 @@ class RegistroUserResponse {
 
   // ignore: non_constant_identifier_names
   void FillFields(http.Response r) {
-    print("statusReg");
-    print(r.statusCode);
     if (r.statusCode <= 300) {
-      print("statusReg2");
       final responseJson = json.decode(utf8.decode(r.bodyBytes));
 
       String parameterValue = responseJson[OK_key];
 
       if (parameterValue == 'True') {
         OK = true;
-        print("REGISTRO COMPLETADO CON EXITO");
       } else {
         OK = false;
-        print("FALLO AL REGISTRARSE");
         error_username = responseJson[eU_key];
         error_password = responseJson[eP_key];
         error_confirm_password = responseJson[eCP_key];
@@ -148,8 +136,6 @@ class RegistroUserResponse {
         error_correo = responseJson[eC_key];
         error_telefono = responseJson[eT_key];
       }
-    } else {
-      print("statusReg0");
     }
   }
 }
