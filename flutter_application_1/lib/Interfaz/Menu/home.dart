@@ -1,3 +1,4 @@
+
 import 'package:flutter_application_1/Interfaz/Menu/tiendaFichas.dart';
 import 'package:flutter_application_1/Interfaz/Menu/estadisticas.dart';
 
@@ -229,12 +230,14 @@ class _Menu extends StatelessWidget {
   }
 
   void showMessage(BuildContext context, String message) {
+
     final snackBar = SnackBar(
         content: Text('Has pulsado el triángulo $message'));
     //ScaffoldMessenger.of(context).showSnackBar(snackBar);
     print(message);
   }
 }
+
 
 
 
@@ -324,6 +327,14 @@ class TrianglePainterAMARILLO extends CustomPainter {
     path.lineTo(size.width - 30, 0);
     path.lineTo(size.width - 52, -10);
 
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final path = Path();
+    // path.moveTo(0, size.height);
+    // path.lineTo(size.width, size.height);
+    // path.lineTo(size.width / 2, 0);
+    path.moveTo(-13, size.height - 13);
 
     path.close();
     canvas.drawPath(path, paint);
@@ -396,9 +407,11 @@ class TrianglePainterVERDE extends CustomPainter {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+
 class TriangleButton extends StatelessWidget {
   final Color color;
   final VoidCallback onPressed;
+
 
   const TriangleButton({Key? key, required this.color, required this.onPressed}) : super(key: key);
 
