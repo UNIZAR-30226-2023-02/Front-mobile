@@ -17,7 +17,8 @@ import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 
 class ErrorInicioSesion extends StatelessWidget {
   Sesion _s;
-  ErrorInicioSesion(this._s, {Key? key}) : super(key: key);
+  String _contrasena;
+  ErrorInicioSesion(this._s,this._contrasena, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +82,7 @@ class ErrorInicioSesion extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  IniciandoSesionRegistro(_s)),
+                                  IniciandoSesionRegistro(_s,_contrasena)),
                           (Route<dynamic> route) => false);
                     },
                   ),

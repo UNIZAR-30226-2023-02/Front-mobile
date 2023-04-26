@@ -1,29 +1,27 @@
-
+import 'package:flutter_application_1/Data_types/datosUsuario.dart';
 import 'package:flutter_application_1/Interfaz/Menu/tiendaFichas.dart';
-import 'package:flutter_application_1/Interfaz/Menu/estadisticas.dart';
 
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
-void main(){
-  debugDisableShadows = true;
-  runApp(Menu());
-} 
+import 'package:flutter_application_1/Interfaz/Perfil/perfil.dart';
+import 'package:flutter_application_1/Data_types/sesion.dart';
 
 class Menu extends StatelessWidget {
-  const Menu({Key? key}) : super(key: key);
-
+  Sesion _s;
+  Menu(this._s,{Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: _Menu(),
+      home: _Menu(_s),
     );
   }
 }
 
 
 class _Menu extends StatelessWidget {
+  Sesion _s;
+  _Menu(this._s);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -230,14 +228,12 @@ class _Menu extends StatelessWidget {
   }
 
   void showMessage(BuildContext context, String message) {
-
     final snackBar = SnackBar(
         content: Text('Has pulsado el triángulo $message'));
     //ScaffoldMessenger.of(context).showSnackBar(snackBar);
     print(message);
   }
 }
-
 
 
 
@@ -327,14 +323,6 @@ class TrianglePainterAMARILLO extends CustomPainter {
     path.lineTo(size.width - 30, 0);
     path.lineTo(size.width - 52, -10);
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color;
-    final path = Path();
-    // path.moveTo(0, size.height);
-    // path.lineTo(size.width, size.height);
-    // path.lineTo(size.width / 2, 0);
-    path.moveTo(-13, size.height - 13);
 
     path.close();
     canvas.drawPath(path, paint);
@@ -407,11 +395,9 @@ class TrianglePainterVERDE extends CustomPainter {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-
 class TriangleButton extends StatelessWidget {
   final Color color;
   final VoidCallback onPressed;
-
 
   const TriangleButton({Key? key, required this.color, required this.onPressed}) : super(key: key);
 
@@ -478,11 +464,11 @@ class PulsaMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (tipoBoton == "Azul"){ //PERFIL
-
-    }else if (tipoBoton == "Amarillo"){ //ESTADISTICAS
       Future.delayed(Duration(milliseconds: 300), () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Estadisticas()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Perfil(DatosUsuario())));
       });
+    }else if (tipoBoton == "Amarillo"){ //ESTADISTICAS
+      
     }else if (tipoBoton == "Verde"){  //TIENDA
       Future.delayed(Duration(milliseconds: 300), () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => TiendaFichas()));

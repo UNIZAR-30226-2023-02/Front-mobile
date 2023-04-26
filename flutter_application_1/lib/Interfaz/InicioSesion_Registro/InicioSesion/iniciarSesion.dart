@@ -34,7 +34,7 @@ class _InicioSesionState extends State<InicioSesion> {
           context,
           MaterialPageRoute(
               builder: (context) => IniciandoSesion(Sesion(
-                  usuario: _usuario, contrasena: _contrasena, token: r.token))),
+                  usuario: _usuario, token: r.token),_contrasena)),
           (Route<dynamic> route) => false);
     } else {
       if (r.error_username != "") {

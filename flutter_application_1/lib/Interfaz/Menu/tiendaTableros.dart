@@ -1,3 +1,4 @@
+import 'package:flutter_application_1/Data_types/sesion.dart';
 import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 import 'package:flutter_application_1/Interfaz/Menu/tiendaFichas.dart';
 
@@ -265,7 +266,7 @@ class _TiendaTableros extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const Menu()),
+                          MaterialPageRoute(builder: (context) => Menu(Sesion())),
                         );
                       },
                     ),

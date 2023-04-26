@@ -159,3 +159,138 @@ Future<RegistroUserResponse> registroUsuario(RegistroUserPetition p) async {
   r.FillFields(response);
   return r;
 }
+
+//DATOS USUARIO
+
+class DatosUsuarioPetition {
+}
+
+class DatosUsuarioResponse {
+  // ignore: constant_identifier_names
+  static const String OK_key = 'OK',
+      U_key = 'username',
+      F_key = 'fecha_nac',
+      C_key = 'correo',
+      T_key = 'telefono';
+  // ignore: non_constant_identifier_names
+  String username = "",
+      fecha = "",
+      correo = "",
+      telefono = "";
+  // ignore: non_constant_identifier_names
+  bool OK = false;
+
+  DatosUsuarioResponse();
+
+  // ignore: non_constant_identifier_names
+  void FillFields(http.Response r) {
+    if (r.statusCode <= 300) {
+      final responseJson = json.decode(utf8.decode(r.bodyBytes));
+
+      String parameterValue = responseJson[OK_key];
+
+      if (parameterValue == 'True') {
+        OK = true;
+      } else {
+        OK = false;
+        username = responseJson[U_key];
+        fecha = responseJson[F_key];
+        correo = responseJson[C_key];
+        telefono = responseJson[T_key];
+      }
+    }
+  }
+}
+
+// ignore: non_constant_identifier_names
+Future<DatosUsuarioResponse> ObtenerDatosUsuario(DatosUsuarioPetition p) async {
+  HttpOverrides.global = MyHttpOverrides();
+
+  DatosUsuarioResponse r = DatosUsuarioResponse();
+
+  final url = Uri.parse('$urlDir/api/usuarios/datos/');
+
+  final response = await http.post(url, body: {
+  });
+
+  r.FillFields(response);
+  return r;
+}
+
+
+
+//CAMBIAR DATOS USUARIO
+
+class CambioDatosUsuarioPetition {
+  final String correo,
+      fechaNac,
+      telefono;
+  const CambioDatosUsuarioPetition(
+      String f, String c, String t)
+      : fechaNac = f,
+        correo = c,
+        telefono = t;
+}
+
+class CambioDatosUsuarioResponse {
+  // ignore: constant_identifier_names
+  static const String OK_key = 'OK',
+      eF_key = 'error_fecha_nac',
+      eC_key = 'error_correo',
+      eT_key = 'error_telefono';
+  // ignore: non_constant_identifier_names
+  String error_fecha = "",
+      error_correo = "",
+      error_telefono = "";
+  // ignore: non_constant_identifier_names
+  bool OK = false;
+
+  CambioDatosUsuarioResponse();
+
+  // ignore: non_constant_identifier_names
+  void FillFields(http.Response r) {
+    if (r.statusCode <= 300) {
+      final responseJson = json.decode(utf8.decode(r.bodyBytes));
+
+      String parameterValue = responseJson[OK_key];
+
+      if (parameterValue == 'True') {
+        OK = true;
+      } else {
+        OK = false;
+        error_fecha = responseJson[eF_key];
+        error_correo = responseJson[eC_key];
+        error_telefono = responseJson[eT_key];
+      }
+    }
+  }
+}
+
+// ignore: non_constant_identifier_names
+Future<CambioDatosUsuarioResponse> CambiarDatosUsuario(CambioDatosUsuarioPetition p) async {
+  HttpOverrides.global = MyHttpOverrides();
+
+  CambioDatosUsuarioResponse r = CambioDatosUsuarioResponse();
+
+  final url = Uri.parse('$urlDir/api/usuarios/cambiar_datos/');
+
+  final response = await http.post(url, body: {
+    'fecha_nac': p.fechaNac,
+    'correo': p.correo,
+    'telefono': p.telefono,
+  });
+
+  r.FillFields(response);
+  return r;
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -66,8 +66,7 @@ class _RegistrandoUsuario extends State<RegistrandoUsuario> {
           context,
           MaterialPageRoute(
               builder: (context) => IniciandoSesionRegistro(Sesion(
-                  usuario: _r.getField(RegistroFieldsCodes.usuario),
-                  contrasena: _r.getField(RegistroFieldsCodes.contrasena)))),
+                  usuario: _r.getField(RegistroFieldsCodes.usuario)),_r.getField(RegistroFieldsCodes.contrasena) )),
           (Route<dynamic> route) => false);
     } else if (contador < 3) {
       contador++;
