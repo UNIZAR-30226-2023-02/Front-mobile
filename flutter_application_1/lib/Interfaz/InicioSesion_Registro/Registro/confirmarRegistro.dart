@@ -7,7 +7,7 @@ import 'package:flutter_application_1/Data_types/registro.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-
+//ignore: must_be_immutable
 class ConfirmarRegistro extends StatefulWidget {
   Registro r;
   ConfirmarRegistro(this.r, {Key? key}) : super(key: key);

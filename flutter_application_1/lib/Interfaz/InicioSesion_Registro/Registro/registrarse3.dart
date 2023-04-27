@@ -8,6 +8,7 @@ import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/inde
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
+//ignore: must_be_immutable
 class Registrarse3 extends StatefulWidget {
   Registro r;
 

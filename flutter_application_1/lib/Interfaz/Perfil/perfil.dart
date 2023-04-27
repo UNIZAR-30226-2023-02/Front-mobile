@@ -1,24 +1,21 @@
 // ignore: file_names
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Data_types/datosUsuario.dart';
-import 'package:flutter_application_1/API/api.dart';
+import 'package:flutter_application_1/API/index.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
 import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
 
 import '../../../Data_types/sesion.dart';
 
-void main() {
-  debugDisableShadows = true;
-  runApp(Perfil(DatosUsuario()));
-}
-
 class Perfil extends StatefulWidget {
-  const Perfil(this._dU, {Key? key}) : super(key: key);
-  final DatosUsuario _dU;
+  const Perfil(this._s, {Key? key}) : super(key: key);
+  final Sesion _s;
 
   @override
   // ignore: library_private_types_in_public_api, no_logic_in_create_state
-  _PerfilState createState() => _PerfilState(_dU);
+  _PerfilState createState() => _PerfilState(_s);
 }
 
 class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
@@ -27,17 +24,15 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
   final TextEditingController _mailController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _birthDateController = TextEditingController();
-  DatosUsuario _dU;
-  _PerfilState(DatosUsuario d) : _dU = d;
+  Sesion _s;
+  late DatosUsuario _dU = DatosUsuario();
+  _PerfilState(Sesion s) : _s = s;
   bool _errorCampos = false;
   bool _cambioDatos = false;
 
   bool _isKeyboardVisible = false;
   bool _isVisible1 = false, _isVisible2 = false;
-  bool _isFocus1 = false,
-      _isFocus2 = false,
-      _isFocus3 = false,
-      _isFocus4 = false;
+  bool _isFocus1 = false, _isFocus3 = false;
   final _focusNode1 = FocusNode(),
       _focusNode2 = FocusNode(),
       _focusNode3 = FocusNode(),
@@ -47,6 +42,22 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    conseguirDatosUsuario();
+    WidgetsBinding.instance.addObserver(this);
+    _focusNode1.addListener(_handleFocus1Change);
+    _focusNode2.addListener(_noHandleFocusChange);
+    _focusNode3.addListener(_handleFocus3Change);
+    _focusNode4.addListener(_noHandleFocusChange);
+    _focusNode5.addListener(_handleFocus5Change);
+  }
+  void conseguirDatosUsuario() async {
+    Future<DatosUsuarioResponse> f =
+        obtenerDatosUsuario(DatosUsuarioPetition(_s.getField(SesionFieldsCodes.token)));
+    DatosUsuarioResponse r = await f;
+    if(r.OK){
+      print("hol1");
+      _dU = DatosUsuario(usuario: r.username,correoElectronico: r.correo, telefonoMovil : r.telefono, fechaNacimiento : r.fecha);
+    }
     _userController.text = _dU.getField(DatosUsuarioFieldsCodes.usuario);
     _mailController.text =
         _dU.getField(DatosUsuarioFieldsCodes.correoElectronico);
@@ -54,14 +65,12 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
         _dU.getField(DatosUsuarioFieldsCodes.telefonoMovil);
     _birthDateController.text =
         _dU.getField(DatosUsuarioFieldsCodes.fechaNacimiento);
-    setState(() {});
-    WidgetsBinding.instance.addObserver(this);
-    _focusNode1.addListener(_handleFocus1Change);
-    _focusNode2.addListener(_handleFocus2Change);
-    _focusNode3.addListener(_handleFocus3Change);
-    _focusNode4.addListener(_handleFocus4Change);
-    _focusNode5.addListener(_handleFocus5Change);
+        setState(() {
+          
+        });
   }
+
+  void _noHandleFocusChange() {}
 
   void _handleFocus1Change() {
     if (_focusNode1.hasFocus) {
@@ -70,24 +79,10 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
     }
   }
 
-  void _handleFocus2Change() {
-    if (_focusNode2.hasFocus) {
-      // The text form field has focus, so the keyboard is being displayed.
-      _isFocus2 = true;
-    }
-  }
-
   void _handleFocus3Change() {
     if (_focusNode3.hasFocus) {
       // The text form field has focus, so the keyboard is being displayed.
       _isFocus3 = true;
-    }
-  }
-
-  void _handleFocus4Change() {
-    if (_focusNode4.hasFocus) {
-      // The text form field has focus, so the keyboard is being displayed.
-      _isFocus4 = true;
     }
   }
 
@@ -109,40 +104,38 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
     super.didChangeMetrics();
     // Check whether the keyboard is currently visible.
     final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
-    _isKeyboardVisible = bottomInset > 360.0;
-    if (_isKeyboardVisible && (_isFocus1 || _isFocus2)) {
-      _isVisible1 = true;
-      setState(() {});
-      if (_isFocus1)
+    _isKeyboardVisible = bottomInset > 400.0;
+    if (_isVisible1) {
+      if (!_isFocus1 && !_isKeyboardVisible) {
+        _isVisible1 = false;
+        _isVisible2 = false;
+        _focusNode1.unfocus();
+        _focusNode2.unfocus();
+        _focusNode3.unfocus();
+        _focusNode4.unfocus();
+        setState(() {});
+      }
+    } else if (_isVisible2) {
+      if (!_isFocus3 && !_isKeyboardVisible) {
+        _isVisible1 = false;
+        _isVisible2 = false;
+        _focusNode1.unfocus();
+        _focusNode2.unfocus();
+        _focusNode3.unfocus();
+        _focusNode4.unfocus();
+        setState(() {});
+      }
+    } else if (_isKeyboardVisible) {
+      if (_isFocus1) {
+        _isVisible1 = true;
+        setState(() {});
         _isFocus1 = false;
-      else
-        _isFocus2 = false;
-    } else if (_isKeyboardVisible && (_isFocus3 || _isFocus4)) {
-      _isVisible2 = true;
-      setState(() {});
-      if (_isFocus3)
+      } else if ((_isFocus3)) {
+        _isVisible2 = true;
+
+        setState(() {});
         _isFocus3 = false;
-      else
-        _isFocus4 = false;
-    } else if (!_isKeyboardVisible && _isVisible1 && !_isFocus1 && !_isFocus2) {
-      _isVisible1 = false;
-      _focusNode1.unfocus();
-      _focusNode2.unfocus();
-      setState(() {});
-    } else if (!_isKeyboardVisible && _isVisible2 && !_isFocus3 && !_isFocus4) {
-      _isVisible2 = false;
-      _focusNode3.unfocus();
-      _focusNode4.unfocus();
-      setState(() {});
-    }
-    else{
-      _isVisible1 = false;
-      _isVisible2 = false;
-      _focusNode1.unfocus();
-      _focusNode2.unfocus();
-      _focusNode3.unfocus();
-      _focusNode4.unfocus();
-      setState(() {});
+      }
     }
   }
 
@@ -153,12 +146,13 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _focusNode1.removeListener(_handleFocus1Change);
     _focusNode1.dispose();
-    _focusNode2.removeListener(_handleFocus2Change);
+    _focusNode2.removeListener(_noHandleFocusChange);
     _focusNode2.dispose();
     _focusNode3.removeListener(_handleFocus3Change);
+    _focusNode3.dispose();
+    _focusNode4.removeListener(_noHandleFocusChange);
     _focusNode4.dispose();
-    _focusNode4.removeListener(_handleFocus4Change);
-    _focusNode4.dispose();
+    _focusNode5.dispose();
     super.dispose();
   }
 
@@ -396,7 +390,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
               Visibility(
                 visible: _isVisible2,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 140),
+                  padding: const EdgeInsets.only(top: 200),
                   child: Container(
                     height: 40,
                     decoration: const BoxDecoration(
@@ -407,6 +401,8 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                       controller: _phoneNumberController,
                       focusNode: _focusNode4,
                       keyboardType: TextInputType.number,
+                      decoration:
+                          const InputDecoration(border: InputBorder.none),
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
@@ -434,10 +430,10 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                             "CAMBIAR DATOS",
                             onPressed: () {
                               _cambioDatos = true;
+                              _isVisible1 = false;
+                              _isVisible2 = false;
                               _isFocus1 = false;
-                              _isFocus2 = false;
                               _isFocus3 = false;
-                              _isFocus4 = false;
                               _focusNode1.unfocus();
                               _focusNode2.unfocus();
                               _focusNode3.unfocus();
@@ -466,6 +462,11 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                           "CANCELAR",
                           onPressed: () {
                             _cambioDatos = false;
+                            _mailController.text = _dU.getField(DatosUsuarioFieldsCodes.usuario);
+                            _birthDateController.text = _dU.getField(DatosUsuarioFieldsCodes.fechaNacimiento);
+                            _phoneNumberController.text = _dU.getField(DatosUsuarioFieldsCodes.telefonoMovil);
+                            print(_s.getField(SesionFieldsCodes.token) + " " + _userController.text + " " + _mailController.text + " " + _birthDateController.text + " " + _phoneNumberController.text);
+
                             setState(() {});
                           },
                         ),

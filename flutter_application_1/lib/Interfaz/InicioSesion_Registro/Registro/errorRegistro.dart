@@ -13,7 +13,7 @@ import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/inde
 import 'package:flutter_application_1/Data_types/registro.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/index.dart';
 import 'package:flutter_application_1/Interfaz/Menu/home.dart';
-
+//ignore: must_be_immutable
 class ErrorRegistro extends StatelessWidget {
   Registro r;
   ErrorRegistro(this.r, {Key? key}) : super(key: key);

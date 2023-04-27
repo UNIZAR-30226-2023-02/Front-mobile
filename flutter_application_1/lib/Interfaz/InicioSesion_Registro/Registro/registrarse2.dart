@@ -7,7 +7,7 @@ import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/inde
 import 'package:http/http.dart';
 
 import '../../../API/api.dart';
-
+//ignore: must_be_immutable
 class Registrarse2 extends StatefulWidget {
   Registro _r;
   List<bool> _quesitos;

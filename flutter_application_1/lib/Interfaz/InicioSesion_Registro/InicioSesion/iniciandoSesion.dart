@@ -6,7 +6,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter_application_1/Api/api.dart';
+import 'package:flutter_application_1/Api/index.dart';
 import 'package:flutter_application_1/Data_types/sesion.dart';
 
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
@@ -15,6 +15,7 @@ import 'package:flutter_application_1/Data_types/registro.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/index.dart';
 import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 
+//ignore: must_be_immutable
 class IniciandoSesion extends StatefulWidget {
   Sesion _s;
   String _contrasena;
@@ -133,6 +134,7 @@ class _IniciandoSesion extends State<IniciandoSesion> {
   }
 }
 
+//ignore: must_be_immutable
 class IniciandoSesionRegistro extends StatefulWidget {
   Sesion _s;
   String _contrasena;

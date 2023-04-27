@@ -16,9 +16,9 @@ import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/index.dart'
 import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 
 class ErrorInicioSesion extends StatelessWidget {
-  Sesion _s;
-  String _contrasena;
-  ErrorInicioSesion(this._s,this._contrasena, {Key? key}) : super(key: key);
+  final Sesion _s;
+  final String _contrasena;
+  const ErrorInicioSesion(this._s,this._contrasena, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

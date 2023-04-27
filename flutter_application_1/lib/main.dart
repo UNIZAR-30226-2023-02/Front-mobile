@@ -24,8 +24,7 @@ void main() {
   runApp(
      MaterialApp(
       home: 
-      //Home()
-      Perfil(DatosUsuario())
+      InicioApp()
     )
   );
 }

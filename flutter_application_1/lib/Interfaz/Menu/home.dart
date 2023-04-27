@@ -6,7 +6,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Interfaz/Perfil/perfil.dart';
 import 'package:flutter_application_1/Data_types/sesion.dart';
+import 'package:flutter_application_1/API/index.dart';
 
+//ignore: must_be_immutable
 class Menu extends StatelessWidget {
   Sesion _s;
   Menu(this._s,{Key? key}) : super(key: key);
@@ -18,7 +20,7 @@ class Menu extends StatelessWidget {
   }
 }
 
-
+//ignore: must_be_immutable
 class _Menu extends StatelessWidget {
   Sesion _s;
   _Menu(this._s);
@@ -62,7 +64,7 @@ class _Menu extends StatelessWidget {
                           context,
                           PageRouteBuilder(
                             transitionDuration: Duration(milliseconds: 100), // La duración de la transición
-                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(imagen: 'assets/menu_trivial_rosa.png', tipoBoton: "Rosa",),
+                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(_s,imagen: 'assets/menu_trivial_rosa.png', tipoBoton: "Rosa",),
                             transitionsBuilder: (context, animation, secondaryAnimation, child) {
                               return FadeTransition(
                                 opacity: animation,
@@ -85,7 +87,7 @@ class _Menu extends StatelessWidget {
                           context,
                           PageRouteBuilder(
                             transitionDuration: Duration(milliseconds: 100), // La duración de la transición
-                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(imagen: 'assets/menu_trivial_rojo.png', tipoBoton: "Rojo",),
+                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(_s,imagen: 'assets/menu_trivial_rojo.png', tipoBoton: "Rojo",),
                             transitionsBuilder: (context, animation, secondaryAnimation, child) {
                               return FadeTransition(
                                 opacity: animation,
@@ -112,7 +114,7 @@ class _Menu extends StatelessWidget {
                           context,
                           PageRouteBuilder(
                             transitionDuration: Duration(milliseconds: 100), // La duración de la transición
-                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(imagen: 'assets/menu_trivial_azul.png', tipoBoton: "Azul",),
+                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(_s,imagen: 'assets/menu_trivial_azul.png', tipoBoton: "Azul",),
                             transitionsBuilder: (context, animation, secondaryAnimation, child) {
                               return FadeTransition(
                                 opacity: animation,
@@ -133,7 +135,7 @@ class _Menu extends StatelessWidget {
                           context,
                           PageRouteBuilder(
                             transitionDuration: Duration(milliseconds: 100), // La duración de la transición
-                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(imagen: 'assets/menu_trivial_blanco.png', tipoBoton: "Blanco",),
+                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(_s,imagen: 'assets/menu_trivial_blanco.png', tipoBoton: "Blanco",),
                             transitionsBuilder: (context, animation, secondaryAnimation, child) {
                               return FadeTransition(
                                 opacity: animation,
@@ -153,7 +155,7 @@ class _Menu extends StatelessWidget {
                           context,
                           PageRouteBuilder(
                             transitionDuration: Duration(milliseconds: 100), // La duración de la transición
-                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(imagen: 'assets/menu_trivial_naranja.png', tipoBoton: "Naranja",),
+                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(_s,imagen: 'assets/menu_trivial_naranja.png', tipoBoton: "Naranja",),
                             transitionsBuilder: (context, animation, secondaryAnimation, child) {
                               return FadeTransition(
                                 opacity: animation,
@@ -181,7 +183,7 @@ class _Menu extends StatelessWidget {
                           context,
                           PageRouteBuilder(
                             transitionDuration: Duration(milliseconds: 100), // La duración de la transición
-                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(imagen: 'assets/menu_trivial_amarillo.png', tipoBoton: "Amarillo",),
+                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(_s,imagen: 'assets/menu_trivial_amarillo.png', tipoBoton: "Amarillo",),
                             transitionsBuilder: (context, animation, secondaryAnimation, child) {
                               return FadeTransition(
                                 opacity: animation,
@@ -204,7 +206,7 @@ class _Menu extends StatelessWidget {
                           context,
                           PageRouteBuilder(
                             transitionDuration: Duration(milliseconds: 100), // La duración de la transición
-                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(imagen: 'assets/menu_trivial_verde.png', tipoBoton: "Verde",),
+                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(_s,imagen: 'assets/menu_trivial_verde.png', tipoBoton: "Verde",),
                             transitionsBuilder: (context, animation, secondaryAnimation, child) {
                               return FadeTransition(
                                 opacity: animation,
@@ -456,16 +458,18 @@ class TrianglePainter extends CustomPainter {
 
 //ES PARA QUE CAMBIE EL BOTON DE COLOR PERO PARA ESO HAY QUE CAMBIAR DE PANTALLA 
 //Y COMO SALE UNA ANIMACION POR DEFECTO PUES YA SE VE QEU CAMBIAS
+//ignore: must_be_immutable
 class PulsaMenu extends StatelessWidget {
+  Sesion _s;
   String imagen = "";
   String tipoBoton = "";
-  PulsaMenu({required this.imagen, required this.tipoBoton});
+  PulsaMenu(this._s,{required this.imagen, required this.tipoBoton});
 
   @override
   Widget build(BuildContext context) {
     if (tipoBoton == "Azul"){ //PERFIL
       Future.delayed(Duration(milliseconds: 300), () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Perfil(DatosUsuario())));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Perfil(_s)));
       });
     }else if (tipoBoton == "Amarillo"){ //ESTADISTICAS
       
