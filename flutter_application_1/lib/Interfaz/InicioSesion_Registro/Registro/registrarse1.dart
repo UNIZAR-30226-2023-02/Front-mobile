@@ -6,6 +6,7 @@ import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
 import 'package:flutter_application_1/Data_types/registro.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
 import 'package:http/http.dart';
+
 //ignore: must_be_immutable
 class Registrarse1 extends StatefulWidget {
   List<bool> quesitos = List<bool>.filled(6, false);
@@ -74,7 +75,7 @@ class _Registrarse1State extends State<Registrarse1>
       } else {
         _isFocus2 = false;
       }
-    } else if (!_isKeyboardVisible && !_isFocus1 && !_isFocus2) {
+    } else if (!_isKeyboardVisible && _isVisible && !_isFocus1 && !_isFocus2) {
       _isVisible = false;
       _focusNode1.unfocus();
       _focusNode2.unfocus();

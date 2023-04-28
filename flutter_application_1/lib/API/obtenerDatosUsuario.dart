@@ -4,7 +4,6 @@ import 'package:flutter_application_1/Data_types/datosUsuario.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-
 class DatosUsuarioPetition {
   String token;
   DatosUsuarioPetition(String t) : token = t;
@@ -21,11 +20,7 @@ class DatosUsuarioResponse {
       M_key = 'monedas',
       A_key = 'amigos';
   // ignore: non_constant_identifier_names
-  String username = "",
-      fecha = "",
-      correo = "",
-      telefono = "",
-      imagen = "";
+  String username = "", fecha = "", correo = "", telefono = "", imagen = "";
   int monedas = 0;
   List<String> amigos = <String>[];
   // ignore: non_constant_identifier_names
@@ -53,7 +48,6 @@ class DatosUsuarioResponse {
       } else {
         OK = false;
       }
-      print("$OK $username $fecha $correo $telefono hola");
     }
   }
 }
@@ -67,7 +61,7 @@ Future<DatosUsuarioResponse> obtenerDatosUsuario(DatosUsuarioPetition p) async {
   final url = Uri.parse('$urlDir/api/usuarios/datos-yo/');
 
   final response = await http.post(url, headers: {
-    'Authorization': "Token " + p.token,
+    'Authorization': "Token ${p.token}",
   });
 
   r.FillFields(response);

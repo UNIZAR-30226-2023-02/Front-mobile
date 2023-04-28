@@ -4,14 +4,9 @@ import 'package:flutter_application_1/Data_types/datosUsuario.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-
 class CambioDatosUsuarioPetition {
-  final String token,
-      correo,
-      fechaNac,
-      telefono;
-  const CambioDatosUsuarioPetition(String t,
-      String f, String c, String te)
+  final String token, correo, fechaNac, telefono;
+  const CambioDatosUsuarioPetition(String t, String f, String c, String te)
       : token = t,
         fechaNac = f,
         correo = c,
@@ -25,9 +20,7 @@ class CambioDatosUsuarioResponse {
       eC_key = 'error_correo',
       eT_key = 'error_telefono';
   // ignore: non_constant_identifier_names
-  String error_fecha = "",
-      error_correo = "",
-      error_telefono = "";
+  String error_fecha = "", error_correo = "", error_telefono = "";
   // ignore: non_constant_identifier_names
   bool OK = false;
 
@@ -53,7 +46,8 @@ class CambioDatosUsuarioResponse {
 }
 
 // ignore: non_constant_identifier_names
-Future<CambioDatosUsuarioResponse> CambiarDatosUsuario(CambioDatosUsuarioPetition p, DatosUsuario dU) async {
+Future<CambioDatosUsuarioResponse> CambiarDatosUsuario(
+    CambioDatosUsuarioPetition p) async {
   HttpOverrides.global = MyHttpOverrides();
 
   CambioDatosUsuarioResponse r = CambioDatosUsuarioResponse();
