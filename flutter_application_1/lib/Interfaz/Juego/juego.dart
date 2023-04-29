@@ -19,20 +19,24 @@ class _Juego extends StatefulWidget {
 }
 
 class __JuegoState extends State<_Juego> {
-  Color Bcolor1 = Colors.blue;
-  Color Bcolor2 = Color.fromARGB(255, 255, 187, 0);
-  Color Bcolor3 = Color.fromARGB(255, 255, 255, 255);
+  Color Azul = Colors.blue;
+  Color Naranja = Color.fromARGB(255, 240, 143, 17);
+  Color Rojo = Color.fromARGB(255, 230, 44, 19);
+  Color Rosa = Color.fromARGB(255, 231, 19, 185);
+  Color Verde = Color.fromARGB(255, 53, 224, 18);
+  Color Amarillo = Color.fromARGB(255, 231, 235, 42);
+  Color Blanco = Color.fromARGB(255, 255, 255, 255);
 
-  void _cambiarColor2() {
-    setState(() {
-      Bcolor2 = Colors.green;
-    });
-  }
-  void _cambiarColor1() {
-    setState(() {
-      Bcolor1 = Colors.green;
-    });
-  }
+  // void _cambiarColor2() {
+  //   setState(() {
+  //     Bcolor2 = Colors.green;
+  //   });
+  // }
+  // void _cambiarColor1() {
+  //   setState(() {
+  //     Bcolor1 = Colors.green;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +52,9 @@ class __JuegoState extends State<_Juego> {
               Transform.translate(
                 offset: const Offset(0, 0),
                 child: HexagonButton(
-                  color: Bcolor1,
+                  color: Blanco,
                   onPressed: () {
-                    _cambiarColor2();
+                    // //_cambiarColor2();
                   },
                 ),
               ),
@@ -60,9 +64,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(19, 66),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Amarillo,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -73,9 +77,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(19, 87),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Verde,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -86,9 +90,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(19, 108),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Rojo,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -99,9 +103,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(19, 129),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Naranja,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -112,9 +116,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(19, 150),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Azul,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -125,9 +129,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(18, -17),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Rosa,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -138,9 +142,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(18, -37),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Rojo,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -151,9 +155,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(18, -57),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Azul,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -164,9 +168,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(18, -77),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Amarillo,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -177,9 +181,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(18, -98),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Naranja,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -191,9 +195,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-150, 75),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Azul,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -204,9 +208,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-150, 55),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Blanco,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -217,9 +221,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-150, 35),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Rojo,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -230,9 +234,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-150, 15),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Amarillo,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -243,9 +247,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-150, -5),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Blanco,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -256,9 +260,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-150, -25),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Naranja,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -269,9 +273,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-142, -23),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Azul,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -282,9 +286,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-142, -5),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Blanco,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -295,9 +299,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-142, 15),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Naranja,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -308,9 +312,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-142, 35),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Verde,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -321,9 +325,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-142, 55),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Blanco,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -334,48 +338,23 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-142, 75),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Rojo,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
               ),
-              //C13
-              Transform.rotate(
-                angle: -270 * pi / 180,
-                child: Transform.translate(
-                  offset: const Offset(26, -135),
-                  child: EsquinaButton(
-                    color: Bcolor3,
-                    onPressed: () {
-                      _cambiarColor2();
-                    },
-                  ),
-                ),
-              ),
-              //C49
-              Transform.rotate(
-                angle: 270 * pi / 180,
-                child: Transform.translate(
-                  offset: const Offset(0, -184),
-                  child: EsquinaButton(
-                    color: Bcolor3,
-                    onPressed: () {
-                      _cambiarColor2();
-                    },
-                  ),
-                ),
-              ),
+
               //C6
               Transform.rotate(
                 angle: -207 * pi / 180,
                 child: Transform.translate(
                   offset: const Offset(37, -158),
                   child: Esquina2Button(
-                    color: Bcolor3,
+                    color: Blanco,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -386,9 +365,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(13, 70),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Naranja,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -399,9 +378,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(13, 91),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Rosa,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -412,9 +391,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(13, 111),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Verde,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -425,9 +404,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(13, 131),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Azul,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -438,9 +417,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(13, 151),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Rojo,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -451,9 +430,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(13, -20),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Verde,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -464,9 +443,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(13, -40),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Azul,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -477,9 +456,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(13, -60),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Naranja,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -490,9 +469,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(13, -80),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Rosa,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -503,9 +482,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(13, -100),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Amarillo,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -517,9 +496,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-148, 88),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Naranja,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -530,9 +509,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-148, 68),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Blanco,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -543,9 +522,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-148, 48),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Azul,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -556,9 +535,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-148, 28),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Rosa,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -569,9 +548,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-148, 8),
                   child: RectangleButton(
-                    color: Bcolor1,
+                    color: Blanco,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -582,9 +561,9 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(-148, -13),
                   child: RectangleButton(
-                    color: Bcolor2,
+                    color: Amarillo,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
@@ -595,13 +574,444 @@ class __JuegoState extends State<_Juego> {
                 child: Transform.translate(
                   offset: const Offset(30, -178),
                   child: Esquina3Button(
-                    color: Bcolor3,
+                    color: Blanco,
                     onPressed: () {
-                      _cambiarColor2();
+                      //_cambiarColor2();
                     },
                   ),
                 ),
               ),
+
+              //C42
+              Transform.rotate(
+                angle: -207 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(19, 66),
+                  child: RectangleButton(
+                    color: Rojo,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C41
+              Transform.rotate(
+                angle: -207 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(19, 86),
+                  child: RectangleButton(
+                    color: Naranja,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C40
+              Transform.rotate(
+                angle: -207 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(19, 106),
+                  child: RectangleButton(
+                    color: Amarillo,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C39
+              Transform.rotate(
+                angle: -207 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(19, 126),
+                  child: RectangleButton(
+                    color: Verde,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C38
+              Transform.rotate(
+                angle: -207 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(19, 146),
+                  child: RectangleButton(
+                    color: Rosa,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+
+
+              //C43
+              Transform.rotate(
+                angle: -329 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-142, -23),
+                  child: RectangleButton(
+                    color: Rosa,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C44
+              Transform.rotate(
+                angle: -329 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-142, -5),
+                  child: RectangleButton(
+                    color: Blanco,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C45
+              Transform.rotate(
+                angle: -329 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-142, 15),
+                  child: RectangleButton(
+                    color: Verde,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C46
+              Transform.rotate(
+                angle: -329 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-142, 35),
+                  child: RectangleButton(
+                    color: Naranja,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C47
+              Transform.rotate(
+                angle: -329 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-142, 55),
+                  child: RectangleButton(
+                    color: Blanco,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C48
+              Transform.rotate(
+                angle: -329 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-142, 75),
+                  child: RectangleButton(
+                    color: Amarillo,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              
+
+              //C30
+              Transform.rotate(
+                angle: -331 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(18, -17),
+                  child: RectangleButton(
+                    color: Azul,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C29
+              Transform.rotate(
+                angle: -331 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(18, -37),
+                  child: RectangleButton(
+                    color: Amarillo,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C28
+              Transform.rotate(
+                angle: -331 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(18, -57),
+                  child: RectangleButton(
+                    color: Rosa,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C27
+              Transform.rotate(
+                angle: -331 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(18, -77),
+                  child: RectangleButton(
+                    color: Rojo,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C26
+              Transform.rotate(
+                angle: -331 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(18, -98),
+                  child: RectangleButton(
+                    color: Verde,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),          
+
+              //C36
+              Transform.rotate(
+                angle: 90 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-140, 73),
+                  child: RectangleButton(
+                    color: Rosa,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C35
+              Transform.rotate(
+                angle: 90 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-140, 53),
+                  child: RectangleButton(
+                    color: Blanco,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C34
+              Transform.rotate(
+                angle: 90 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-140, 33),
+                  child: RectangleButton(
+                    color: Amarillo,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C33
+              Transform.rotate(
+                angle: 90 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-140, 13),
+                  child: RectangleButton(
+                    color: Rojo,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C32
+              Transform.rotate(
+                angle: 90 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-140, -8),
+                  child: RectangleButton(
+                    color: Blanco,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C31
+              Transform.rotate(
+                angle: 90 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-140, -29),
+                  child: RectangleButton(
+                    color: Verde,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+
+              //C24
+              Transform.rotate(
+                angle: 150 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-145, 75),
+                  child: RectangleButton(
+                    color: Verde,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C23
+              Transform.rotate(
+                angle: 150 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-145, 57),
+                  child: RectangleButton(
+                    color: Blanco,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C22
+              Transform.rotate(
+                angle: 150 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-145, 38),
+                  child: RectangleButton(
+                    color: Rosa,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C21
+              Transform.rotate(
+                angle: 150 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-145, 18),
+                  child: RectangleButton(
+                    color: Azul,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C20
+              Transform.rotate(
+                angle: 150 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-145, -2),
+                  child: RectangleButton(
+                    color: Blanco,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+              //C19
+              Transform.rotate(
+                angle: 150 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-145, -21),
+                  child: RectangleButton(
+                    color: Rojo,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+
+
+              //C49
+              Transform.rotate(
+                angle: 270 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(0, -184),
+                  child: EsquinaButton(
+                    color: Blanco,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+
+              //C37
+              Transform.rotate(
+                angle: -27 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-16, -164),
+                  child: Esquina2Button(
+                    color: Blanco,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+
+              //C25
+              Transform.rotate(
+                angle: 30 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(-8, -146),
+                  child: Esquina3Button(
+                    color: Blanco,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+
+              //C13
+              Transform.rotate(
+                angle: -270 * pi / 180,
+                child: Transform.translate(
+                  offset: const Offset(26, -135),
+                  child: EsquinaButton(
+                    color: Blanco,
+                    onPressed: () {
+                      //_cambiarColor2();
+                    },
+                  ),
+                ),
+              ),
+
+
+
               
             ],
           ),
