@@ -30,7 +30,10 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
   Sesion _s;
   DatosUsuario _dU;
   _PerfilState(this._s, this._dU);
+
+  String _errorCambioDatos = "";
   bool _errorCampos = false;
+  bool _cambioRealizado = false;
   bool _cambioDatos = false;
 
   bool _isKeyboardVisible = false;
@@ -47,9 +50,10 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    print("initstate");
     WidgetsBinding.instance.addObserver(this);
-    conseguirDatosUsuario();
+    if (_s.getField(SesionFieldsCodes.token) != "") {
+      conseguirDatosUsuario();
+    }
     _focusNode1.addListener(_handleFocus1Change);
     _focusNode2.addListener(_handleFocus2Change);
     _focusNode3.addListener(_handleFocus3Change);
@@ -63,7 +67,6 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
         DatosUsuarioPetition(_s.getField(SesionFieldsCodes.token)));
     DatosUsuarioResponse r = await f;
     if (r.OK) {
-      print("hol1");
       _dU = DatosUsuario(
           usuario: r.username,
           correoElectronico: r.correo,
@@ -174,17 +177,42 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
   }
 
   void _comprobarDatos(BuildContext context) async {
-    Future<CambioDatosUsuarioResponse> f = CambiarDatosUsuario(
-        CambioDatosUsuarioPetition(
-            _s.getField(SesionFieldsCodes.token),
-            _birthDateController.text,
-            _mailController.text,
-            _phoneNumberController.text));
-    CambioDatosUsuarioResponse r = await f;
-    if (r.OK) {
-      // ignore: use_build_context_synchronously
-      _formKey.currentState!.save();
-    } else {}
+    if (_birthDateController.text ==
+            _dU.getField(DatosUsuarioFieldsCodes.fechaNacimiento) &&
+        _mailController.text ==
+            _dU.getField(DatosUsuarioFieldsCodes.correoElectronico) &&
+        _phoneNumberController.text ==
+            _dU.getField(DatosUsuarioFieldsCodes.telefonoMovil)) {
+      _errorCampos = true;
+      _errorCambioDatos =
+          "Ninguno de los campos ha sido modificado. Por favor, modifique algún campo.";
+      _cambioDatos = false;
+      setState(() {});
+    } else {
+      Future<CambioDatosUsuarioResponse> f = CambiarDatosUsuario(
+          CambioDatosUsuarioPetition(
+              _s.getField(SesionFieldsCodes.token),
+              _birthDateController.text,
+              _mailController.text,
+              _phoneNumberController.text));
+      CambioDatosUsuarioResponse r = await f;
+      if (r.OK) {
+        // ignore: use_build_context_synchronously
+        _formKey.currentState!.save();
+        _cambioRealizado = true;
+      } else {
+        _errorCampos = true;
+        if (r.error_correo != "") {
+          _errorCambioDatos = r.error_correo;
+        } else if (r.error_fecha != "") {
+          _errorCambioDatos = r.error_fecha;
+        } else {
+          _errorCambioDatos = r.error_telefono;
+        }
+        print(_errorCambioDatos);
+        setState(() {});
+      }
+    }
   }
 
   @override
@@ -532,6 +560,210 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                       ),
                     ),
                   ),
+                ),
+                LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    return Visibility(
+                      visible: _cambioRealizado,
+                      child: Container(
+                        height: constraints.maxHeight,
+                        width: constraints.maxWidth,
+                        decoration:
+                            const BoxDecoration(color: Color(0x80444444)),
+                        margin: const EdgeInsets.only(top: 0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: constraints.maxWidth / 1.5,
+                                height: constraints.maxHeight / 2,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: const Color(0xFFb13636),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 30),
+                                        child: SizedBox(
+                                          height: constraints.maxHeight / 4.5,
+                                          width: constraints.maxWidth / 2,
+                                          child: Text(
+                                            _errorCambioDatos,
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                                fontFamily: "Georgia"),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 20),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          child: Stack(
+                                            children: <Widget>[
+                                              Positioned.fill(
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            30),
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                style: TextButton.styleFrom(
+                                                  foregroundColor: Colors.white,
+                                                  // padding: const EdgeInsets.all(16.0),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 4,
+                                                          bottom: 4,
+                                                          left: 15,
+                                                          right: 15),
+                                                  textStyle: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18,
+                                                      fontFamily: "Georgia"),
+                                                ),
+                                                onPressed: () {
+                                                  _errorCampos = false;
+                                                  setState(() {});
+                                                },
+                                                child: const Text("ACEPTAR"),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    return Visibility(
+                      visible: _errorCampos,
+                      child: Container(
+                        height: constraints.maxHeight,
+                        width: constraints.maxWidth,
+                        decoration:
+                            const BoxDecoration(color: Color(0x80444444)),
+                        margin: const EdgeInsets.only(top: 0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: constraints.maxWidth / 1.5,
+                                height: constraints.maxHeight / 2,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: const Color(0xFF3dce00),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 30),
+                                        child: SizedBox(
+                                          height: constraints.maxHeight / 4.5,
+                                          width: constraints.maxWidth / 2,
+                                          child: const Text(
+                                            "Los datos han sido modificados correctamente",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                                fontFamily: "Georgia"),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 20),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          child: Stack(
+                                            children: <Widget>[
+                                              Positioned.fill(
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            30),
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                style: TextButton.styleFrom(
+                                                  foregroundColor: Colors.white,
+                                                  // padding: const EdgeInsets.all(16.0),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 4,
+                                                          bottom: 4,
+                                                          left: 15,
+                                                          right: 15),
+                                                  textStyle: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18,
+                                                      fontFamily: "Georgia"),
+                                                ),
+                                                onPressed: () {
+                                                  _errorCampos = false;
+                                                  setState(() {});
+                                                },
+                                                child: const Text("ACEPTAR"),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

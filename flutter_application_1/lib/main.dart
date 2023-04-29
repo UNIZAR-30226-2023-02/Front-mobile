@@ -19,14 +19,8 @@ import 'Data_types/sesion.dart';
 // import 'package:flutter_application_1/InicioSesion/home.dart';
 import 'package:flutter_application_1/Interfaz/Perfil/perfil.dart';
 
-
 void main() {
-  runApp(
-     MaterialApp(
-      home: 
-      InicioApp()
-    )
-  );
+  runApp(MaterialApp(home: Home()));
 }
 
 /*void main() {

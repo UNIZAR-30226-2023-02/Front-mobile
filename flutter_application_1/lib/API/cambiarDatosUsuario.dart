@@ -52,10 +52,11 @@ Future<CambioDatosUsuarioResponse> CambiarDatosUsuario(
 
   CambioDatosUsuarioResponse r = CambioDatosUsuarioResponse();
 
-  final url = Uri.parse('$urlDir/api/usuarios/cambiar_datos/');
+  final url = Uri.parse('$urlDir/api/usuarios/cambiar-datos/');
 
-  final response = await http.post(url, body: {
-    'token': p.token,
+  final response = await http.post(url, headers: {
+    'Authorization': "Token ${p.token}",
+  }, body: {
     'fecha_nac': p.fechaNac,
     'correo': p.correo,
     'telefono': p.telefono,
