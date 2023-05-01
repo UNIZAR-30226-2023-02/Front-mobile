@@ -563,7 +563,8 @@ class PulsaMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     if (tipoBoton == "Azul") {
       //PERFIL
-      Future.delayed(Duration(milliseconds: 300), () {
+      conseguirDatos();
+      Future.delayed(Duration(milliseconds: 500), () {
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -574,12 +575,13 @@ class PulsaMenu extends StatelessWidget {
       //ESTADISTICAS
     } else if (tipoBoton == "Verde") {
       //TIENDA
-      Future.delayed(Duration(milliseconds: 300), () {
+      Future.delayed(Duration(milliseconds: 500), () {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => TiendaFichas()));
       });
     } else if (tipoBoton == "Naranja") {
-      Future.delayed(Duration(milliseconds: 300), () {
+      conseguirDatos();
+      Future.delayed(Duration(milliseconds: 1000), () {
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(

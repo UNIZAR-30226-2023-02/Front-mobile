@@ -176,7 +176,6 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
       _errorCampos = true;
       _errorCambioDatos =
           "Ninguno de los campos ha sido modificado. Por favor, modifique algún campo.";
-      _cambioDatos = false;
       setState(() {});
     } else {
       Future<CambioDatosUsuarioResponse> f = CambiarDatosUsuario(
@@ -190,7 +189,6 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
         // ignore: use_build_context_synchronously
         _formKey.currentState!.save();
         _cambioRealizado = true;
-        _cambioDatos = false;
         setState(() {});
       } else {
         _errorCampos = true;
@@ -211,13 +209,20 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
     return WillPopScope(
       onWillPop: () async {
         if (_cambioDatos) {
-          _cambioDatos = false;
-          _mailController.text =
-              _dU.getField(DatosUsuarioFieldsCodes.correoElectronico);
-          _birthDateController.text =
-              _dU.getField(DatosUsuarioFieldsCodes.fechaNacimiento);
-          _phoneNumberController.text =
-              _dU.getField(DatosUsuarioFieldsCodes.telefonoMovil);
+          if (_cambioRealizado) {
+            _cambioRealizado = false;
+            _cambioDatos = false;
+          } else if (_errorCampos) {
+            _errorCampos = false;
+          } else {
+            _cambioDatos = false;
+            _mailController.text =
+                _dU.getField(DatosUsuarioFieldsCodes.correoElectronico);
+            _birthDateController.text =
+                _dU.getField(DatosUsuarioFieldsCodes.fechaNacimiento);
+            _phoneNumberController.text =
+                _dU.getField(DatosUsuarioFieldsCodes.telefonoMovil);
+          }
 
           setState(() {});
         } else {
@@ -567,13 +572,13 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                           child: Stack(
                             children: [
                               Container(
-                                width: constraints.maxWidth / 1.5,
-                                height: constraints.maxHeight / 2,
+                                width: constraints.maxWidth / 2,
+                                height: constraints.maxHeight / 2.3,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: const Color(0xFFb13636),
+                                    color: Colors.black,
                                     width: 2,
                                   ),
                                 ),
@@ -585,11 +590,12 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                                         padding: const EdgeInsets.only(top: 30),
                                         child: SizedBox(
                                           height: constraints.maxHeight / 4.5,
-                                          width: constraints.maxWidth / 2,
+                                          width: constraints.maxWidth / 2.3,
                                           child: Text(
                                             _errorCambioDatos,
                                             textAlign: TextAlign.center,
                                             style: const TextStyle(
+                                                color: Color(0xFFb13636),
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18,
                                                 fontFamily: "Georgia"),
@@ -614,6 +620,9 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                                                         BorderRadius.circular(
                                                             30),
                                                     color: Colors.black,
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 2),
                                                   ),
                                                 ),
                                               ),
@@ -669,13 +678,13 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                           child: Stack(
                             children: [
                               Container(
-                                width: constraints.maxWidth / 1.5,
-                                height: constraints.maxHeight / 2,
+                                width: constraints.maxWidth / 2,
+                                height: constraints.maxHeight / 2.5,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: const Color(0xFF3dce00),
+                                    color: Colors.black,
                                     width: 2,
                                   ),
                                 ),
@@ -687,11 +696,12 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                                         padding: const EdgeInsets.only(top: 30),
                                         child: SizedBox(
                                           height: constraints.maxHeight / 4.5,
-                                          width: constraints.maxWidth / 2,
+                                          width: constraints.maxWidth / 2.3,
                                           child: const Text(
                                             "Los datos han sido modificados correctamente",
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
+                                                color: Color(0xFF3dce00),
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18,
                                                 fontFamily: "Georgia"),
@@ -716,6 +726,9 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                                                         BorderRadius.circular(
                                                             30),
                                                     color: Colors.black,
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 2),
                                                   ),
                                                 ),
                                               ),
@@ -737,6 +750,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                                                 ),
                                                 onPressed: () {
                                                   _cambioRealizado = false;
+                                                  _cambioDatos = false;
                                                   setState(() {});
                                                 },
                                                 child: const Text("ACEPTAR"),

@@ -22,19 +22,7 @@ import 'Data_types/sesion.dart';
 import 'package:flutter_application_1/Interfaz/Menu/Perfil/perfil.dart';
 
 void main() {
-  runApp(MaterialApp(
-      home: Amigos(
-          //Sesion(), DatosUsuario(), AmigosUsuario(List<String>.empty()))));
-          Sesion(),
-          AmigosUsuario(<String>[
-            "Acher",
-            "Roberto",
-            "Diego",
-            "Javier",
-            "Carlos",
-            "Simón",
-            "Héctor"
-          ]))));
+  runApp(MaterialApp(home: Home()));
 }
 
 /*void main() {

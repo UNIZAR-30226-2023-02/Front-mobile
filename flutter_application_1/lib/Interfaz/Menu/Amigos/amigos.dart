@@ -25,58 +25,112 @@ class Amigos extends StatefulWidget {
 class _AmigosState extends State<Amigos> {
   final _formKey = GlobalKey<FormState>();
   Sesion _s;
-  DatosUsuario _dA = DatosUsuario(
-      usuario: "Acher99",
-      correoElectronico: "acheraldkadkajk",
-      fechaNacimiento: "2002-02-01",
-      telefonoMovil: "789676899");
+  DatosUsuario _dA = DatosUsuario();
   AmigosUsuario _a;
   _AmigosState(this._s, this._a);
 
-  String _errorBuscarAmigo = "";
-  bool _errorCampos = false;
+  String _sErrorAnadirAmigo = "", _sErrorEliminarAmigo = "";
+  bool _errorAnadirAmigo = false, _errorEliminarAmigo = false;
+  bool _amigoEliminado = false;
+  bool _amigoAnadido = false;
   bool _datosAmigo = false;
   bool _anadirAmigo = false;
 
   bool _isKeyboardVisible = false;
 
   final TextEditingController _friendSearchController = TextEditingController();
-  final _focusNode = FocusNode();
 
   @override
   void dispose() {
     _friendSearchController.dispose();
-    _focusNode.dispose();
     super.dispose();
   }
 
   void conseguirDatosAmigo(int index) async {
-    /*Future<DatosUsuarioResponse> f = obtenerDatosUsuario(
-        DatosUsuarioPetition(_s.getField(SesionFieldsCodes.token)));
-    DatosUsuarioResponse r = await f;*/
-    _dA.setField(DatosUsuarioFieldsCodes.usuario, _a.amigos[index]);
+    Future<DatosAmigoResponse> f =
+        obtenerDatosAmigo(DatosAmigoPetition(_a.amigos[index]));
+    DatosAmigoResponse r = await f;
+    _dA.setField(DatosUsuarioFieldsCodes.usuario, r.username);
+    _dA.setField(DatosUsuarioFieldsCodes.correoElectronico, r.correo);
+    _dA.setField(DatosUsuarioFieldsCodes.telefonoMovil, r.telefono);
+    _dA.setField(DatosUsuarioFieldsCodes.fechaNacimiento, r.fecha);
+    _datosAmigo = true;
+    setState(() {});
   }
 
-  void anadirAmigo() {
+  void anadirAmigoUsuario() async {
     String amigo = _friendSearchController.text;
     if (amigo == "") {
-    } else if (_a.amigos.contains(amigo)) {
-    } else if (_a.amigos.contains(amigo)) {
+      _errorAnadirAmigo = true;
+      _sErrorAnadirAmigo = "El nombre de usuario está vacío.";
     } else {
-      _a.amigos.add(amigo);
+      Future<AnadirAmigoResponse> f = anadirAmigo(
+          AnadirAmigoPetition(_s.getField(SesionFieldsCodes.token), amigo));
+      AnadirAmigoResponse r = await f;
+      if (r.OK) {
+        _a.amigos.add(amigo);
+        _amigoAnadido = true;
+      } else {
+        _sErrorAnadirAmigo = r.error;
+        _errorAnadirAmigo = true;
+      }
     }
+    setState(() {});
   }
 
-  void eliminarAmigo() {
-    _a.amigos.remove(_dA.getField(DatosUsuarioFieldsCodes.usuario));
-  }
+  void eliminarAmigoUsuario() async {
+    String amigo = _dA.getField(DatosUsuarioFieldsCodes.usuario);
 
-  void _comprobarDatos(BuildContext context) async {}
+    Future<EliminarAmigoResponse> f = eliminarAmigo(
+        EliminarAmigoPetition(_s.getField(SesionFieldsCodes.token), amigo));
+    EliminarAmigoResponse r = await f;
+    if (r.OK) {
+      _a.amigos.remove(amigo);
+      _amigoEliminado = true;
+      _datosAmigo = false;
+    } else {
+      _sErrorEliminarAmigo = r.error;
+      _errorEliminarAmigo = true;
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        if (_anadirAmigo) {
+          if (_amigoAnadido) {
+            _amigoAnadido = false;
+            _friendSearchController.text = "";
+          } else if (_errorAnadirAmigo) {
+            _errorAnadirAmigo = false;
+          } else {
+            _anadirAmigo = false;
+          }
+          setState(() {});
+        } else if (_datosAmigo) {
+          if (_amigoEliminado) {
+            _amigoEliminado = false;
+            _datosAmigo = false;
+          } else if (_errorEliminarAmigo) {
+            _errorEliminarAmigo = false;
+          } else {
+            _datosAmigo = false;
+          }
+          setState(() {});
+        } else {
+          if (_amigoEliminado) {
+            _amigoEliminado = false;
+
+            setState(() {});
+          } else {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => Menu(_s)),
+                (Route<dynamic> route) => false);
+          }
+        }
         return false;
       },
       child: Scaffold(
@@ -116,37 +170,50 @@ class _AmigosState extends State<Amigos> {
                       alignment: Alignment.center,
                       child: Stack(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 0),
-                            child: Container(
-                              width: constraints.maxWidth / 1.3,
-                              height: constraints.maxHeight / 1.8,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: const Color(0xFFc9c154),
-                                  width: 10,
-                                ),
+                          Container(
+                            width: constraints.maxWidth / 1.3,
+                            height: constraints.maxHeight / 1.8,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: const Color(0xFFc9c154),
+                                width: 10,
                               ),
-                              child: ListView.separated(
-                                itemCount: _a.amigos.length,
-                                separatorBuilder: (context, index) =>
-                                    const Divider(
-                                  color: Colors.grey,
-                                  thickness: 1.5,
-                                ),
-                                itemBuilder: (context, index) {
-                                  return ListTile(
-                                    title: Text(_a.amigos[index]),
-                                    onLongPress: () {
-                                      _datosAmigo = true;
+                            ),
+                            child: ListView.separated(
+                              padding: const EdgeInsets.only(top: 5, bottom: 5),
+                              itemCount: _a.amigos.length,
+                              separatorBuilder: (context, index) =>
+                                  const Divider(
+                                color: Colors.grey,
+                                thickness: 1.5,
+                              ),
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  leading: IconButton(
+                                    icon: const Icon(
+                                      Icons.person,
+                                      color: Colors.black,
+                                      size: 40,
+                                    ),
+                                    onPressed: () async {
                                       conseguirDatosAmigo(index);
-                                      setState(() {});
                                     },
-                                  );
-                                },
-                              ),
+                                  ),
+                                  title: Text(_a.amigos[index]),
+                                  trailing: IconButton(
+                                    icon: const Icon(
+                                      Icons.analytics,
+                                      color: Colors.black,
+                                      size: 40,
+                                    ),
+                                    onPressed: () async {
+                                      conseguirDatosAmigo(index);
+                                    },
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ],
@@ -178,6 +245,7 @@ class _AmigosState extends State<Amigos> {
                     "AÑADIR AMIGO",
                     onPressed: () {
                       _anadirAmigo = true;
+                      _friendSearchController.text = "";
                       setState(() {});
                     },
                   ),
@@ -200,7 +268,7 @@ class _AmigosState extends State<Amigos> {
                               padding: const EdgeInsets.only(top: 15),
                               child: Container(
                                 width: constraints.maxWidth / 1.55,
-                                height: constraints.maxHeight / 1.7,
+                                height: constraints.maxHeight / 1.8,
                                 decoration: BoxDecoration(
                                   color: const Color(0xFF164966),
                                   borderRadius: BorderRadius.circular(20),
@@ -219,7 +287,7 @@ class _AmigosState extends State<Amigos> {
                                         child: Boton1(
                                           "AÑADIR",
                                           onPressed: () {
-                                            anadirAmigo();
+                                            anadirAmigoUsuario();
                                           },
                                         ),
                                       ),
@@ -258,7 +326,7 @@ class _AmigosState extends State<Amigos> {
                                       child: Padding(
                                         padding: const EdgeInsets.only(top: 60),
                                         child: Container(
-                                          height: 60,
+                                          height: 50,
                                           width: 370,
                                           decoration: BoxDecoration(
                                             borderRadius:
@@ -290,6 +358,107 @@ class _AmigosState extends State<Amigos> {
                                     ),
                                   ],
                                 ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return Visibility(
+                    visible: _errorAnadirAmigo,
+                    child: Container(
+                      height: constraints.maxHeight,
+                      width: constraints.maxWidth,
+                      decoration: const BoxDecoration(color: Color(0x80444444)),
+                      margin: const EdgeInsets.only(top: 0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: constraints.maxWidth / 2,
+                              height: constraints.maxHeight / 2.5,
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Stack(
+                                children: [
+                                  Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 30),
+                                      child: SizedBox(
+                                        height: constraints.maxHeight / 4.5,
+                                        width: constraints.maxWidth / 2.3,
+                                        child: Text(
+                                          _sErrorAnadirAmigo,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                              color: Color(0xFFb13636),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              fontFamily: "Georgia"),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 20),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Stack(
+                                          children: <Widget>[
+                                            Positioned.fill(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                  color: Colors.black,
+                                                  border: Border.all(
+                                                      color: Colors.white,
+                                                      width: 2),
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              style: TextButton.styleFrom(
+                                                foregroundColor: Colors.white,
+                                                // padding: const EdgeInsets.all(16.0),
+                                                padding: const EdgeInsets.only(
+                                                    top: 4,
+                                                    bottom: 4,
+                                                    left: 15,
+                                                    right: 15),
+                                                textStyle: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
+                                                    fontFamily: "Georgia"),
+                                              ),
+                                              onPressed: () {
+                                                _errorAnadirAmigo = false;
+                                                setState(() {});
+                                              },
+                                              child: const Text("ACEPTAR"),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -440,17 +609,320 @@ class _AmigosState extends State<Amigos> {
                                         padding:
                                             const EdgeInsets.only(bottom: 5),
                                         child: Boton1(
-                                          "Eliminar de amigos",
+                                          "ELIMINAR DE AMIGOS",
                                           onPressed: () {
-                                            eliminarAmigo();
-                                            _datosAmigo = false;
-                                            setState(() {});
+                                            eliminarAmigoUsuario();
                                           },
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return Visibility(
+                    visible: _errorEliminarAmigo,
+                    child: Container(
+                      height: constraints.maxHeight,
+                      width: constraints.maxWidth,
+                      decoration: const BoxDecoration(color: Color(0x80444444)),
+                      margin: const EdgeInsets.only(top: 0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: constraints.maxWidth / 2,
+                              height: constraints.maxHeight / 2.5,
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Stack(
+                                children: [
+                                  Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 30),
+                                      child: SizedBox(
+                                        height: constraints.maxHeight / 4.5,
+                                        width: constraints.maxWidth / 2.3,
+                                        child: Text(
+                                          _sErrorEliminarAmigo,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                              color: Color(0xFFb13636),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              fontFamily: "Georgia"),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 20),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Stack(
+                                          children: <Widget>[
+                                            Positioned.fill(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                  color: Colors.black,
+                                                  border: Border.all(
+                                                      color: Colors.white,
+                                                      width: 2),
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              style: TextButton.styleFrom(
+                                                foregroundColor: Colors.white,
+                                                // padding: const EdgeInsets.all(16.0),
+                                                padding: const EdgeInsets.only(
+                                                    top: 4,
+                                                    bottom: 4,
+                                                    left: 15,
+                                                    right: 15),
+                                                textStyle: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
+                                                    fontFamily: "Georgia"),
+                                              ),
+                                              onPressed: () {
+                                                _errorEliminarAmigo = false;
+                                                setState(() {});
+                                              },
+                                              child: const Text("ACEPTAR"),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return Visibility(
+                    visible: _amigoAnadido,
+                    child: Container(
+                      height: constraints.maxHeight,
+                      width: constraints.maxWidth,
+                      decoration: const BoxDecoration(color: Color(0x80444444)),
+                      margin: const EdgeInsets.only(top: 0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: constraints.maxWidth / 2,
+                              height: constraints.maxHeight / 2.5,
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Stack(
+                                children: [
+                                  Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 30),
+                                      child: SizedBox(
+                                        height: constraints.maxHeight / 4.5,
+                                        width: constraints.maxWidth / 2.3,
+                                        child: Text(
+                                          "${_friendSearchController.text} ahora es tu amigo",
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                              color: Color(0xFF3dce00),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              fontFamily: "Georgia"),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 20),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Stack(
+                                          children: <Widget>[
+                                            Positioned.fill(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                  color: Colors.black,
+                                                  border: Border.all(
+                                                      color: Colors.white,
+                                                      width: 2),
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              style: TextButton.styleFrom(
+                                                foregroundColor: Colors.white,
+                                                // padding: const EdgeInsets.all(16.0),
+                                                padding: const EdgeInsets.only(
+                                                    top: 4,
+                                                    bottom: 4,
+                                                    left: 15,
+                                                    right: 15),
+                                                textStyle: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
+                                                    fontFamily: "Georgia"),
+                                              ),
+                                              onPressed: () {
+                                                _friendSearchController.text =
+                                                    "";
+                                                _amigoAnadido = false;
+                                                setState(() {});
+                                              },
+                                              child: const Text("ACEPTAR"),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return Visibility(
+                    visible: _amigoEliminado,
+                    child: Container(
+                      height: constraints.maxHeight,
+                      width: constraints.maxWidth,
+                      decoration: const BoxDecoration(color: Color(0x80444444)),
+                      margin: const EdgeInsets.only(top: 0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: constraints.maxWidth / 2,
+                              height: constraints.maxHeight / 2.5,
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Stack(
+                                children: [
+                                  Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 30),
+                                      child: SizedBox(
+                                        height: constraints.maxHeight / 4.5,
+                                        width: constraints.maxWidth / 2.3,
+                                        child: Text(
+                                          "${_dA.getField(DatosUsuarioFieldsCodes.usuario)} ya no es tu amigo",
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                              color: Color(0xFF3dce00),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              fontFamily: "Georgia"),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 20),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Stack(
+                                          children: <Widget>[
+                                            Positioned.fill(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                  color: Colors.black,
+                                                  border: Border.all(
+                                                      color: Colors.white,
+                                                      width: 2),
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              style: TextButton.styleFrom(
+                                                foregroundColor: Colors.white,
+                                                // padding: const EdgeInsets.all(16.0),
+                                                padding: const EdgeInsets.only(
+                                                    top: 4,
+                                                    bottom: 4,
+                                                    left: 15,
+                                                    right: 15),
+                                                textStyle: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
+                                                    fontFamily: "Georgia"),
+                                              ),
+                                              onPressed: () {
+                                                _amigoEliminado = false;
+                                                setState(() {});
+                                              },
+                                              child: const Text("ACEPTAR"),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
