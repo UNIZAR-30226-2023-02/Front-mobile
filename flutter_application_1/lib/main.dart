@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Api/api.dart';
+import 'package:flutter_application_1/Interfaz/Amigos/amigos.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/InicioSesion/iniciandoSesion.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/index.dart';
 import 'package:flutter_application_1/Interfaz/Juego/juego.dart';
@@ -20,7 +21,7 @@ import 'Data_types/sesion.dart';
 import 'package:flutter_application_1/Interfaz/Perfil/perfil.dart';
 
 void main() {
-  runApp(MaterialApp(home: Home()));
+  runApp(MaterialApp(home: Amigos(Sesion())));
 }
 
 /*void main() {

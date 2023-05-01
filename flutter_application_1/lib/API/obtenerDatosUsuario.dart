@@ -16,11 +16,10 @@ class DatosUsuarioResponse {
       F_key = 'fecha_nac',
       C_key = 'correo',
       T_key = 'telefono',
-      I_key = 'imagen',
       M_key = 'monedas',
       A_key = 'amigos';
   // ignore: non_constant_identifier_names
-  String username = "", fecha = "", correo = "", telefono = "", imagen = "";
+  String username = "", fecha = "", correo = "", telefono = "";
   int monedas = 0;
   List<String> amigos = <String>[];
   // ignore: non_constant_identifier_names
@@ -41,7 +40,6 @@ class DatosUsuarioResponse {
         fecha = responseJson[F_key];
         correo = responseJson[C_key];
         telefono = responseJson[T_key].toString();
-        imagen = responseJson[I_key];
         monedas = responseJson[M_key];
         List<dynamic> l = responseJson[A_key];
         amigos = l.map((item) => item as String).toList();

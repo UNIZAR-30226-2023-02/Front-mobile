@@ -200,6 +200,8 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
         // ignore: use_build_context_synchronously
         _formKey.currentState!.save();
         _cambioRealizado = true;
+        _cambioDatos = false;
+        setState(() {});
       } else {
         _errorCampos = true;
         if (r.error_correo != "") {
@@ -209,7 +211,6 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
         } else {
           _errorCambioDatos = r.error_telefono;
         }
-        print(_errorCambioDatos);
         setState(() {});
       }
     }
@@ -564,7 +565,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                 LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                     return Visibility(
-                      visible: _cambioRealizado,
+                      visible: _errorCampos,
                       child: Container(
                         height: constraints.maxHeight,
                         width: constraints.maxWidth,
@@ -666,7 +667,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                 LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                     return Visibility(
-                      visible: _errorCampos,
+                      visible: _cambioRealizado,
                       child: Container(
                         height: constraints.maxHeight,
                         width: constraints.maxWidth,
@@ -745,7 +746,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                                                       fontFamily: "Georgia"),
                                                 ),
                                                 onPressed: () {
-                                                  _errorCampos = false;
+                                                  _cambioRealizado = false;
                                                   setState(() {});
                                                 },
                                                 child: const Text("ACEPTAR"),
