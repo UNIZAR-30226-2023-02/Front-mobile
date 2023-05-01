@@ -7,8 +7,8 @@ import 'package:flutter_application_1/API/index.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
 import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
 
-import '../../../Data_types/sesion.dart';
-import '../Menu/home.dart';
+import '../../../../Data_types/sesion.dart';
+import '../home.dart';
 
 //ignore: must_be_immutable
 class Perfil extends StatefulWidget {
@@ -52,7 +52,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     if (_s.getField(SesionFieldsCodes.token) != "") {
-      conseguirDatosUsuario();
+      rellenarDatosUsuario();
     }
     _focusNode1.addListener(_handleFocus1Change);
     _focusNode2.addListener(_handleFocus2Change);
@@ -62,17 +62,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
     super.initState();
   }
 
-  void conseguirDatosUsuario() async {
-    Future<DatosUsuarioResponse> f = obtenerDatosUsuario(
-        DatosUsuarioPetition(_s.getField(SesionFieldsCodes.token)));
-    DatosUsuarioResponse r = await f;
-    if (r.OK) {
-      _dU = DatosUsuario(
-          usuario: r.username,
-          correoElectronico: r.correo,
-          telefonoMovil: r.telefono,
-          fechaNacimiento: r.fecha);
-    }
+  void rellenarDatosUsuario() async {
     _userController.text = _dU.getField(DatosUsuarioFieldsCodes.usuario);
     _mailController.text =
         _dU.getField(DatosUsuarioFieldsCodes.correoElectronico);

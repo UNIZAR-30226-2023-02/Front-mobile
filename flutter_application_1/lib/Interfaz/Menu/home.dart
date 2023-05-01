@@ -1,12 +1,15 @@
+import 'package:flutter_application_1/Data_types/amigosUsuario.dart';
 import 'package:flutter_application_1/Data_types/datosUsuario.dart';
 import 'package:flutter_application_1/Interfaz/Menu/tiendaFichas.dart';
 
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Interfaz/Perfil/perfil.dart';
+import 'package:flutter_application_1/Interfaz/Menu/Perfil/perfil.dart';
 import 'package:flutter_application_1/Data_types/sesion.dart';
 import 'package:flutter_application_1/API/index.dart';
+
+import 'Amigos/amigos.dart';
 
 //ignore: must_be_immutable
 class Menu extends StatelessWidget {
@@ -521,7 +524,40 @@ class PulsaMenu extends StatelessWidget {
   Sesion _s;
   String imagen = "";
   String tipoBoton = "";
+  dynamic datos;
   PulsaMenu(this._s, {required this.imagen, required this.tipoBoton});
+
+  void conseguirDatos() async {
+    if (tipoBoton == "Azul") {
+      Future<DatosUsuarioResponse> f = obtenerDatosUsuario(
+          DatosUsuarioPetition(_s.getField(SesionFieldsCodes.token)));
+      DatosUsuarioResponse r = await f;
+      if (r.OK) {
+        datos = DatosUsuario(
+            usuario: r.username,
+            correoElectronico: r.correo,
+            telefonoMovil: r.telefono,
+            fechaNacimiento: r.fecha);
+      }
+    } else if (tipoBoton == "Amarillo") {
+      //ESTADISTICAS
+    } else if (tipoBoton == "Verde") {
+      //TIENDA
+    } else if (tipoBoton == "Naranja") {
+      Future<DatosUsuarioResponse> f = obtenerDatosUsuario(
+          DatosUsuarioPetition(_s.getField(SesionFieldsCodes.token)));
+      DatosUsuarioResponse r = await f;
+      if (r.OK) {
+        datos = AmigosUsuario(r.amigos);
+      }
+    } else if (tipoBoton == "Rojo") {
+      //CONTACTO Y REDES
+    } else if (tipoBoton == "Rosa") {
+      //HISTORIAL
+    } else if (tipoBoton == "Blanco") {
+      //HISTORIAL
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -530,7 +566,8 @@ class PulsaMenu extends StatelessWidget {
       Future.delayed(Duration(milliseconds: 300), () {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => Perfil(_s, DatosUsuario())),
+            MaterialPageRoute(
+                builder: (context) => Perfil(_s, datos as DatosUsuario)),
             (Route<dynamic> route) => false);
       });
     } else if (tipoBoton == "Amarillo") {
@@ -542,7 +579,13 @@ class PulsaMenu extends StatelessWidget {
             context, MaterialPageRoute(builder: (context) => TiendaFichas()));
       });
     } else if (tipoBoton == "Naranja") {
-      //AMIGOS
+      Future.delayed(Duration(milliseconds: 300), () {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Amigos(_s, datos as AmigosUsuario)),
+            (Route<dynamic> route) => false);
+      });
     } else if (tipoBoton == "Rojo") {
       //CONTACTO Y REDES
     } else if (tipoBoton == "Rosa") {
