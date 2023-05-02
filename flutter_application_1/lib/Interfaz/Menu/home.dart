@@ -1,28 +1,31 @@
+
+import 'package:flutter_application_1/Data_types/amigosUsuario.dart';
+import 'package:flutter_application_1/Data_types/datosUsuario.dart';
 import 'package:flutter_application_1/Interfaz/Menu/tiendaFichas.dart';
-// import 'package:flutter_application_1/Interfaz/Menu/estadisticas.dart';
 
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Interfaz/Menu/Perfil/perfil.dart';
+import 'package:flutter_application_1/Data_types/sesion.dart';
+import 'package:flutter_application_1/API/index.dart';
 
-void main(){
-  debugDisableShadows = true;
-  runApp(Menu());
-} 
+import 'Amigos/amigos.dart';
 
+//ignore: must_be_immutable
 class Menu extends StatelessWidget {
-  const Menu({Key? key}) : super(key: key);
-
+  final Sesion _s;
+  const Menu(this._s, {Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: _Menu(),
-    );
+    return _Menu(_s);
   }
 }
 
-
+//ignore: must_be_immutable
 class _Menu extends StatelessWidget {
+  final Sesion _s;
+  const _Menu(this._s);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,13 +39,14 @@ class _Menu extends StatelessWidget {
                     image: AssetImage('assets/tapete.png'), fit: BoxFit.fill),
                 ),
               ),
-              Center(
-                child: Transform.translate(
-                  offset: Offset(7.5, 15), // ajusta los valores de desplazamiento
-                  child: Transform.scale(
-                    scale: 1.1,
-                    child: Image.asset('assets/menu_trivial.png'),
-                  ),
+            ),
+            Center(
+              child: Transform.translate(
+                offset: const Offset(
+                    7.5, 15), // ajusta los valores de desplazamiento
+                child: Transform.scale(
+                  scale: 1.1,
+                  child: Image.asset('assets/menu_trivial.png'),
                 ),
               ),
               Center(
@@ -103,67 +107,237 @@ class _Menu extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Transform.rotate(
-                    angle: pi,
-                    child: TriangleButton(
-                      color: Color.fromARGB(0, 33, 149, 243),
-                      //onPressed: () => showMessage(context, 'Azul'),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            transitionDuration: Duration(milliseconds: 100), // La duración de la transición
-                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(imagen: 'assets/menu_trivial_azul.png', tipoBoton: "Azul",),
-                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: child,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                    ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Transform.rotate(
+                        angle: -244 * pi / 180,
+                        child: TriangleButton(
+                          color: const Color.fromARGB(0, 233, 30, 148),
+                          //onPressed: () => showMessage(context, 'Rosa'),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                transitionDuration: const Duration(
+                                    milliseconds:
+                                        100), // La duración de la transición
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        PulsaMenu(
+                                  _s,
+                                  'assets/menu_trivial_rosa.png',
+                                  "Rosa",
+                                ),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Transform.rotate(
+                        angle: -296 * pi / 180,
+                        child: TriangleButton(
+                          color: const Color.fromARGB(0, 231, 40, 26),
+                          //onPressed: () => showMessage(context, 'Rojo'),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                transitionDuration: const Duration(
+                                    milliseconds:
+                                        100), // La duración de la transición
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        PulsaMenu(
+                                  _s,
+                                  'assets/menu_trivial_rojo.png',
+                                  "Rojo",
+                                ),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 0, width: 0),
-                  CircleButton(
-                    color: Color.fromARGB(0, 0, 0, 0),
-                    //onPressed: () => showMessage(context, 'Blanco'),
-                    onPressed: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            transitionDuration: Duration(milliseconds: 100), // La duración de la transición
-                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(imagen: 'assets/menu_trivial_blanco.png', tipoBoton: "Blanco",),
-                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: child,
-                              );
-                            },
-                          ),
-                        );
-                      },
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Transform.rotate(
+                        angle: pi,
+                        child: TriangleButton(
+                          color: const Color.fromARGB(0, 33, 149, 243),
+                          //onPressed: () => showMessage(context, 'Azul'),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                transitionDuration: const Duration(
+                                    milliseconds:
+                                        100), // La duración de la transición
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        PulsaMenu(
+                                  _s,
+                                  'assets/menu_trivial_azul.png',
+                                  "Azul",
+                                ),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 0, width: 0),
+                      CircleButton(
+                        color: const Color.fromARGB(0, 0, 0, 0),
+                        //onPressed: () => showMessage(context, 'Blanco'),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              transitionDuration: const Duration(
+                                  milliseconds:
+                                      100), // La duración de la transición
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      PulsaMenu(
+                                _s,
+                                'assets/menu_trivial_blanco.png',
+                                "Blanco",
+                              ),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 0),
+                      TriangleButton(
+                        color: const Color.fromARGB(0, 255, 153, 0),
+                        // onPressed: () => showMessage(context, 'Naranja'),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              transitionDuration: const Duration(
+                                  milliseconds:
+                                      100), // La duración de la transición
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      PulsaMenu(
+                                _s,
+                                'assets/menu_trivial_naranja.png',
+                                "Naranja",
+                              ),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 0),
+                    ],
                   ),
-                  SizedBox(height: 0),
-                  TriangleButton(
-                    color: Color.fromARGB(0, 255, 153, 0),
-                    // onPressed: () => showMessage(context, 'Naranja'),
-                    onPressed: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            transitionDuration: Duration(milliseconds: 100), // La duración de la transición
-                            pageBuilder: (context, animation, secondaryAnimation) => PulsaMenu(imagen: 'assets/menu_trivial_naranja.png', tipoBoton: "Naranja",),
-                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: child,
-                              );
-                            },
-                          ),
-                        );
-                      },
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const SizedBox(height: 0),
+                      Transform.rotate(
+                        angle: 244 * pi / 180,
+                        child: TriangleButtonAMARILLO(
+                          color: const Color.fromARGB(0, 255, 235, 59),
+                          // onPressed: () => showMessage(context, 'Amarillo'),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                transitionDuration: const Duration(
+                                    milliseconds:
+                                        100), // La duración de la transición
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        PulsaMenu(
+                                  _s,
+                                  'assets/menu_trivial_amarillo.png',
+                                  "Amarillo",
+                                ),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 0),
+                      Transform.rotate(
+                        angle: 296 * pi / 180,
+                        child: TriangleButtonVERDE(
+                          color: const Color.fromARGB(0, 76, 175, 79),
+                          // onPressed: () => showMessage(context, 'Verde'),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                transitionDuration: const Duration(
+                                    milliseconds:
+                                        100), // La duración de la transición
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        PulsaMenu(
+                                  _s,
+                                  'assets/menu_trivial_verde.png',
+                                  "Verde",
+                                ),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 0),
                 ],
@@ -227,13 +401,6 @@ class _Menu extends StatelessWidget {
       ),
     );
   }
-
-  void showMessage(BuildContext context, String message) {
-    final snackBar = SnackBar(
-        content: Text('Has pulsado el triángulo $message'));
-    //ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    print(message);
-  }
 }
 
 
@@ -249,7 +416,7 @@ class CircleButton extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: CustomPaint(
-        size: Size(130, 130),
+        size: const Size(130, 130),
         painter: CirclePainter(color),
       ),
     );
@@ -290,7 +457,7 @@ class TriangleButtonAMARILLO extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: CustomPaint(
-        size: Size(70, 70),
+        size: const Size(70, 70),
         painter: TrianglePainterAMARILLO(color),
       ),
     );
@@ -349,7 +516,7 @@ class TriangleButtonVERDE extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: CustomPaint(
-        size: Size(70, 70),
+        size: const Size(70, 70),
         painter: TrianglePainterVERDE(color),
       ),
     );
@@ -407,7 +574,7 @@ class TriangleButton extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: CustomPaint(
-        size: Size(70, 70),
+        size: const Size(70, 70),
         painter: TrianglePainter(color),
       ),
     );
@@ -457,47 +624,84 @@ class TrianglePainter extends CustomPainter {
 
 //ES PARA QUE CAMBIE EL BOTON DE COLOR PERO PARA ESO HAY QUE CAMBIAR DE PANTALLA 
 //Y COMO SALE UNA ANIMACION POR DEFECTO PUES YA SE VE QEU CAMBIAS
+//ignore: must_be_immutable
 class PulsaMenu extends StatelessWidget {
-  String imagen = "";
-  String tipoBoton = "";
-  PulsaMenu({required this.imagen, required this.tipoBoton});
+  final Sesion _s;
+  String imagen;
+  String tipoBoton;
+  dynamic datos;
+  PulsaMenu(this._s, this.imagen, this.tipoBoton, {Key? key}) : super(key: key);
+
+  void conseguirDatos(BuildContext context) async {
+    if (tipoBoton == "Azul") {
+      Future<DatosUsuarioResponse> f = obtenerDatosUsuario(
+          DatosUsuarioPetition(_s.getField(SesionFieldsCodes.token)));
+      DatosUsuarioResponse r = await f;
+      if (r.OK) {
+        datos = DatosUsuario(
+            usuario: r.username,
+            correoElectronico: r.correo,
+            telefonoMovil: r.telefono,
+            fechaNacimiento: r.fecha);
+        // ignore: use_build_context_synchronously
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Perfil(_s, datos as DatosUsuario)),
+            (Route<dynamic> route) => false);
+      }
+    } else if (tipoBoton == "Amarillo") {
+      //ESTADISTICAS
+    } else if (tipoBoton == "Verde") {
+      //TIENDA
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => TiendaFichas(_s)));
+    } else if (tipoBoton == "Naranja") {
+      Future<DatosUsuarioResponse> f = obtenerDatosUsuario(
+          DatosUsuarioPetition(_s.getField(SesionFieldsCodes.token)));
+      DatosUsuarioResponse r = await f;
+      if (r.OK) {
+        datos = AmigosUsuario(r.amigos);
+        // ignore: use_build_context_synchronously
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Amigos(_s, datos as AmigosUsuario)),
+            (Route<dynamic> route) => false);
+      }
+    } else if (tipoBoton == "Rojo") {
+      //CONTACTO Y REDES
+    } else if (tipoBoton == "Rosa") {
+      //HISTORIAL
+    } else if (tipoBoton == "Blanco") {
+      //HISTORIAL
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (tipoBoton == "Azul"){ //PERFIL
-
-    }else if (tipoBoton == "Amarillo"){ //ESTADISTICAS
-      // Future.delayed(Duration(milliseconds: 300), () {
-      //   Navigator.push(context, MaterialPageRoute(builder: (context) => Estadisticas()));
-      // });
-    }else if (tipoBoton == "Verde"){  //TIENDA
-      Future.delayed(Duration(milliseconds: 300), () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => TiendaFichas()));
-      });
-    }else if (tipoBoton == "Naranja"){  //AMIGOS
-      
-    }else if (tipoBoton == "Rojo"){ //CONTACTO Y REDES
-      
-    }else if (tipoBoton == "Rosa"){ //HISTORIAL
-      
-    }else if (tipoBoton == "Blanco"){ //HISTORIAL
-      
-    }
+    Future.delayed(const Duration(milliseconds: 100), () {
+      conseguirDatos(context);
+    });
 
     return MaterialApp(
-      home: Scaffold(
-        body: Stack(
+      home: WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Stack(
           children: [
             Container(
               //alignment: Alignment.center,
-              decoration: BoxDecoration(
-              image: const DecorationImage(
-                  image: AssetImage('assets/tapete.png'), fit: BoxFit.fill),
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage('assets/tapete.png'), fit: BoxFit.fill),
               ),
             ),
             Center(
               child: Transform.translate(
-                offset: Offset(7.5, 15), // ajusta los valores de desplazamiento
+                offset: const Offset(
+                    7.5, 15), // ajusta los valores de desplazamiento
                 child: Transform.scale(
                   scale: 1.1,
                   child: Image.asset(imagen),

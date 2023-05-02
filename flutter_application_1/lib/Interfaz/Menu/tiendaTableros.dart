@@ -1,21 +1,24 @@
+
+import 'package:flutter_application_1/Data_types/sesion.dart';
 import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 import 'package:flutter_application_1/Interfaz/Menu/tiendaFichas.dart';
 
 import 'package:flutter/material.dart';
 
-void main() => runApp(TiendaTableros());
-
 class TiendaTableros extends StatelessWidget {
+  final Sesion _s;
+  const TiendaTableros(this._s, {Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
-      home: _TiendaTableros(),
+      home: _TiendaTableros(_s),
     );
   }
 }
 
 class _TiendaTableros extends StatelessWidget {
+  final Sesion _s;
+  const _TiendaTableros(this._s);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -263,10 +266,10 @@ class _TiendaTableros extends StatelessWidget {
                     child: BotonHome(
                       "MENÚ",
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const Menu()),
-                        );
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => Menu(_s)),
+                            (Route<dynamic> route) => false);
                       },
                     ),
                   ),
@@ -275,10 +278,10 @@ class _TiendaTableros extends StatelessWidget {
                     child: BotonHome(
                       "FICHAS",
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => TiendaFichas()),
-                        );
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => TiendaFichas(_s)),
+                            (Route<dynamic> route) => false);
                       },
                     ),
                   ),

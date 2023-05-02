@@ -6,7 +6,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter_application_1/Api/api.dart';
+import 'package:flutter_application_1/Api/index.dart';
 import 'package:flutter_application_1/Data_types/sesion.dart';
 
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
@@ -15,23 +15,26 @@ import 'package:flutter_application_1/Data_types/registro.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/index.dart';
 import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 
+//ignore: must_be_immutable
 class IniciandoSesion extends StatefulWidget {
   Sesion _s;
-  IniciandoSesion(this._s, {Key? key}) : super(key: key);
+  String _contrasena;
+  IniciandoSesion(this._s,this._contrasena, {Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api, no_logic_in_create_state
-  _IniciandoSesion createState() => _IniciandoSesion(_s);
+  _IniciandoSesion createState() => _IniciandoSesion(_s,_contrasena);
 }
 
 class _IniciandoSesion extends State<IniciandoSesion> {
   Sesion _s;
+  String _contrasena;
   late Timer _timer;
 
   int contador = 0;
   bool registrado = false;
 
-  _IniciandoSesion(this._s);
+  _IniciandoSesion(this._s,this._contrasena);
 
   @override
   void initState() {
@@ -43,7 +46,7 @@ class _IniciandoSesion extends State<IniciandoSesion> {
     _timer = Timer(const Duration(seconds: 6), () {
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => Menu()),
+          MaterialPageRoute(builder: (context) => Menu(_s)),
           (Route<dynamic> route) => false);
     });
   }
@@ -131,24 +134,27 @@ class _IniciandoSesion extends State<IniciandoSesion> {
   }
 }
 
+//ignore: must_be_immutable
 class IniciandoSesionRegistro extends StatefulWidget {
   Sesion _s;
-  IniciandoSesionRegistro(this._s, {Key? key}) : super(key: key);
+  String _contrasena;
+  IniciandoSesionRegistro(this._s,this._contrasena, {Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api, no_logic_in_create_state
   _IniciandoSesionRegistroState createState() =>
-      _IniciandoSesionRegistroState(_s);
+      _IniciandoSesionRegistroState(_s,_contrasena);
 }
 
 class _IniciandoSesionRegistroState extends State<IniciandoSesionRegistro> {
   Sesion _s;
+  String _contrasena;
   late Timer _timer1, _timer2;
 
   int contador = 0;
   bool iniciado = false;
 
-  _IniciandoSesionRegistroState(this._s);
+  _IniciandoSesionRegistroState(this._s,this._contrasena);
 
   @override
   void initState() {
@@ -160,8 +166,7 @@ class _IniciandoSesionRegistroState extends State<IniciandoSesionRegistro> {
   void _comprobarIniciarSesionUsuario() async {
     if (contador < 3) {
       Future<LoginUserResponse> f = iniciarSesionUsuario(LoginUserPetition(
-          _s.getField(SesionFieldsCodes.usuario),
-          _s.getField(SesionFieldsCodes.contrasena)));
+          _s.getField(SesionFieldsCodes.usuario),_contrasena));
       LoginUserResponse re = await f;
 
       if (re.OK) {
@@ -177,7 +182,7 @@ class _IniciandoSesionRegistroState extends State<IniciandoSesionRegistro> {
     if (iniciado) {
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => Menu()),
+          MaterialPageRoute(builder: (context) => Menu(_s)),
           (Route<dynamic> route) => false);
     } else if (contador < 3) {
       contador++;
@@ -185,7 +190,7 @@ class _IniciandoSesionRegistroState extends State<IniciandoSesionRegistro> {
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ErrorInicioSesion(_s)),
+        MaterialPageRoute(builder: (context) => ErrorInicioSesion(_s,_contrasena)),
       );
     }
   }

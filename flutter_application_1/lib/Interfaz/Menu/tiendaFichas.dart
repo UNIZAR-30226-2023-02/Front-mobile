@@ -3,23 +3,26 @@ import 'package:flutter_application_1/Interfaz/Menu/tiendaTableros.dart';
 
 import 'package:flutter/material.dart';
 
-void main() => runApp(TiendaFichas());
+
+import '../../Data_types/sesion.dart';
 
 class TiendaFichas extends StatelessWidget {
+  final Sesion _s;
+  const TiendaFichas(this._s);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
-      home: _TiendaFichas(),
+      home: _TiendaFichas(_s),
     );
   }
 }
 
 class _TiendaFichas extends StatelessWidget {
+  final Sesion _s;
+  const _TiendaFichas(this._s);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -47,7 +50,6 @@ class _TiendaFichas extends StatelessWidget {
                   ),
                 ),
               ),
-              
               Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -59,7 +61,6 @@ class _TiendaFichas extends StatelessWidget {
                 ),
                 margin: EdgeInsets.symmetric(horizontal: 20.0),
               ),
-
               Container(
                 alignment: Alignment.center,
                 margin: const EdgeInsets.only(top: 0, bottom: 0),
@@ -74,9 +75,8 @@ class _TiendaFichas extends StatelessWidget {
                   ),
                 ),
               ),
-
               Container(
-                height: 155,  //120 sin poner el precio
+                height: 155, //120 sin poner el precio
                 margin: EdgeInsets.symmetric(horizontal: 35),
                 decoration: BoxDecoration(
                   color: Colors.grey[800],
@@ -90,12 +90,11 @@ class _TiendaFichas extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   child: Center(
                     child: Container(
-                      
                       child: Row(
                         children: <Widget>[
                           //TODOS LOS OBJETOS DE LA TIENDA
                           Column(
-                            children: [ 
+                            children: [
                               ObjetcButton(
                                 //color: Color.fromARGB(255, 76, 175, 79),
                                 onPressed: () {
@@ -121,7 +120,7 @@ class _TiendaFichas extends StatelessWidget {
                           ),
 
                           Column(
-                            children: [ 
+                            children: [
                               ObjetcButton(
                                 //color: Color.fromARGB(255, 76, 175, 79),
                                 onPressed: () {
@@ -147,7 +146,7 @@ class _TiendaFichas extends StatelessWidget {
                           ),
 
                           Column(
-                            children: [ 
+                            children: [
                               ObjetcButton(
                                 //color: Color.fromARGB(255, 76, 175, 79),
                                 onPressed: () {
@@ -173,7 +172,7 @@ class _TiendaFichas extends StatelessWidget {
                           ),
 
                           Column(
-                            children: [ 
+                            children: [
                               ObjetcButton(
                                 //color: Color.fromARGB(255, 76, 175, 79),
                                 onPressed: () {
@@ -225,7 +224,7 @@ class _TiendaFichas extends StatelessWidget {
                           ),
 
                           Column(
-                            children: [ 
+                            children: [
                               ObjetcButton(
                                 //color: Color.fromARGB(255, 76, 175, 79),
                                 onPressed: () {
@@ -251,7 +250,7 @@ class _TiendaFichas extends StatelessWidget {
                           ),
 
                           Column(
-                            children: [ 
+                            children: [
                               ObjetcButton(
                                 //color: Color.fromARGB(255, 76, 175, 79),
                                 onPressed: () {
@@ -277,7 +276,7 @@ class _TiendaFichas extends StatelessWidget {
                           ),
 
                           Column(
-                            children: [ 
+                            children: [
                               ObjetcButton(
                                 //color: Color.fromARGB(255, 76, 175, 79),
                                 onPressed: () {
@@ -303,7 +302,7 @@ class _TiendaFichas extends StatelessWidget {
                           ),
 
                           Column(
-                            children: [ 
+                            children: [
                               ObjetcButton(
                                 //color: Color.fromARGB(255, 76, 175, 79),
                                 onPressed: () {
@@ -327,12 +326,11 @@ class _TiendaFichas extends StatelessWidget {
                               ),
                             ],
                           ),
-
                         ],
                       ),
                     ),
                   ),
-                ), 
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -342,10 +340,10 @@ class _TiendaFichas extends StatelessWidget {
                     child: BotonHome(
                       "MENÚ",
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const Menu()),
-                        );
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => Menu(_s)),
+                            (Route<dynamic> route) => false);
                       },
                     ),
                   ),
@@ -354,10 +352,11 @@ class _TiendaFichas extends StatelessWidget {
                     child: BotonHome(
                       "TABLEROS",
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => TiendaTableros()),
-                        );
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => TiendaTableros(_s)),
+                            (Route<dynamic> route) => false);
+
                       },
                     ),
                   ),
@@ -371,14 +370,14 @@ class _TiendaFichas extends StatelessWidget {
   }
 }
 
-
-
 class ObjetcButton extends StatelessWidget {
   final Color color = const Color.fromARGB(0, 66, 66, 66);
   final VoidCallback onPressed;
   final String pathImagen;
 
-  const ObjetcButton({Key? key, required this.onPressed, required this.pathImagen}) : super(key: key);
+  const ObjetcButton(
+      {Key? key, required this.onPressed, required this.pathImagen})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -408,7 +407,6 @@ class ObjetcButton extends StatelessWidget {
     );
   }
 }
-
 
 class BotonHome extends StatelessWidget {
   final String textContrasenya;
@@ -455,4 +453,3 @@ class BotonHome extends StatelessWidget {
       ),
     );
   }
-}
