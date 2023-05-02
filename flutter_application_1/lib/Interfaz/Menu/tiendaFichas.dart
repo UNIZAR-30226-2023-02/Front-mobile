@@ -3,6 +3,7 @@ import 'package:flutter_application_1/Interfaz/Menu/tiendaTableros.dart';
 
 import 'package:flutter/material.dart';
 
+
 import '../../Data_types/sesion.dart';
 
 class TiendaFichas extends StatelessWidget {
@@ -197,7 +198,7 @@ class _TiendaFichas extends StatelessWidget {
                           ),
 
                           Column(
-                            children: [
+                            children: [ 
                               ObjetcButton(
                                 //color: Color.fromARGB(255, 76, 175, 79),
                                 onPressed: () {
@@ -355,7 +356,7 @@ class _TiendaFichas extends StatelessWidget {
                             context,
                             MaterialPageRoute(builder: (context) => TiendaTableros(_s)),
                             (Route<dynamic> route) => false);
-                      
+
                       },
                     ),
                   ),
@@ -452,4 +453,3 @@ class BotonHome extends StatelessWidget {
       ),
     );
   }
-}

@@ -1,3 +1,4 @@
+
 import 'package:flutter_application_1/Data_types/sesion.dart';
 import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 import 'package:flutter_application_1/Interfaz/Menu/tiendaFichas.dart';
@@ -10,7 +11,6 @@ class TiendaTableros extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       home: _TiendaTableros(_s),
     );
   }
