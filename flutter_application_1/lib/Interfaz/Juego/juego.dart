@@ -1315,6 +1315,60 @@ class __JuegoState extends State<_Juego> {
                     ),
                   ),
 
+                  //TrianguloRojo
+                  Transform.rotate(
+                    angle: 90 * pi / 180,
+                    child: Transform.translate(
+                      offset: const Offset(20, 137),
+                      child: TriangleWidget(color: Rojo),
+                    ),
+                  ),
+
+                  //TrianguloAzul
+                  Transform.rotate(
+                    angle: 152 * pi / 180,
+                    child: Transform.translate(
+                      offset: const Offset(-5, 132),
+                      child: TriangleWidget(color: Azul),
+                    ),
+                  ),
+
+                  //TrianguloNaranja
+                  Transform.rotate(
+                    angle: 207 * pi / 180,
+                    child: Transform.translate(
+                      offset: const Offset(-37, 150),
+                      child: TriangleWidget(color: Naranja),
+                    ),
+                  ),
+
+                  //TrianguloAmarillo
+                  Transform.rotate(
+                    angle: 270 * pi / 180,
+                    child: Transform.translate(
+                      offset: const Offset(-22, 177),
+                      child: TriangleWidget(color: Amarillo),
+                    ),
+                  ),
+
+                  //TrianguloRosa
+                  Transform.rotate(
+                    angle: 332 * pi / 180,
+                    child: Transform.translate(
+                      offset: const Offset(10, 185),
+                      child: TriangleWidget(color: Rosa),
+                    ),
+                  ),
+
+                  //TrianguloVerde
+                  Transform.rotate(
+                    angle: -330 * pi / 180,
+                    child: Transform.translate(
+                      offset: const Offset(33, 170),
+                      child: TriangleWidget(color: Verde),
+                    ),
+                  ),
+
                   //ImagenDado
                   Transform.translate(  
                     offset: const Offset(190, -120),
@@ -1336,15 +1390,15 @@ class __JuegoState extends State<_Juego> {
                   Padding(
                     padding: EdgeInsets.only(top: 190, left: 0), // ajusta los valores según tus necesidades
                     child: ElevatedButton(
-                    onPressed: _resetTurno,
-                    child: Text('Reiniciar turno'),
+                      onPressed: _resetTurno,
+                      child: Text('Reiniciar turno'),
+                    ),
                   ),
-                  ),
-                  
+
+                                    
                    
-                   
-                    ],
-                  ),
+                ],
+              ),
 
             ),
           ],
@@ -1651,6 +1705,50 @@ class BotonDado extends StatelessWidget {
           child: Text(textContrasenya),
           ),
         ],
+      ),
+    );
+  }
+}
+
+
+class TrianglePainter extends CustomPainter {
+  final Color color;
+
+  TrianglePainter({this.color = Colors.black});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint()
+      ..color = color
+      ..strokeWidth = 2
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    path.moveTo(0, size.height);
+    path.lineTo(size.width / 2, 0);
+    path.lineTo(size.width, size.height);
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
+class TriangleWidget extends StatelessWidget {
+  final Color color;
+
+  TriangleWidget({this.color = Colors.black});
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: CustomPaint(
+        painter: TrianglePainter(color: color),
+        size: Size(30, 30),
       ),
     );
   }
