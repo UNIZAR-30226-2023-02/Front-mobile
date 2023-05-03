@@ -1,8 +1,6 @@
 
 import 'package:flutter_application_1/Data_types/sesion.dart';
-import 'package:flutter_application_1/Interfaz/Menu/home.dart';
-import 'package:flutter_application_1/Interfaz/Menu/tiendaFichas.dart';
-
+import 'package:flutter_application_1/Interfaz/Menu/index.dart';
 import 'package:flutter/material.dart';
 
 class TiendaTableros extends StatelessWidget {
@@ -326,54 +324,6 @@ class ObjetcButton extends StatelessWidget {
               ),
             ),
             margin: EdgeInsets.symmetric(horizontal: 8),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-class BotonHome extends StatelessWidget {
-  final String textContrasenya;
-  final VoidCallback onPressed;
-  const BotonHome(String t, {Key? key, required this.onPressed})
-      : textContrasenya = t,
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // ignore: dead_code
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: <Color>[Color(0xFFdee8eb), Color(0xFFb0c7d0)],
-                  stops: [0.4, 1.0],
-                ),
-              ),
-            ),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF004461),
-              // padding: const EdgeInsets.all(16.0),
-              padding:
-                  const EdgeInsets.only(top: 4, bottom: 4, left: 30, right: 30),
-              textStyle: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  fontFamily: "Georgia"),
-            ),
-            onPressed: onPressed,
-            child: Text(textContrasenya),
           ),
         ],
       ),

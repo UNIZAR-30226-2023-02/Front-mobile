@@ -6,7 +6,6 @@ import 'package:flutter_application_1/Data_types/amigosUsuario.dart';
 import 'package:flutter_application_1/Data_types/datosUsuario.dart';
 import 'package:flutter_application_1/API/index.dart';
 import 'package:flutter_application_1/Interfaz/Menu/Estilo/index.dart';
-import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
 
 import '../../../../Data_types/sesion.dart';
 import '../home.dart';
@@ -227,7 +226,7 @@ class _AmigosState extends State<Amigos> {
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 30, left: 150),
                   child: Boton1(
-                    "VOLVER",
+                    "MENU",
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
                           context,

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Data_types/datosUsuario.dart';
 import 'package:flutter_application_1/API/index.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
-import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
 
 import '../../../../Data_types/sesion.dart';
 import '../home.dart';
@@ -486,7 +485,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Boton1(
-                            "VOLVER",
+                            "MENU",
                             onPressed: () {
                               Navigator.pushAndRemoveUntil(
                                   context,
