@@ -78,6 +78,7 @@ Future<LoginUserResponse> iniciarSesionUsuario(LoginUserPetition p) async {
   return r;
 }
 
+
 //REGISTRO
 
 class RegistroUserPetition {
