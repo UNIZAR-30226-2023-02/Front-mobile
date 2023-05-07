@@ -5,3 +5,4 @@ export 'obtenerDatosAmigos.dart';
 export 'anadirAmigo.dart';
 export 'eliminarAmigo.dart';
 export 'iniciarSesionUsuario.dart';
+export 'crearSalaPartida.dart';
