@@ -1,10 +1,7 @@
 import 'dart:math';
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-
-import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 
 class Juego extends StatelessWidget {
   const Juego({Key? key}) : super(key: key);
@@ -1389,23 +1386,6 @@ class __JuegoState extends State<_Juego> {
                       turno: turno,
                     ),
                   ),
-                  //BotonSalir
-                  Transform.translate(
-                    offset: const Offset(-240, 0),
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 180, left: 80), // ajusta los valores según tus necesidades
-                      child: BotonHome(
-                        "Salir",
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const Menu()),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-
                   //BOTON TEMPORAL REINICIO TURNO
                   Padding(
                     padding: EdgeInsets.only(top: 190, left: 0), // ajusta los valores según tus necesidades
@@ -1420,37 +1400,6 @@ class __JuegoState extends State<_Juego> {
                 ],
               ),
 
-            ),
-            Center(
-              child: Container(
-                width: 400,
-                height: 250,
-                decoration: BoxDecoration(
-                  color: Naranja,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        width: 4,
-                        color: Naranja,
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '$_countdownTime',
-                        style: TextStyle(fontSize: 48),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             ),
           ],
         ),
@@ -1800,53 +1749,6 @@ class TriangleWidget extends StatelessWidget {
       child: CustomPaint(
         painter: TrianglePainter(color: color),
         size: Size(30, 30),
-      ),
-    );
-  }
-}
-
-class BotonHome extends StatelessWidget {
-  final String textContrasenya;
-  final VoidCallback onPressed;
-  const BotonHome(String t, {Key? key, required this.onPressed})
-      : textContrasenya = t,
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // ignore: dead_code
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: <Color>[Color(0xFFdee8eb), Color(0xFFb0c7d0)],
-                  stops: [0.4, 1.0],
-                ),
-              ),
-            ),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF004461),
-              // padding: const EdgeInsets.all(16.0),
-              padding:
-                  const EdgeInsets.only(top: 4, bottom: 4, left: 10, right: 10),
-              textStyle: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  fontFamily: "Georgia"),
-            ),
-            onPressed: onPressed,
-            child: Text(textContrasenya),
-          ),
-        ],
       ),
     );
   }
