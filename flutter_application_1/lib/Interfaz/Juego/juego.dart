@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 
+import '../../Data_types/sesion.dart';
+
 class Juego extends StatelessWidget {
   const Juego({Key? key}) : super(key: key);
 
@@ -56,6 +58,7 @@ class __JuegoState extends State<_Juego> {
       });
     });
   }
+
   @override
   void dispose() {
     super.dispose();
@@ -97,12 +100,14 @@ class __JuegoState extends State<_Juego> {
         child: Stack(
           children: [
             Positioned(
-              top: screenSize.height / 2 - 50, // ajustar la posición vertical del hexágono
-              left: screenSize.width / 2 - 50, // ajustar la posición horizontal del hexágono
+              top: screenSize.height / 2 -
+                  50, // ajustar la posición vertical del hexágono
+              left: screenSize.width / 2 -
+                  50, // ajustar la posición horizontal del hexágono
               child: Stack(
                 children: [
-                  
-                  Transform.translate(  //Contador
+                  Transform.translate(
+                    //Contador
                     offset: const Offset(-150, -128),
                     child: Text(
                       '$_countdownTime',
@@ -110,21 +115,22 @@ class __JuegoState extends State<_Juego> {
                     ),
                   ),
 
-                  Transform.translate(  //Texto J1
+                  Transform.translate(
+                    //Texto J1
                     offset: const Offset(-262, -128),
                     child: const Text(
                       "Jugador 1",
                       style: TextStyle(
-                        fontFamily: "Baskerville",
-                        fontSize: 12.0,
-                        //color: Color(0xFFc9c154),
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.none
-                      ),
+                          fontFamily: "Baskerville",
+                          fontSize: 12.0,
+                          //color: Color(0xFFc9c154),
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none),
                     ),
                   ),
-                  Transform.translate(  //Imagen J1
+                  Transform.translate(
+                    //Imagen J1
                     offset: const Offset(-265, -110),
                     child: Container(
                       width: 70,
@@ -137,7 +143,8 @@ class __JuegoState extends State<_Juego> {
                       ),
                     ),
                   ),
-                  Transform.translate(  //Putos J1
+                  Transform.translate(
+                    //Putos J1
                     offset: const Offset(-205, -60),
                     child: Container(
                       width: 40,
@@ -151,21 +158,22 @@ class __JuegoState extends State<_Juego> {
                     ),
                   ),
 
-                  Transform.translate(  //Texto J2
+                  Transform.translate(
+                    //Texto J2
                     offset: const Offset(-262, -8),
                     child: const Text(
                       "Jugador 2",
                       style: TextStyle(
-                        fontFamily: "Baskerville",
-                        fontSize: 12.0,
-                        //color: Color(0xFFc9c154),
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.none
-                      ),
+                          fontFamily: "Baskerville",
+                          fontSize: 12.0,
+                          //color: Color(0xFFc9c154),
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none),
                     ),
                   ),
-                  Transform.translate(  //Imagen J2
+                  Transform.translate(
+                    //Imagen J2
                     offset: const Offset(-265, 10),
                     child: Container(
                       width: 70,
@@ -178,7 +186,8 @@ class __JuegoState extends State<_Juego> {
                       ),
                     ),
                   ),
-                  Transform.translate(  //Putos J2
+                  Transform.translate(
+                    //Putos J2
                     offset: const Offset(-205, 60),
                     child: Container(
                       width: 40,
@@ -192,21 +201,22 @@ class __JuegoState extends State<_Juego> {
                     ),
                   ),
 
-                  Transform.translate(  //Texto J3
+                  Transform.translate(
+                    //Texto J3
                     offset: const Offset(-262, 112),
                     child: const Text(
                       "Jugador 3",
                       style: TextStyle(
-                        fontFamily: "Baskerville",
-                        fontSize: 12.0,
-                        //color: Color(0xFFc9c154),
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.none
-                      ),
+                          fontFamily: "Baskerville",
+                          fontSize: 12.0,
+                          //color: Color(0xFFc9c154),
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none),
                     ),
                   ),
-                  Transform.translate(  //Imagen J3
+                  Transform.translate(
+                    //Imagen J3
                     offset: const Offset(-265, 130),
                     child: Container(
                       width: 70,
@@ -219,7 +229,8 @@ class __JuegoState extends State<_Juego> {
                       ),
                     ),
                   ),
-                  Transform.translate(  //Putos J3
+                  Transform.translate(
+                    //Putos J3
                     offset: const Offset(-205, 180),
                     child: Container(
                       width: 40,
@@ -233,21 +244,22 @@ class __JuegoState extends State<_Juego> {
                     ),
                   ),
 
-                  Transform.translate(  //Texto J4
+                  Transform.translate(
+                    //Texto J4
                     offset: const Offset(293, -128),
                     child: const Text(
                       "Jugador 4",
                       style: TextStyle(
-                        fontFamily: "Baskerville",
-                        fontSize: 12.0,
-                        //color: Color(0xFFc9c154),
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.none
-                      ),
+                          fontFamily: "Baskerville",
+                          fontSize: 12.0,
+                          //color: Color(0xFFc9c154),
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none),
                     ),
                   ),
-                  Transform.translate(  //Imagen J4
+                  Transform.translate(
+                    //Imagen J4
                     offset: const Offset(290, -110),
                     child: Container(
                       width: 70,
@@ -260,7 +272,8 @@ class __JuegoState extends State<_Juego> {
                       ),
                     ),
                   ),
-                  Transform.translate(  //Putos J4
+                  Transform.translate(
+                    //Putos J4
                     offset: const Offset(260, -60),
                     child: Container(
                       width: 40,
@@ -274,21 +287,22 @@ class __JuegoState extends State<_Juego> {
                     ),
                   ),
 
-                  Transform.translate(  //Texto J5
+                  Transform.translate(
+                    //Texto J5
                     offset: const Offset(293, -8),
                     child: const Text(
                       "Jugador 5",
                       style: TextStyle(
-                        fontFamily: "Baskerville",
-                        fontSize: 12.0,
-                        //color: Color(0xFFc9c154),
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.none
-                      ),
+                          fontFamily: "Baskerville",
+                          fontSize: 12.0,
+                          //color: Color(0xFFc9c154),
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none),
                     ),
                   ),
-                  Transform.translate(  //Imagen J5
+                  Transform.translate(
+                    //Imagen J5
                     offset: const Offset(290, 10),
                     child: Container(
                       width: 70,
@@ -301,7 +315,8 @@ class __JuegoState extends State<_Juego> {
                       ),
                     ),
                   ),
-                  Transform.translate(  //Putos J5
+                  Transform.translate(
+                    //Putos J5
                     offset: const Offset(260, 60),
                     child: Container(
                       width: 40,
@@ -315,21 +330,22 @@ class __JuegoState extends State<_Juego> {
                     ),
                   ),
 
-                  Transform.translate(  //Texto J6
+                  Transform.translate(
+                    //Texto J6
                     offset: const Offset(293, 112),
                     child: const Text(
                       "Jugador 6",
                       style: TextStyle(
-                        fontFamily: "Baskerville",
-                        fontSize: 12.0,
-                        //color: Color(0xFFc9c154),
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.none
-                      ),
+                          fontFamily: "Baskerville",
+                          fontSize: 12.0,
+                          //color: Color(0xFFc9c154),
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none),
                     ),
                   ),
-                  Transform.translate(  //Imagen J6
+                  Transform.translate(
+                    //Imagen J6
                     offset: const Offset(290, 130),
                     child: Container(
                       width: 70,
@@ -342,7 +358,8 @@ class __JuegoState extends State<_Juego> {
                       ),
                     ),
                   ),
-                  Transform.translate(  //Putos J6
+                  Transform.translate(
+                    //Putos J6
                     offset: const Offset(260, 180),
                     child: Container(
                       width: 40,
@@ -960,7 +977,6 @@ class __JuegoState extends State<_Juego> {
                     ),
                   ),
 
-
                   //C43
                   Transform.rotate(
                     angle: -329 * pi / 180,
@@ -1039,7 +1055,6 @@ class __JuegoState extends State<_Juego> {
                       ),
                     ),
                   ),
-                  
 
                   //C30
                   Transform.rotate(
@@ -1105,7 +1120,7 @@ class __JuegoState extends State<_Juego> {
                         },
                       ),
                     ),
-                  ),          
+                  ),
 
                   //C36
                   Transform.rotate(
@@ -1373,7 +1388,7 @@ class __JuegoState extends State<_Juego> {
                   ),
 
                   //ImagenDado
-                  Transform.translate(  
+                  Transform.translate(
                     offset: const Offset(190, -120),
                     child: Image.asset(
                       'assets/cara$_diceNumber.png',
@@ -1382,7 +1397,9 @@ class __JuegoState extends State<_Juego> {
                   ),
                   //BotonDado
                   Padding(
-                    padding: EdgeInsets.only(top: 180, left: 168), // ajusta los valores según tus necesidades
+                    padding: EdgeInsets.only(
+                        top: 180,
+                        left: 168), // ajusta los valores según tus necesidades
                     child: BotonDado(
                       'Tirar',
                       onPressed: _rollDice,
@@ -1393,13 +1410,16 @@ class __JuegoState extends State<_Juego> {
                   Transform.translate(
                     offset: const Offset(-240, 0),
                     child: Padding(
-                      padding: EdgeInsets.only(top: 180, left: 80), // ajusta los valores según tus necesidades
+                      padding: EdgeInsets.only(
+                          top: 180,
+                          left: 80), // ajusta los valores según tus necesidades
                       child: BotonHome(
                         "Salir",
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const Menu()),
+                            MaterialPageRoute(
+                                builder: (context) => Menu(Sesion())),
                           );
                         },
                       ),
@@ -1408,18 +1428,16 @@ class __JuegoState extends State<_Juego> {
 
                   //BOTON TEMPORAL REINICIO TURNO
                   Padding(
-                    padding: EdgeInsets.only(top: 190, left: 0), // ajusta los valores según tus necesidades
+                    padding: EdgeInsets.only(
+                        top: 190,
+                        left: 0), // ajusta los valores según tus necesidades
                     child: ElevatedButton(
                       onPressed: _resetTurno,
                       child: Text('Reiniciar turno'),
                     ),
                   ),
-
-                                    
-                   
                 ],
               ),
-
             ),
             Center(
               child: Container(
@@ -1469,9 +1487,8 @@ class _HexagonClipper extends CustomClipper<Path> {
     // path.lineTo(size.width * 0.5, 0); //centro arriba (linea arriba derecha)
     // path.lineTo(size.width, size.height * 0.4); //punto derecho
     // path.lineTo(size.width * 0.8, size.height); //abajo derecha
-    // path.lineTo(size.width * 0.2, size.height); //abajo izquierda 
+    // path.lineTo(size.width * 0.2, size.height); //abajo izquierda
     // path.lineTo(size.width * 0, size.height * 0.4); //punto izquierdo
-
 
     path.moveTo(w * 0.5, 0);
     path.lineTo(w, h * 0.25);
@@ -1479,7 +1496,6 @@ class _HexagonClipper extends CustomClipper<Path> {
     path.lineTo(w * 0.5, h);
     path.lineTo(0, h * 0.75);
     path.lineTo(0, h * 0.25);
-
 
     path.close();
     return path;
@@ -1500,7 +1516,6 @@ class _RectangleClipper extends CustomClipper<Path> {
     path.lineTo(w * 0.56, 0);
     path.lineTo(w * 0.56, h * 0.3);
     path.lineTo(0, h * 0.3);
-
 
     path.close();
     return path;
@@ -1524,7 +1539,7 @@ class _EsquinaClipper extends CustomClipper<Path> {
     path.lineTo(0.55 * w, h);
     // path.lineTo(0.25 * w, h);
     path.lineTo(28, h);
-    path.lineTo(-28, -50);  //arriba izq
+    path.lineTo(-28, -50); //arriba izq
     path.close();
 
     // path.moveTo(10,20);
@@ -1550,7 +1565,7 @@ class _Esquina2Clipper extends CustomClipper<Path> {
     path.moveTo(0.25 * w, 0);
     path.lineTo(1 * w, -300);
     path.lineTo(0.55 * w, h);
-    path.lineTo(30, h +8);
+    path.lineTo(30, h + 8);
     path.lineTo(-19, -60);
     path.close();
 
@@ -1581,6 +1596,7 @@ class _Esquina3Clipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
+
 /////////////////////////////////////////////////////////
 class HexagonButton extends StatelessWidget {
   final Color color;
@@ -1710,8 +1726,6 @@ class Esquina3Button extends StatelessWidget {
       ),
     );
   }
-
-
 }
 /////////////////////////////////////////////////////////
 
@@ -1719,7 +1733,8 @@ class BotonDado extends StatelessWidget {
   final String textContrasenya;
   final VoidCallback onPressed;
   final int turno;
- const BotonDado(String t, {Key? key, required this.onPressed, required this.turno})
+  const BotonDado(String t,
+      {Key? key, required this.onPressed, required this.turno})
       : textContrasenya = t,
         super(key: key);
 
@@ -1744,23 +1759,23 @@ class BotonDado extends StatelessWidget {
             ),
           ),
           TextButton(
-          style: TextButton.styleFrom(
-            foregroundColor: const Color(0xFF004461),
-            padding: const EdgeInsets.only(top: 4, bottom: 4, left: 15, right: 15),
-            textStyle: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              fontFamily: "Georgia"),
-          ),
-          onPressed: turno == 1 ? onPressed : null,
-          child: Text(textContrasenya),
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFF004461),
+              padding:
+                  const EdgeInsets.only(top: 4, bottom: 4, left: 15, right: 15),
+              textStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontFamily: "Georgia"),
+            ),
+            onPressed: turno == 1 ? onPressed : null,
+            child: Text(textContrasenya),
           ),
         ],
       ),
     );
   }
 }
-
 
 class TrianglePainter extends CustomPainter {
   final Color color;

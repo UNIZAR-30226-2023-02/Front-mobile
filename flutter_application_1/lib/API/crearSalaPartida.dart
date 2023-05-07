@@ -13,15 +13,21 @@ class CrearSalaPetition {
       NS_key = 'nombre_sala',
       TR_key = 'tiempo_respuesta',
       PS_key = 'password_sala',
-      NJ_key = 'n_jugadores';
+      NJ_key = 'n_jugadores',
+      TP_key = 'tipo_partida';
 
   // ignore: non_constant_identifier_names
-  String nombreSala, tiempoRespuesta, contrasenaSala, numeroJugadores;
-  CrearSalaPetition(String nS, String tR, String cS, String nJ)
+  String nombreSala,
+      tiempoRespuesta,
+      contrasenaSala,
+      numeroJugadores,
+      tipoPartida;
+  CrearSalaPetition(String nS, String tR, String cS, String nJ, String tP)
       : nombreSala = nS,
         tiempoRespuesta = tR,
         contrasenaSala = cS,
-        numeroJugadores = nJ;
+        numeroJugadores = nJ,
+        tipoPartida = tP;
 }
 
 class CrearSalaResponse {
@@ -77,6 +83,7 @@ Future<CrearSalaResponse> crearSalaPartida(
     CrearSalaPetition.NJ_key: p.numeroJugadores,
     CrearSalaPetition.PS_key: p.contrasenaSala,
     CrearSalaPetition.TR_key: p.tiempoRespuesta,
+    CrearSalaPetition.TP_key: p.tipoPartida
   });
 
   r.FillFields(response);

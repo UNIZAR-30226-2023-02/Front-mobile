@@ -65,7 +65,7 @@ class _PartidasState extends State<Partidas> {
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Padding(
-                          padding: const EdgeInsets.only(bottom: 30),
+                          padding: const EdgeInsets.only(bottom: 50),
                           child: Boton1(
                             "MENU",
                             onPressed: () {
@@ -78,56 +78,117 @@ class _PartidasState extends State<Partidas> {
                           ),
                         ),
                       ),
-                      Align(alignment: Alignment.topCenter,child: 
-                      Padding(padding: const EdgeInsets.only(top: 80),child: Container(
-                        width: constraints.maxWidth / 1.4,
-                        height: constraints.maxHeight / 1.75,
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 4,
-                          ),
-                        ),
-                        child: Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 0),
-                                child: Container(
-                                  width: constraints.maxWidth / 2.7,
-                                  height: constraints.maxHeight / 2.3,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: const Color(0xFF164966),
-                                    border: Border.all(
-                                        color: Colors.white, width: 2),
-                                  ),
-                                  child: SizedBox(
-                                    width: 20,
-                                    height: 20,
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 60),
+                          child: SizedBox(
+                            width: constraints.maxWidth / 1.1,
+                            height: constraints.maxHeight / 1.7,
+                            child: Stack(
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        bottom: 20, left: 40),
                                     child: GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    CrearPartida(_s)),
-                                          );
-                                        },
-                                        child: Image.asset(
-                                          "assets/trivial_blanco.png",
-                                          fit: BoxFit.contain,
-                                        )),
+                                      behavior: HitTestBehavior.deferToChild,
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CrearPartida(_s)),
+                                        );
+                                      },
+                                      child: Container(
+                                        width: constraints.maxWidth / 3.2,
+                                        height: constraints.maxHeight / 3.2,
+                                        decoration: BoxDecoration(
+                                          image: const DecorationImage(
+                                            image: AssetImage('assets/mas.png'),
+                                            fit: BoxFit.scaleDown,
+                                          ),
+                                          shape: BoxShape.circle,
+                                          color: const Color(0xFF164966),
+                                          border: Border.all(
+                                              color: Colors.white, width: 2),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                                const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.only(top: 160, left: 70),
+                                    child: Text(
+                                      "CREAR PARTIDA",
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        fontFamily: "Baskerville",
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        bottom: 20, right: 40),
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.deferToChild,
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CrearPartida(_s)),
+                                        );
+                                      },
+                                      child: Container(
+                                        width: constraints.maxWidth / 3.2,
+                                        height: constraints.maxHeight / 3.2,
+                                        decoration: BoxDecoration(
+                                          image: const DecorationImage(
+                                            image:
+                                                AssetImage('assets/lupa.png'),
+                                            fit: BoxFit.scaleDown,
+                                          ),
+                                          shape: BoxShape.circle,
+                                          color: const Color(0xFF164966),
+                                          border: Border.all(
+                                              color: Colors.white, width: 2),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.only(top: 160, right: 60),
+                                    child: Text(
+                                      "BUSCAR PARTIDAS",
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        fontFamily: "Baskerville",
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),),
-                      ),),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

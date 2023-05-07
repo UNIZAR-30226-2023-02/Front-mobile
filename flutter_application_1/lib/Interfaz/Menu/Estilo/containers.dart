@@ -2,97 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class ContainerError1 extends StatelessWidget {
-  const ContainerError1({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          width: 300,
-          height: 60,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: const Color(0xFFb13636),
-              width: 2,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 50, top: 2),
-          child: CustomPaint(
-            size: const Size(20, 15),
-            painter: Triangulo(),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class ContainerError2 extends StatelessWidget {
-  const ContainerError2({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 1),
-          child: Container(
-            width: 290,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: const Color(0xFFb13636),
-                width: 2,
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 0, top: 23),
-          child: Transform.rotate(
-            angle: -pi / 2,
-            child: CustomPaint(
-              size: const Size(20, 15),
-              painter: Triangulo(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class Triangulo extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final path = Path();
-
-    path.moveTo(0, 0);
-    path.lineTo(size.width / 2, -size.height);
-    path.lineTo(size.width, 0);
-    canvas.drawPath(path, Paint()..color = Colors.white);
-    canvas.drawPath(
-        path,
-        Paint()
-          ..color = const Color(0xFFb13636)
-          ..strokeWidth = 2
-          ..style = PaintingStyle.stroke);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
-}
-
 class ContainerLabelForm extends StatelessWidget {
   final String texto;
   const ContainerLabelForm(String t, {Key? key})
@@ -297,6 +206,227 @@ class _ContainerContrasenaRegistroState
           ),
         ),
       ],
+    );
+  }
+}
+
+class ContainerPreguntas extends StatelessWidget {
+  final String number;
+
+  const ContainerPreguntas({Key? key, required this.number}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 65,
+      width: 185,
+      margin: const EdgeInsets.only(top: 5),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(160, 116, 116, 116),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color.fromARGB(255, 255, 255, 255),
+          width: 3,
+        ),
+      ),
+      child: Column(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            //margin: const EdgeInsets.only(top: 5),
+            padding: const EdgeInsets.only(top: 10.0),
+            child: const Text(
+              'Preguntas respondidas: ',
+              style: TextStyle(
+                fontSize: 13.0,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 255, 255, 255),
+                fontFamily: "Baskerville",
+              ),
+            ),
+          ),
+          Container(
+            alignment: Alignment.center,
+            //margin: const EdgeInsets.only(top: 5),
+            padding: const EdgeInsets.only(top: 5.0),
+            child: Text(
+              number,
+              style: const TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 255, 255, 255),
+                fontFamily: "Baskerville",
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ContainerIncorrectas extends StatelessWidget {
+  final String number;
+
+  const ContainerIncorrectas({Key? key, required this.number})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 60,
+      width: 90,
+      margin: const EdgeInsets.only(top: 5),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(220, 231, 40, 26),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color.fromARGB(255, 255, 255, 255),
+          width: 3,
+        ),
+      ),
+      child: Column(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            //margin: const EdgeInsets.only(top: 5),
+            padding: const EdgeInsets.only(top: 10.0),
+            child: const Text(
+              'Incorrectas:',
+              style: TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 255, 255, 255),
+                fontFamily: "Baskerville",
+              ),
+            ),
+          ),
+          Container(
+            alignment: Alignment.center,
+            //margin: const EdgeInsets.only(top: 5),
+            padding: const EdgeInsets.only(top: 0.0),
+            child: Text(
+              number,
+              style: const TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 255, 255, 255),
+                fontFamily: "Baskerville",
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ContainerCorrectas extends StatelessWidget {
+  final String number;
+
+  const ContainerCorrectas({Key? key, required this.number}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 60,
+      width: 90,
+      margin: const EdgeInsets.only(top: 5, left: 5),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(220, 76, 175, 79),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color.fromARGB(255, 255, 255, 255),
+          width: 3,
+        ),
+      ),
+      child: Column(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            //margin: const EdgeInsets.only(top: 5),
+            padding: const EdgeInsets.only(left: 5, right: 5, top: 10.0),
+            child: const Text(
+              'Correctas',
+              style: TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 255, 255, 255),
+                fontFamily: "Baskerville",
+              ),
+            ),
+          ),
+          Container(
+            alignment: Alignment.center,
+            //margin: const EdgeInsets.only(top: 5),
+            padding: const EdgeInsets.only(top: 5.0),
+            child: Text(
+              number,
+              style: const TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 255, 255, 255),
+                fontFamily: "Baskerville",
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ContainerPorcentaje extends StatelessWidget {
+  final String number;
+
+  const ContainerPorcentaje({Key? key, required this.number}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 35,
+      width: 185,
+      margin: const EdgeInsets.only(top: 5),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(220, 114, 165, 207),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color.fromARGB(255, 255, 255, 255),
+          width: 3,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            //margin: const EdgeInsets.only(top: 5),
+            padding: const EdgeInsets.only(left: 38.0, top: 6.0),
+            child: const Text(
+              '%Acierto: ',
+              style: TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 255, 255, 255),
+                fontFamily: "Baskerville",
+              ),
+            ),
+          ),
+          Container(
+            alignment: Alignment.center,
+            //margin: const EdgeInsets.only(top: 5),
+            padding: const EdgeInsets.only(left: 10.0, top: 6.0),
+            child: Text(
+              '$number%',
+              style: const TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 255, 255, 255),
+                fontFamily: "Baskerville",
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

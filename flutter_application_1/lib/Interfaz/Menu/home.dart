@@ -1,6 +1,6 @@
-
 import 'package:flutter_application_1/Data_types/amigosUsuario.dart';
 import 'package:flutter_application_1/Data_types/datosUsuario.dart';
+import 'package:flutter_application_1/Interfaz/Menu/Estadisticas/estadisticas.dart';
 import 'package:flutter_application_1/Interfaz/Menu/Tienda/tiendaFichas.dart';
 
 import 'dart:math';
@@ -539,6 +539,10 @@ class PulsaMenu extends StatelessWidget {
       }
     } else if (tipoBoton == "Amarillo") {
       //ESTADISTICAS
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => Estadisticas()),
+          (Route<dynamic> route) => false);
     } else if (tipoBoton == "Verde") {
       //TIENDA
       Navigator.push(
@@ -562,12 +566,11 @@ class PulsaMenu extends StatelessWidget {
       //HISTORIAL
     } else if (tipoBoton == "Blanco") {
       Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Partidas(_s)),
-            (Route<dynamic> route) => false);
-      }
+          context,
+          MaterialPageRoute(builder: (context) => Partidas(_s)),
+          (Route<dynamic> route) => false);
     }
+  }
 
   @override
   Widget build(BuildContext context) {

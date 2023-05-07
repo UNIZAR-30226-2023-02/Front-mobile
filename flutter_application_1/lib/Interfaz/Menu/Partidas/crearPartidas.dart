@@ -176,34 +176,40 @@ class _CrearPartidaState extends State<CrearPartida>
     super.dispose();
   }
 
-  void conseguirDatosAmigo(int index) async {}
-
   void crearPartida() async {
     _formKey.currentState!.save();
+    String aux = "";
+    String tipoPartida = "";
+    if (!_partidaPublica) {
+      aux = _dSPC.getField(DatosSalaPartidaClasicaFieldsCodes.contrasena);
+    }
+
     if (_modoClasico) {
-      Future<CrearSalaResponse> f = crearSalaPartida(
-          CrearSalaPetition(
+      tipoPartida = "Clasico";
+    } else if (_modoEquipos) {
+      tipoPartida = "Equipo";
+    } else {
+      tipoPartida = "Tematico";
+    }
+    Future<CrearSalaResponse> f = crearSalaPartida(
+        CrearSalaPetition(
             _dSPC.getField(DatosSalaPartidaClasicaFieldsCodes.nombre),
             _dSPC.getField(DatosSalaPartidaClasicaFieldsCodes.tiempoRespuesta),
-            _dSPC.getField(DatosSalaPartidaClasicaFieldsCodes.contrasena),
+            aux,
             _dSPC.getField(DatosSalaPartidaClasicaFieldsCodes.numeroJugadores),
-          ),
-          _s.getField(SesionFieldsCodes.token));
-      CrearSalaResponse r = await f;
-      if (r.OK) {
-        // ignore: use_build_context_synchronously
-        /*Navigator.pushAndRemoveUntil(
+            tipoPartida),
+        _s.getField(SesionFieldsCodes.token));
+    CrearSalaResponse r = await f;
+    if (r.OK) {
+      // ignore: use_build_context_synchronously
+      /*Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
                 builder: (context) => IniciandoSesion(
                     Sesion(usuario: _usuario, token: r.token), _contrasena)),
             (Route<dynamic> route) => false);*/
-      } else {}
-    } else if (_modoEquipos) {
     } else {}
   }
-
-  void eliminarAmigoUsuario() async {}
 
   @override
   Widget build(BuildContext context) {
