@@ -544,17 +544,49 @@ class PulsaMenu extends StatelessWidget {
           EstadisticasUsuarioPetition(_s.getField(SesionFieldsCodes.token)));
       EstadisticasUsuarioResponse r = await f;
       if (r.OK) {
-        datos = EstadisticasUsuario(r.quesitos,r.preguntas,r.incorrectas,r.correctas,r.aciertos);
+        datos = EstadisticasUsuario(
+            r.quesitos, r.preguntas, r.incorrectas, r.correctas, r.aciertos);
         // ignore: use_build_context_synchronously
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Estadisticas(_s,datos as EstadisticasUsuario)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    Estadisticas(_s, datos as EstadisticasUsuario)));
       }
-      
     } else if (tipoBoton == "Verde") {
       //TIENDA
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => TiendaFichas(_s)));
+      List<Ficha> fichas = <Ficha>[];
+      List<Tablero> tableros = <Tablero>[];
+
+      Future<ObjetosTiendaResponse> f = obtenerObjetosTienda(
+          ObjetosTiendaPetition(_s.getField(SesionFieldsCodes.token)));
+      ObjetosTiendaResponse r = await f;
+
+      if (r.OK) {
+        for (var item in r.fichas) {
+          fichas.add(Ficha(
+              id: item['id'],
+              coste: item['coste'],
+              enUso: item['enUso'],
+              adquirido: item['adquirido'],
+              imagen: item['imagen']));
+        }
+
+        for (var item in r.tableros) {
+          tableros.add(Tablero(
+              id: item['id'],
+              coste: item['coste'],
+              enUso: item['enUso'],
+              adquirido: item['adquirido'],
+              imagen: item['imagen']));
+        }
+      }
+
+      // ignore: use_build_context_synchronously
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => Tienda(_s, fichas, tableros)),
+          (Route<dynamic> route) => false);
     } else if (tipoBoton == "Naranja") {
       Future<DatosUsuarioResponse> f = obtenerDatosUsuario(
           DatosUsuarioPetition(_s.getField(SesionFieldsCodes.token)));

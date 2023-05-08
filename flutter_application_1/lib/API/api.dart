@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 const String urlDir = 'http://51.142.118.71:8000';
+const String serverDir = 'http://51.142.118.71';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -74,8 +75,6 @@ class RegistroUserResponse {
         error_telefono = responseJson[eT_key];
       }
     }
-    print(
-        "${r.statusCode} $error_username $error_password $error_confirm_password $error_fecha $error_correo $error_telefono");
   }
 }
 
@@ -94,8 +93,6 @@ Future<RegistroUserResponse> registroUsuario(RegistroUserPetition p) async {
     'correo': p.correo,
     'telefono': p.telefono,
   });
-  print(
-      "${p.username} ${p.password} ${p.confirm_password} ${p.fecha_nac} ${p.correo} ${p.telefono}");
 
   r.FillFields(response);
   return r;

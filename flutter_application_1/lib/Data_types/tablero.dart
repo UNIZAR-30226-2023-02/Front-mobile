@@ -1,7 +1,7 @@
-class Ficha {
+class Tablero {
   String _imagen;
   int _id,_coste,_enUso,_adquirido;
-  Ficha({
+  Tablero({
     int id = 0,
     int coste = 0,
     int enUso = 0,
@@ -13,36 +13,36 @@ class Ficha {
         _adquirido = adquirido,
         _imagen = imagen;
 
-  dynamic getField(FichaFieldsCodes r) {
+  dynamic getField(TableroFieldsCodes r) {
     switch (r) {
-      case FichaFieldsCodes.id:
+      case TableroFieldsCodes.id:
         return _id;
-      case FichaFieldsCodes.coste:
+      case TableroFieldsCodes.coste:
         return _coste;
-        case FichaFieldsCodes.enUso:
-        return _coste;
-        case FichaFieldsCodes.adquirido:
-        return _coste;
-        case FichaFieldsCodes.imagen:
-        return _coste;
+        case TableroFieldsCodes.enUso:
+        return _enUso;
+        case TableroFieldsCodes.adquirido:
+        return _adquirido;
+        case TableroFieldsCodes.imagen:
+        return _imagen;
     }
   }
 
-  setField(FichaFieldsCodes r, dynamic s) {
+  setField(TableroFieldsCodes r, dynamic s) {
     switch (r) {
-      case FichaFieldsCodes.id:
+      case TableroFieldsCodes.id:
         _id = s;
         break;
-      case FichaFieldsCodes.coste:
+      case TableroFieldsCodes.coste:
         _coste = s;
         break;
-      case FichaFieldsCodes.enUso:
+      case TableroFieldsCodes.enUso:
         _enUso = s;
         break;
-      case FichaFieldsCodes.adquirido:
+      case TableroFieldsCodes.adquirido:
         _adquirido = s;
         break;
-      case FichaFieldsCodes.imagen:
+      case TableroFieldsCodes.imagen:
         _imagen = s;
         break;
     }
@@ -50,7 +50,7 @@ class Ficha {
 }
 
 
-enum FichaFieldsCodes {
+enum TableroFieldsCodes {
   id,
   coste,
   enUso,

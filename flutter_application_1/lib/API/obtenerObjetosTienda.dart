@@ -15,7 +15,7 @@ class ObjetosTiendaResponse {
       F_key = 'fichas',
       T_key = 'tableros';
   // ignore: non_constant_identifier_names
-  List<Map<String,dynamic>> fichas = <Map<String,dynamic>>[],tableros = <Map<String,dynamic>>[];
+  List<dynamic> fichas = <dynamic>[],tableros = <dynamic>[];
   // ignore: non_constant_identifier_names
   bool OK = false;
 
@@ -26,16 +26,9 @@ class ObjetosTiendaResponse {
     if (r.statusCode <= 300) {
       final responseJson = json.decode(utf8.decode(r.bodyBytes));
 
-      String parameterValue = responseJson[OK_key];
-
-      if (parameterValue == 'True') {
         OK = true;
         fichas = responseJson[F_key];
         tableros = responseJson[T_key];
-      } else {
-        OK = false;
-        
-      }
     }
   }
 }

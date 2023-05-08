@@ -2,7 +2,7 @@
 import 'package:flutter_application_1/Data_types/sesion.dart';
 import 'package:flutter_application_1/Interfaz/Menu/index.dart';
 import 'package:flutter/material.dart';
-
+/*
 class TiendaTableros extends StatelessWidget {
   final Sesion _s;
   const TiendaTableros(this._s, {Key? key}) : super(key: key);
@@ -292,41 +292,4 @@ class _TiendaTableros extends StatelessWidget {
     );
   }
 }
-
-
-
-class ObjetcButton extends StatelessWidget {
-  final Color color = const Color.fromARGB(0, 66, 66, 66);
-  final VoidCallback onPressed;
-  final String pathImagen;
-
-  const ObjetcButton({Key? key, required this.onPressed, required this.pathImagen}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Stack(
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            color: color,
-            margin: EdgeInsets.symmetric(horizontal: 8),
-          ),
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(pathImagen),
-                fit: BoxFit.cover,
-              ),
-            ),
-            margin: EdgeInsets.symmetric(horizontal: 8),
-          ),
-        ],
-      ),
-    );
-  }
-}
+*/
