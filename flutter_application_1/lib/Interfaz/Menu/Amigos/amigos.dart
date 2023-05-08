@@ -6,8 +6,10 @@ import 'package:flutter_application_1/Data_types/amigosUsuario.dart';
 import 'package:flutter_application_1/Data_types/datosUsuario.dart';
 import 'package:flutter_application_1/API/index.dart';
 import 'package:flutter_application_1/Interfaz/Menu/Estilo/index.dart';
+import 'package:flutter_application_1/Interfaz/Menu/index.dart';
 
 import '../../../../Data_types/sesion.dart';
+import '../../../Data_types/index.dart';
 import '../home.dart';
 
 //ignore: must_be_immutable
@@ -22,20 +24,20 @@ class Amigos extends StatefulWidget {
 }
 
 class _AmigosState extends State<Amigos> {
-  final _formKey = GlobalKey<FormState>();
   Sesion _s;
-  DatosUsuario _dA = DatosUsuario();
+  late DatosUsuario _dA = DatosUsuario();
   AmigosUsuario _a;
   _AmigosState(this._s, this._a);
+  EstadisticasUsuario _eA = EstadisticasUsuario("",<String>[],<String>[],<String>[],<String>[]);
 
   String _sErrorAnadirAmigo = "", _sErrorEliminarAmigo = "";
   bool _errorAnadirAmigo = false, _errorEliminarAmigo = false;
   bool _amigoEliminado = false;
   bool _amigoAnadido = false;
   bool _datosAmigo = false;
+  bool _estadisticasAmigo = false;
   bool _anadirAmigo = false;
-
-  bool _isKeyboardVisible = false;
+  String amigo = "";
 
   final TextEditingController _friendSearchController = TextEditingController();
 
@@ -92,6 +94,22 @@ class _AmigosState extends State<Amigos> {
       _errorEliminarAmigo = true;
     }
     setState(() {});
+  }
+
+  void verEstadisticasAmigo(int index) async {
+    amigo = _a.amigos[index];
+    _estadisticasAmigo = true;
+    Future<EstadisticasAmigoResponse> f = obtenerEstadisticasAmigo(
+          EstadisticasAmigoPetition(amigo));
+      EstadisticasAmigoResponse r = await f;
+      if (r.OK) {
+        _eA = EstadisticasUsuario(r.quesitos,r.preguntas,r.incorrectas,r.correctas,r.aciertos);
+        // ignore: use_build_context_synchronously
+        
+      }
+      setState(() {
+        
+      });
   }
 
   @override
@@ -208,7 +226,7 @@ class _AmigosState extends State<Amigos> {
                                       size: 40,
                                     ),
                                     onPressed: () async {
-                                      conseguirDatosAmigo(index);
+                                      verEstadisticasAmigo(index);
                                     },
                                   ),
                                 );
@@ -613,6 +631,109 @@ class _AmigosState extends State<Amigos> {
                                             eliminarAmigoUsuario();
                                           },
                                         ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return Visibility(
+                    visible: _estadisticasAmigo,
+                    child: Container(
+                      height: constraints.maxHeight,
+                      width: constraints.maxWidth,
+                      decoration: const BoxDecoration(color: Color(0x80444444)),
+                      margin: const EdgeInsets.only(top: 0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Stack(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 25),
+                              child: Container(
+                                width: constraints.maxWidth / 1.5,
+                                height: constraints.maxHeight / 1.3,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF164966),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child: Column(
+                                          children: [
+                                            SizedBox(
+                                              width: constraints.maxWidth / 2,
+                                              child: Text(
+                                                "Estadisticas de $amigo",
+                                                textAlign: TextAlign.center,
+                                                style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                    fontSize: 18,
+                                                    fontFamily: "Georgia"),
+                                              ),
+                                            ),
+                                            const Padding(
+                                              padding: EdgeInsets.only(top: 5),
+                                              child: Divider(
+                                                color: Colors.white,
+                                                thickness: 1.5,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 7, right: 6),
+                                        child: Container(
+                                          width: 33,
+                                          height: 33,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Colors.white, width: 1),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 405),
+                                      child: IconButton(
+                                          iconSize: 31,
+                                          icon: const Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                          ),
+                                          onPressed: () {
+                                            _estadisticasAmigo = false;
+                                            setState(() {});
+                                          }),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 60),
+                                      child: SizedBox(
+                                        width: constraints.maxWidth / 1.5,
+                                        child: EstadisticasAmigos(_eA)
                                       ),
                                     ),
                                   ],

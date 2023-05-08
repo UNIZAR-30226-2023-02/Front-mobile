@@ -23,5 +23,5 @@ import 'Data_types/sesion.dart';
 import 'package:flutter_application_1/Interfaz/Menu/index.dart';
 
 void main() {
-  runApp(MaterialApp(home: Menu(Sesion())));
+  runApp(MaterialApp(home: Home()));
 }

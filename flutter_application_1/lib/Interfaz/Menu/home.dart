@@ -11,6 +11,7 @@ import 'package:flutter_application_1/Data_types/sesion.dart';
 import 'package:flutter_application_1/API/index.dart';
 import 'package:flutter_application_1/Interfaz/Menu/index.dart';
 
+import '../../Data_types/index.dart';
 import 'Amigos/amigos.dart';
 
 //ignore: must_be_immutable
@@ -539,10 +540,17 @@ class PulsaMenu extends StatelessWidget {
       }
     } else if (tipoBoton == "Amarillo") {
       //ESTADISTICAS
-      Navigator.pushAndRemoveUntil(
+      Future<EstadisticasUsuarioResponse> f = obtenerEstadisticasUsuario(
+          EstadisticasUsuarioPetition(_s.getField(SesionFieldsCodes.token)));
+      EstadisticasUsuarioResponse r = await f;
+      if (r.OK) {
+        datos = EstadisticasUsuario(r.quesitos,r.preguntas,r.incorrectas,r.correctas,r.aciertos);
+        // ignore: use_build_context_synchronously
+      Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Estadisticas()),
-          (Route<dynamic> route) => false);
+          MaterialPageRoute(builder: (context) => Estadisticas(_s,datos as EstadisticasUsuario)));
+      }
+      
     } else if (tipoBoton == "Verde") {
       //TIENDA
       Navigator.push(

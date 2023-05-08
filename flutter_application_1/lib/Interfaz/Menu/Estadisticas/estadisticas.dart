@@ -7,7 +7,8 @@ import '../../../Data_types/sesion.dart';
 
 class Estadisticas extends StatelessWidget {
   final EstadisticasUsuario _eU;
-  const Estadisticas(this._eU, {Key? key}) : super(key: key);
+  final Sesion _s;
+  const Estadisticas(this._s,this._eU, {Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +30,7 @@ class Estadisticas extends StatelessWidget {
                 margin: const EdgeInsets.only(top: 20),
                 padding: const EdgeInsets.all(16.0),
                 child: const Text(
-                  'Estadísticas',
+                  'Mis estadísticas',
                   style: TextStyle(
                     fontSize: 30.0,
                     fontWeight: FontWeight.bold,
@@ -99,18 +100,18 @@ class Estadisticas extends StatelessWidget {
                                         children: [
                                           Column(
                                             children: [
-                                              const ContainerPreguntas(
-                                                  number: '200'),
+                                               ContainerPreguntas(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.preguntas, TematicasEstadisticasCodes.totales)),
                                               Row(
-                                                children: const [
+                                                children: [
                                                   ContainerIncorrectas(
-                                                      number: '100'),
+                                                      number: _eU.getField(EstadisticasFieldsCodes.incorrectas, TematicasEstadisticasCodes.totales)),
                                                   ContainerCorrectas(
-                                                      number: '100'),
+                                                      number: _eU.getField(EstadisticasFieldsCodes.correctas, TematicasEstadisticasCodes.totales)),
                                                 ],
                                               ),
-                                              const ContainerPorcentaje(
-                                                  number: '50'),
+                                              ContainerPorcentaje(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.acierto, TematicasEstadisticasCodes.totales)),
                                             ],
                                           ),
                                         ],
@@ -165,20 +166,21 @@ class Estadisticas extends StatelessWidget {
                                       margin: const EdgeInsets.only(
                                           left: 7, right: 7),
                                       child: Column(
-                                        children: [
-                                          const ContainerPreguntas(
-                                              number: '200'),
-                                          Row(
-                                            children: const [
-                                              ContainerIncorrectas(
-                                                  number: '100'),
-                                              ContainerCorrectas(number: '100'),
+                                            children: [
+                                               ContainerPreguntas(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.preguntas, TematicasEstadisticasCodes.geografia)),
+                                              Row(
+                                                children: [
+                                                  ContainerIncorrectas(
+                                                      number: _eU.getField(EstadisticasFieldsCodes.incorrectas, TematicasEstadisticasCodes.geografia)),
+                                                  ContainerCorrectas(
+                                                      number: _eU.getField(EstadisticasFieldsCodes.correctas, TematicasEstadisticasCodes.geografia)),
+                                                ],
+                                              ),
+                                              ContainerPorcentaje(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.acierto, TematicasEstadisticasCodes.geografia)),
                                             ],
                                           ),
-                                          const ContainerPorcentaje(
-                                              number: '50'),
-                                        ],
-                                      ),
                                     ),
                                   ],
                                 ),
@@ -224,20 +226,21 @@ class Estadisticas extends StatelessWidget {
                                       margin: const EdgeInsets.only(
                                           left: 7, right: 7),
                                       child: Column(
-                                        children: [
-                                          const ContainerPreguntas(
-                                              number: '200'),
-                                          Row(
-                                            children: const [
-                                              ContainerIncorrectas(
-                                                  number: '100'),
-                                              ContainerCorrectas(number: '100'),
+                                            children: [
+                                               ContainerPreguntas(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.preguntas, TematicasEstadisticasCodes.ciencia)),
+                                              Row(
+                                                children: [
+                                                  ContainerIncorrectas(
+                                                      number: _eU.getField(EstadisticasFieldsCodes.incorrectas, TematicasEstadisticasCodes.ciencia)),
+                                                  ContainerCorrectas(
+                                                      number: _eU.getField(EstadisticasFieldsCodes.correctas, TematicasEstadisticasCodes.ciencia)),
+                                                ],
+                                              ),
+                                              ContainerPorcentaje(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.acierto, TematicasEstadisticasCodes.ciencia)),
                                             ],
                                           ),
-                                          const ContainerPorcentaje(
-                                              number: '50'),
-                                        ],
-                                      ),
                                     ),
                                   ],
                                 ),
@@ -288,20 +291,21 @@ class Estadisticas extends StatelessWidget {
                                       margin: const EdgeInsets.only(
                                           left: 7, right: 7),
                                       child: Column(
-                                        children: [
-                                          const ContainerPreguntas(
-                                              number: '200'),
-                                          Row(
-                                            children: const [
-                                              ContainerIncorrectas(
-                                                  number: '100'),
-                                              ContainerCorrectas(number: '100'),
+                                            children: [
+                                               ContainerPreguntas(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.preguntas, TematicasEstadisticasCodes.historia)),
+                                              Row(
+                                                children: [
+                                                  ContainerIncorrectas(
+                                                      number: _eU.getField(EstadisticasFieldsCodes.incorrectas, TematicasEstadisticasCodes.historia)),
+                                                  ContainerCorrectas(
+                                                      number: _eU.getField(EstadisticasFieldsCodes.correctas, TematicasEstadisticasCodes.historia)),
+                                                ],
+                                              ),
+                                              ContainerPorcentaje(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.acierto, TematicasEstadisticasCodes.historia)),
                                             ],
                                           ),
-                                          const ContainerPorcentaje(
-                                              number: '50'),
-                                        ],
-                                      ),
                                     ),
                                   ],
                                 ),
@@ -352,20 +356,21 @@ class Estadisticas extends StatelessWidget {
                                       margin: const EdgeInsets.only(
                                           left: 7, right: 7),
                                       child: Column(
-                                        children: [
-                                          const ContainerPreguntas(
-                                              number: '200'),
-                                          Row(
-                                            children: const [
-                                              ContainerIncorrectas(
-                                                  number: '100'),
-                                              ContainerCorrectas(number: '100'),
+                                            children: [
+                                               ContainerPreguntas(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.preguntas, TematicasEstadisticasCodes.entretenimiento)),
+                                              Row(
+                                                children: [
+                                                  ContainerIncorrectas(
+                                                      number: _eU.getField(EstadisticasFieldsCodes.incorrectas, TematicasEstadisticasCodes.entretenimiento)),
+                                                  ContainerCorrectas(
+                                                      number: _eU.getField(EstadisticasFieldsCodes.correctas, TematicasEstadisticasCodes.entretenimiento)),
+                                                ],
+                                              ),
+                                              ContainerPorcentaje(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.acierto, TematicasEstadisticasCodes.entretenimiento)),
                                             ],
                                           ),
-                                          const ContainerPorcentaje(
-                                              number: '50'),
-                                        ],
-                                      ),
                                     ),
                                   ],
                                 ),
@@ -415,20 +420,21 @@ class Estadisticas extends StatelessWidget {
                                       margin: const EdgeInsets.only(
                                           left: 7, right: 7),
                                       child: Column(
-                                        children: [
-                                          const ContainerPreguntas(
-                                              number: '200'),
-                                          Row(
-                                            children: const [
-                                              ContainerIncorrectas(
-                                                  number: '100'),
-                                              ContainerCorrectas(number: '100'),
+                                            children: [
+                                               ContainerPreguntas(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.preguntas, TematicasEstadisticasCodes.deportes)),
+                                              Row(
+                                                children: [
+                                                  ContainerIncorrectas(
+                                                      number: _eU.getField(EstadisticasFieldsCodes.incorrectas, TematicasEstadisticasCodes.deportes)),
+                                                  ContainerCorrectas(
+                                                      number: _eU.getField(EstadisticasFieldsCodes.correctas, TematicasEstadisticasCodes.deportes)),
+                                                ],
+                                              ),
+                                              ContainerPorcentaje(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.acierto, TematicasEstadisticasCodes.deportes)),
                                             ],
                                           ),
-                                          const ContainerPorcentaje(
-                                              number: '50'),
-                                        ],
-                                      ),
                                     ),
                                   ],
                                 ),
@@ -464,7 +470,7 @@ class Estadisticas extends StatelessWidget {
                                           left: 6.0,
                                           right: 6.0),
                                       child: const Text(
-                                        'ARTE Y LITERA',
+                                        'ARTE Y LITERATURA',
                                         style: TextStyle(
                                           fontSize: 20.0,
                                           fontWeight: FontWeight.bold,
@@ -478,20 +484,21 @@ class Estadisticas extends StatelessWidget {
                                       margin: const EdgeInsets.only(
                                           left: 7, right: 7),
                                       child: Column(
-                                        children: [
-                                          const ContainerPreguntas(
-                                              number: '200'),
-                                          Row(
-                                            children: const [
-                                              ContainerIncorrectas(
-                                                  number: '100'),
-                                              ContainerCorrectas(number: '100'),
+                                            children: [
+                                               ContainerPreguntas(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.preguntas, TematicasEstadisticasCodes.arte)),
+                                              Row(
+                                                children: [
+                                                  ContainerIncorrectas(
+                                                      number: _eU.getField(EstadisticasFieldsCodes.incorrectas, TematicasEstadisticasCodes.arte)),
+                                                  ContainerCorrectas(
+                                                      number: _eU.getField(EstadisticasFieldsCodes.correctas, TematicasEstadisticasCodes.arte)),
+                                                ],
+                                              ),
+                                              ContainerPorcentaje(
+                                                  number: _eU.getField(EstadisticasFieldsCodes.acierto, TematicasEstadisticasCodes.arte)),
                                             ],
                                           ),
-                                          const ContainerPorcentaje(
-                                              number: '50'),
-                                        ],
-                                      ),
                                     ),
                                   ],
                                 ),
@@ -504,23 +511,21 @@ class Estadisticas extends StatelessWidget {
                   ),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+              Align(
+                alignment: Alignment.bottomCenter,
+                child:
                   Container(
-                    margin: const EdgeInsets.only(left: 40.0, top: 10),
+                    margin: const EdgeInsets.only(left: 0.0, top: 10),
                     child: Boton1(
-                      "MENÚ",
+                      "MENU",
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Menu(Sesion())),
-                        );
+                        Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => Menu(_s)),
+                (Route<dynamic> route) => false);
                       },
                     ),
                   ),
-                ],
               ),
             ],
           ),

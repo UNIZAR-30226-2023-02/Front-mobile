@@ -6,3 +6,8 @@ export 'anadirAmigo.dart';
 export 'eliminarAmigo.dart';
 export 'iniciarSesionUsuario.dart';
 export 'crearSalaPartida.dart';
+export 'obtenerEstadisticasUsuario.dart';
+export 'obtenerEstadisticasAmigo.dart';
+export 'comprarObjetoTienda.dart';
+export 'usarObjetoTienda.dart';
+export 'obtenerObjetosTienda.dart';
