@@ -117,7 +117,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
     super.didChangeMetrics();
     // Check whether the keyboard is currently visible.
     final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
-    _isKeyboardVisible = bottomInset > 400.0;
+    _isKeyboardVisible = bottomInset > 480.0;
     if (_isKeyboardVisible && (_isFocus1 || _isFocus2)) {
       _isVisible1 = true;
       setState(() {});
@@ -264,7 +264,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 80, left: 40),
+                  padding: const EdgeInsets.only(top: 70, left: 40),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -303,141 +303,148 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                     ],
                   ),
                 ),
-                Positioned(
-                  top: 200,
-                  left: 40,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const ContainerLabelForm('CORREO ELECTRONICO'),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Container(
-                          height: 45,
-                          width: 290,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 180, left: 40),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const ContainerLabelForm('CORREO ELECTRONICO'),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Container(
+                            height: 45,
+                            width: 290,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                              color: Colors.white.withOpacity(0),
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            color: Colors.white.withOpacity(0),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: TextFormField(
-                            controller: _mailController,
-                            focusNode: _focusNode1,
-                            readOnly: !_cambioDatos,
-                            keyboardType: TextInputType.visiblePassword,
-                            onSaved: (value) {
-                              _dU.setField(
-                                  DatosUsuarioFieldsCodes.correoElectronico,
-                                  value!);
-                            },
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
+                            child: TextFormField(
+                              controller: _mailController,
+                              focusNode: _focusNode1,
+                              readOnly: !_cambioDatos,
+                              keyboardType: TextInputType.visiblePassword,
+                              onSaved: (value) {
+                                _dU.setField(
+                                    DatosUsuarioFieldsCodes.correoElectronico,
+                                    value!);
+                              },
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                              ),
+                              style: const TextStyle(color: Colors.white),
                             ),
-                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 80, left: 350),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const ContainerLabelForm('FECHA NACIMIENTO'),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: Container(
-                              height: 45,
-                              width: 290,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 2,
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 70, left: 410),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const ContainerLabelForm('FECHA NACIMIENTO'),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Container(
+                                height: 45,
+                                width: 290,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                  color: Colors.white.withOpacity(0),
+                                  borderRadius: BorderRadius.circular(15),
                                 ),
-                                color: Colors.white.withOpacity(0),
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: TextFormField(
-                                controller: _birthDateController,
-                                readOnly: !_cambioDatos,
-                                keyboardType: TextInputType.datetime,
-                                focusNode: _focusNode5,
-                                onSaved: (value) {
-                                  _dU.setField(
-                                      DatosUsuarioFieldsCodes.fechaNacimiento,
-                                      value!);
-                                },
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
+                                child: TextFormField(
+                                  controller: _birthDateController,
+                                  readOnly: !_cambioDatos,
+                                  keyboardType: TextInputType.datetime,
+                                  focusNode: _focusNode5,
+                                  onSaved: (value) {
+                                    _dU.setField(
+                                        DatosUsuarioFieldsCodes.fechaNacimiento,
+                                        value!);
+                                  },
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                  ),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
-                                style: const TextStyle(color: Colors.white),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                Positioned(
-                  top: 200,
-                  left: 350,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const ContainerLabelForm('TELEFONO MOVIL'),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Container(
-                          height: 45,
-                          width: 290,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 180, left: 410),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const ContainerLabelForm('TELEFONO MOVIL'),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Container(
+                            height: 45,
+                            width: 290,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                              color: Colors.white.withOpacity(0),
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            color: Colors.white.withOpacity(0),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: TextFormField(
-                            controller: _phoneNumberController,
-                            focusNode: _focusNode3,
-                            readOnly: !_cambioDatos,
-                            keyboardType: TextInputType.number,
-                            onSaved: (value) {
-                              _dU.setField(
-                                  DatosUsuarioFieldsCodes.telefonoMovil,
-                                  value!);
-                            },
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
+                            child: TextFormField(
+                              controller: _phoneNumberController,
+                              focusNode: _focusNode3,
+                              readOnly: !_cambioDatos,
+                              keyboardType: TextInputType.number,
+                              onSaved: (value) {
+                                _dU.setField(
+                                    DatosUsuarioFieldsCodes.telefonoMovil,
+                                    value!);
+                              },
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                              ),
+                              style: const TextStyle(color: Colors.white),
                             ),
-                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 Visibility(
                   visible: _isVisible1,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 160),
+                    padding: const EdgeInsets.only(top: 155),
                     child: Container(
                       height: 40,
                       decoration: const BoxDecoration(
@@ -456,7 +463,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                 Visibility(
                   visible: _isVisible2,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 200),
+                    padding: const EdgeInsets.only(top: 155),
                     child: Container(
                       height: 40,
                       decoration: const BoxDecoration(
@@ -474,85 +481,82 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                     ),
                   ),
                 ),
-                Positioned(
-                  top: 320,
-                  left: 130,
-                  child: Visibility(
-                    visible: !_cambioDatos,
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Boton1(
-                            "MENU",
-                            onPressed: () {
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Menu(_s)),
-                                  (Route<dynamic> route) => false);
-                            },
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 30),
+                    child: Stack(
+                      children: [
+                        Visibility(
+                          visible: !_cambioDatos,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Boton1(
+                                "MENU",
+                                onPressed: () {
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Menu(_s)),
+                                      (Route<dynamic> route) => false);
+                                },
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 200),
+                                child: Boton1(
+                                  "CAMBIAR DATOS",
+                                  onPressed: () {
+                                    _cambioDatos = true;
+                                    setState(() {});
+                                    _isFocus1 = false;
+                                    _isFocus2 = false;
+                                    _isFocus3 = false;
+                                    _isFocus4 = false;
+                                    _focusNode1.unfocus();
+                                    _focusNode2.unfocus();
+                                    _focusNode3.unfocus();
+                                    _focusNode4.unfocus();
+                                    _focusNode5.unfocus();
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 200),
-                            child: Boton1(
-                              "CAMBIAR DATOS",
-                              onPressed: () {
-                                _cambioDatos = true;
-                                setState(() {});
-                                _isFocus1 = false;
-                                _isFocus2 = false;
-                                _isFocus3 = false;
-                                _isFocus4 = false;
-                                _focusNode1.unfocus();
-                                _focusNode2.unfocus();
-                                _focusNode3.unfocus();
-                                _focusNode4.unfocus();
-                                _focusNode5.unfocus();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 320,
-                  left: 130,
-                  child: Visibility(
-                    visible: _cambioDatos,
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Boton1(
-                            "CANCELAR",
-                            onPressed: () {
-                              _cambioDatos = false;
-                              _mailController.text = _dU.getField(
-                                  DatosUsuarioFieldsCodes.correoElectronico);
-                              _birthDateController.text = _dU.getField(
-                                  DatosUsuarioFieldsCodes.fechaNacimiento);
-                              _phoneNumberController.text = _dU.getField(
-                                  DatosUsuarioFieldsCodes.telefonoMovil);
+                        ),
+                        Visibility(
+                          visible: _cambioDatos,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Boton1(
+                                "CANCELAR",
+                                onPressed: () {
+                                  _cambioDatos = false;
+                                  _mailController.text = _dU.getField(
+                                      DatosUsuarioFieldsCodes
+                                          .correoElectronico);
+                                  _birthDateController.text = _dU.getField(
+                                      DatosUsuarioFieldsCodes.fechaNacimiento);
+                                  _phoneNumberController.text = _dU.getField(
+                                      DatosUsuarioFieldsCodes.telefonoMovil);
 
-                              setState(() {});
-                            },
+                                  setState(() {});
+                                },
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 200),
+                                child: Boton1(
+                                  "CONFIRMAR",
+                                  onPressed: () {
+                                    _comprobarDatos(context);
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 200),
-                            child: Boton1(
-                              "CONFIRMAR",
-                              onPressed: () {
-                                _comprobarDatos(context);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -572,7 +576,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                             children: [
                               Container(
                                 width: constraints.maxWidth / 2,
-                                height: constraints.maxHeight / 2.3,
+                                height: constraints.maxHeight / 2.2,
                                 decoration: BoxDecoration(
                                   color: Colors.black,
                                   borderRadius: BorderRadius.circular(20),
@@ -584,11 +588,11 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                                 child: Stack(
                                   children: [
                                     Align(
-                                      alignment: Alignment.topCenter,
+                                      alignment: Alignment.center,
                                       child: Padding(
-                                        padding: const EdgeInsets.only(top: 30),
+                                        padding: const EdgeInsets.only(top: 0),
                                         child: SizedBox(
-                                          height: constraints.maxHeight / 4.5,
+                                          height: constraints.maxHeight / 3.5,
                                           width: constraints.maxWidth / 2.3,
                                           child: Text(
                                             _errorCambioDatos,
@@ -606,7 +610,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                                       alignment: Alignment.bottomCenter,
                                       child: Padding(
                                         padding:
-                                            const EdgeInsets.only(bottom: 20),
+                                            const EdgeInsets.only(bottom: 10),
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(4),
@@ -678,7 +682,7 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                             children: [
                               Container(
                                 width: constraints.maxWidth / 2,
-                                height: constraints.maxHeight / 2.5,
+                                height: constraints.maxHeight / 2.2,
                                 decoration: BoxDecoration(
                                   color: Colors.black,
                                   borderRadius: BorderRadius.circular(20),
@@ -690,9 +694,9 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                                 child: Stack(
                                   children: [
                                     Align(
-                                      alignment: Alignment.topCenter,
+                                      alignment: Alignment.center,
                                       child: Padding(
-                                        padding: const EdgeInsets.only(top: 30),
+                                        padding: const EdgeInsets.only(top: 0),
                                         child: SizedBox(
                                           height: constraints.maxHeight / 4.5,
                                           width: constraints.maxWidth / 2.3,

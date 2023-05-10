@@ -17,9 +17,9 @@ import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 
 //ignore: must_be_immutable
 class IniciandoSesion extends StatefulWidget {
-  Sesion _s;
-  String _contrasena;
-  IniciandoSesion(this._s,this._contrasena, {Key? key}) : super(key: key);
+  final Sesion _s;
+  final String _contrasena;
+  const IniciandoSesion(this._s,this._contrasena, {Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api, no_logic_in_create_state
@@ -27,8 +27,8 @@ class IniciandoSesion extends StatefulWidget {
 }
 
 class _IniciandoSesion extends State<IniciandoSesion> {
-  Sesion _s;
-  String _contrasena;
+  final Sesion _s;
+  final String _contrasena;
   late Timer _timer;
 
   int contador = 0;
@@ -43,7 +43,7 @@ class _IniciandoSesion extends State<IniciandoSesion> {
   }
 
   void _setTimer() {
-    _timer = Timer(const Duration(seconds: 6), () {
+    _timer = Timer(const Duration(seconds: 4), () {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => Menu(_s)),
@@ -105,8 +105,9 @@ class _IniciandoSesion extends State<IniciandoSesion> {
                     ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 450, top: 350),
+                const Align(alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 30, right: 70),
                   child: Text(
                     "Iniciando sesión...",
                     style: TextStyle(
@@ -116,15 +117,16 @@ class _IniciandoSesion extends State<IniciandoSesion> {
                       fontFamily: "Bona Nova",
                     ),
                   ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 600, top: 340),
+                ),),
+                const Align(alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 25, right: 30),
                   child: SizedBox(
                     width: 32,
                     height: 33,
                     child: AnimacionImagen(),
                   ),
-                ),
+                ),),
               ],
             ),
           ),
@@ -171,6 +173,7 @@ class _IniciandoSesionRegistroState extends State<IniciandoSesionRegistro> {
 
       if (re.OK) {
         iniciado = true;
+        _s.setField(SesionFieldsCodes.token, re.token);
       } else {
         _timer1 = Timer(
             const Duration(milliseconds: 500), _comprobarIniciarSesionUsuario);
@@ -249,8 +252,9 @@ class _IniciandoSesionRegistroState extends State<IniciandoSesionRegistro> {
                     ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 450, top: 350),
+                const Align(alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 30, right: 70),
                   child: Text(
                     "Iniciando sesión...",
                     style: TextStyle(
@@ -260,15 +264,16 @@ class _IniciandoSesionRegistroState extends State<IniciandoSesionRegistro> {
                       fontFamily: "Bona Nova",
                     ),
                   ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 600, top: 340),
+                ),),
+                const Align(alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 25, right: 30),
                   child: SizedBox(
                     width: 32,
                     height: 33,
                     child: AnimacionImagen(),
                   ),
-                ),
+                ),),
               ],
             ),
           ),

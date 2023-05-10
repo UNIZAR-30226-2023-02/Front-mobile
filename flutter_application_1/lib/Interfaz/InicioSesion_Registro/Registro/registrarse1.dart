@@ -32,7 +32,7 @@ class _Registrarse1State extends State<Registrarse1>
   bool _isKeyboardVisible = false;
   bool _isVisible = false;
   bool _isFocus1 = false, _isFocus2 = false;
-  final _focusNode1 = FocusNode(), _focusNode2 = FocusNode();
+  final _focusNode1 = FocusNode(), _focusNode2 = FocusNode(),_focusNode3 = FocusNode();
 
   @override
   void initState() {
@@ -44,6 +44,7 @@ class _Registrarse1State extends State<Registrarse1>
     WidgetsBinding.instance.addObserver(this);
     _focusNode1.addListener(_handleFocus1Change);
     _focusNode2.addListener(_handleFocus2Change);
+    _focusNode3.addListener(_handleFocus3Change);
   }
 
   void _handleFocus1Change() {
@@ -60,12 +61,23 @@ class _Registrarse1State extends State<Registrarse1>
     }
   }
 
+  void _handleFocus3Change() {
+    if (_focusNode3.hasFocus) {
+      // The text form field has focus, so the keyboard is being displayed.
+      _isVisible = false;
+      _focusNode1.unfocus();
+      _focusNode2.unfocus();
+      setState(() {
+      });
+    }
+  }
+
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
     // Check whether the keyboard is currently visible.
     final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
-    _isKeyboardVisible = bottomInset > 500.0;
+    _isKeyboardVisible = bottomInset > 480.0;
     if (_isKeyboardVisible && (_isFocus1 || _isFocus2)) {
       _isVisible = true;
       setState(() {});
@@ -91,6 +103,8 @@ class _Registrarse1State extends State<Registrarse1>
     _focusNode1.dispose();
     _focusNode2.removeListener(_handleFocus2Change);
     _focusNode2.dispose();
+    _focusNode3.removeListener(_handleFocus2Change);
+    _focusNode3.dispose();
     super.dispose();
   }
 
@@ -156,25 +170,31 @@ class _Registrarse1State extends State<Registrarse1>
             key: _formKey,
             child: Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 40, left: 630),
-                  child: Text(
-                    "$_nQuesitos/6",
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xfff7f6f6),
-                      fontFamily: "Georgia",
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 30, right: 40),
+                    child: Text(
+                      "$_nQuesitos/6",
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xfff7f6f6),
+                        fontFamily: "Georgia",
+                      ),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 60, left: 520),
-                  child: ContainerQuesitos(_quesitos),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 50, right: 30),
+                    child: ContainerQuesitos(_quesitos),
+                  ),
                 ),
                 const ContainerTitle('Registrarse'),
                 Padding(
-                  padding: const EdgeInsets.only(top: 80, left: 40),
+                  padding: const EdgeInsets.only(top: 70, left: 40),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -200,6 +220,7 @@ class _Registrarse1State extends State<Registrarse1>
                               ),
                               child: TextFormField(
                                 controller: _userController,
+                                focusNode: _focusNode3,
                                 keyboardType: TextInputType.visiblePassword,
                                 decoration: const InputDecoration(
                                   border: InputBorder.none,
@@ -221,52 +242,54 @@ class _Registrarse1State extends State<Registrarse1>
                     ],
                   ),
                 ),
-                Positioned(
-                  top: 200,
-                  left: 40,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const ContainerLabelForm('CORREO ELECTRONICO'),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Container(
-                          height: 45,
-                          width: 290,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 180, left: 40),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const ContainerLabelForm('CORREO ELECTRONICO'),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Container(
+                            height: 45,
+                            width: 290,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                              color: Colors.white.withOpacity(0),
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            color: Colors.white.withOpacity(0),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: TextFormField(
-                            controller: _mailController,
-                            focusNode: _focusNode1,
-                            keyboardType: TextInputType.visiblePassword,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Introduzca su correo electrónico',
-                              hintStyle: TextStyle(
-                                  fontFamily: "Baskerville",
-                                  fontSize: 16.0,
-                                  color: Colors.white),
+                            child: TextFormField(
+                              controller: _mailController,
+                              focusNode: _focusNode1,
+                              keyboardType: TextInputType.visiblePassword,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Introduzca su correo electrónico',
+                                hintStyle: TextStyle(
+                                    fontFamily: "Baskerville",
+                                    fontSize: 16.0,
+                                    color: Colors.white),
+                              ),
+                              onSaved: (value) {
+                                _correoElectronico = value!;
+                              },
+                              style: const TextStyle(color: Colors.white),
                             ),
-                            onSaved: (value) {
-                              _correoElectronico = value!;
-                            },
-                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 350, top: 110),
+                  padding: const EdgeInsets.only(left: 360, top: 100),
                   child: Stack(
                     children: [
                       Visibility(
@@ -298,7 +321,7 @@ class _Registrarse1State extends State<Registrarse1>
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 350, top: 230),
+                  padding: const EdgeInsets.only(left: 360, top: 210),
                   child: Stack(
                     children: [
                       Visibility(
@@ -332,7 +355,7 @@ class _Registrarse1State extends State<Registrarse1>
                 Visibility(
                   visible: _isVisible,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 160),
+                    padding: const EdgeInsets.only(top: 155),
                     child: Container(
                       height: 40,
                       decoration: const BoxDecoration(
@@ -356,13 +379,12 @@ class _Registrarse1State extends State<Registrarse1>
                     ),
                   ),
                 ),
-                Positioned(
-                  top: 320,
-                  left: 130,
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: 
+                  Padding(padding: const EdgeInsets.only(bottom: 30),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Boton1(
                           "VOLVER",

@@ -171,7 +171,9 @@ class _CrearPartidaState extends State<CrearPartida>
     _focusNode3.dispose();
     _focusNode4.removeListener(_handleFocus4Change);
     _focusNode4.dispose();
+    _focusNode5.removeListener(_handleFocus5Change);
     _focusNode5.dispose();
+    _focusNode6.removeListener(_handleFocus6Change);
     _focusNode6.dispose();
     super.dispose();
   }
@@ -208,7 +210,19 @@ class _CrearPartidaState extends State<CrearPartida>
                 builder: (context) => IniciandoSesion(
                     Sesion(usuario: _usuario, token: r.token), _contrasena)),
             (Route<dynamic> route) => false);*/
-    } else {}
+    } else {
+      _errorCampos = true;
+      if (r.errorNombreSala != "") {
+        _errorCambioDatos = r.errorNombreSala;
+      } else if (r.errorNJugadores != "") {
+        _errorCambioDatos = r.errorNJugadores;
+      } else if (r.errorTiempoRespuesta != "") {
+        _errorCambioDatos = r.errorTiempoRespuesta;
+      } else if (r.errorTipoPartida != "") {
+        _errorCambioDatos = r.errorTipoPartida;
+      }
+      setState(() {});
+    }
   }
 
   @override
@@ -269,7 +283,7 @@ class _CrearPartidaState extends State<CrearPartida>
                         padding: const EdgeInsets.only(right: 380),
                         child: Container(
                           width: constraints.maxWidth / 5,
-                          height: constraints.maxHeight / 3,
+                          height: constraints.maxHeight / 2.8,
                           decoration: BoxDecoration(
                               color: Colors.transparent,
                               border: Border.all(color: Colors.white)),
@@ -278,7 +292,7 @@ class _CrearPartidaState extends State<CrearPartida>
                               const Align(
                                 alignment: Alignment.bottomCenter,
                                 child: Padding(
-                                  padding: EdgeInsets.only(bottom: 15),
+                                  padding: EdgeInsets.only(bottom: 10),
                                   child: Text(
                                     "Modo Clásico",
                                     style: TextStyle(
@@ -325,7 +339,7 @@ class _CrearPartidaState extends State<CrearPartida>
                       alignment: Alignment.center,
                       child: Container(
                         width: constraints.maxWidth / 5,
-                        height: constraints.maxHeight / 3,
+                        height: constraints.maxHeight / 2.8,
                         decoration: BoxDecoration(
                             color: Colors.transparent,
                             border: Border.all(color: Colors.white)),
@@ -334,7 +348,7 @@ class _CrearPartidaState extends State<CrearPartida>
                             const Align(
                               alignment: Alignment.bottomCenter,
                               child: Padding(
-                                padding: EdgeInsets.only(bottom: 15),
+                                padding: EdgeInsets.only(bottom: 10),
                                 child: Text(
                                   "Modo Equipos",
                                   style: TextStyle(
@@ -382,7 +396,7 @@ class _CrearPartidaState extends State<CrearPartida>
                         padding: const EdgeInsets.only(left: 380),
                         child: Container(
                           width: constraints.maxWidth / 5,
-                          height: constraints.maxHeight / 3,
+                          height: constraints.maxHeight / 2.8,
                           decoration: BoxDecoration(
                               color: Colors.transparent,
                               border: Border.all(color: Colors.white)),
@@ -391,7 +405,7 @@ class _CrearPartidaState extends State<CrearPartida>
                               const Align(
                                 alignment: Alignment.bottomCenter,
                                 child: Padding(
-                                  padding: EdgeInsets.only(bottom: 15),
+                                  padding: EdgeInsets.only(bottom: 10),
                                   child: Text(
                                     "Modo Temática",
                                     style: TextStyle(
@@ -437,10 +451,10 @@ class _CrearPartidaState extends State<CrearPartida>
                       child: Align(
                         alignment: Alignment.topCenter,
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 40),
+                          padding: const EdgeInsets.only(top: 15),
                           child: Container(
                             width: constraints.maxWidth / 1.10,
-                            height: constraints.maxHeight / 1.2,
+                            height: constraints.maxHeight / 1.1,
                             decoration: BoxDecoration(
                                 color: const Color(0xFF164966),
                                 border: Border.all(color: Colors.white)),
@@ -450,7 +464,7 @@ class _CrearPartidaState extends State<CrearPartida>
                                   alignment: Alignment.topRight,
                                   child: Padding(
                                     padding:
-                                        const EdgeInsets.only(top: 7, right: 6),
+                                        const EdgeInsets.only(top: 7, right: 7),
                                     child: Container(
                                       width: 33,
                                       height: 33,
@@ -462,8 +476,8 @@ class _CrearPartidaState extends State<CrearPartida>
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 573),
+                                Align(
+                                  alignment: Alignment.topRight,
                                   child: IconButton(
                                       iconSize: 31,
                                       icon: const Icon(
@@ -478,7 +492,7 @@ class _CrearPartidaState extends State<CrearPartida>
                                 Stack(
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.only(top: 20),
+                                      padding: const EdgeInsets.only(top: 15),
                                       child: Container(
                                         alignment: Alignment.topCenter,
                                         child: const Text(
@@ -494,7 +508,7 @@ class _CrearPartidaState extends State<CrearPartida>
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(
-                                          top: 70, left: 10),
+                                          top: 60, left: 30),
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
@@ -560,9 +574,9 @@ class _CrearPartidaState extends State<CrearPartida>
                                         ],
                                       ),
                                     ),
-                                    Positioned(
-                                      top: 190,
-                                      left: 10,
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 160, left: 30),
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
@@ -621,7 +635,7 @@ class _CrearPartidaState extends State<CrearPartida>
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(
-                                          top: 70, left: 310),
+                                          top: 60, left: 350),
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
@@ -689,9 +703,9 @@ class _CrearPartidaState extends State<CrearPartida>
                                     ),
                                     Visibility(
                                       visible: !_partidaPublica,
-                                      child: Positioned(
-                                        top: 190,
-                                        left: 310,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 160, left: 350),
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
@@ -772,7 +786,7 @@ class _CrearPartidaState extends State<CrearPartida>
                                       alignment: Alignment.bottomLeft,
                                       child: Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 380, bottom: 10),
+                                            left: 420, bottom: 20),
                                         child: Boton1(
                                           "CREAR SALA",
                                           onPressed: () {
@@ -784,7 +798,7 @@ class _CrearPartidaState extends State<CrearPartida>
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(
-                                          top: 280, left: 60),
+                                          top: 260, left: 60),
                                       child: TwoOptionsField(
                                         option1Text: "Publica",
                                         option2Text: "Privada",
@@ -878,8 +892,7 @@ class _CrearPartidaState extends State<CrearPartida>
                                                                       .circular(
                                                                           4),
                                                               child: Stack(
-                                                                children: <
-                                                                    Widget>[
+                                                                children: <Widget>[
                                                                   Positioned
                                                                       .fill(
                                                                     child:
@@ -1030,8 +1043,7 @@ class _CrearPartidaState extends State<CrearPartida>
                                                                       .circular(
                                                                           4),
                                                               child: Stack(
-                                                                children: <
-                                                                    Widget>[
+                                                                children: <Widget>[
                                                                   Positioned
                                                                       .fill(
                                                                     child:

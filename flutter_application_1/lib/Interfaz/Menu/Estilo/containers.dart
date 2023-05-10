@@ -384,7 +384,7 @@ class ContainerPorcentaje extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 35,
+      height: 30,
       width: 185,
       margin: const EdgeInsets.only(top: 5),
       decoration: BoxDecoration(
@@ -400,23 +400,26 @@ class ContainerPorcentaje extends StatelessWidget {
           Container(
             alignment: Alignment.center,
             //margin: const EdgeInsets.only(top: 5),
-            padding: const EdgeInsets.only(left: 38.0, top: 6.0),
+            padding: const EdgeInsets.only(left: 38.0, top: 0.0),
             child: const Text(
               '%Acierto: ',
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,
                 color: Color.fromARGB(255, 255, 255, 255),
                 fontFamily: "Baskerville",
+                
               ),
             ),
           ),
           Container(
             alignment: Alignment.center,
             //margin: const EdgeInsets.only(top: 5),
-            padding: const EdgeInsets.only(left: 10.0, top: 6.0),
+            padding: const EdgeInsets.only(left: 10.0, top: 0.0),
             child: Text(
               '$number%',
+              textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,

@@ -26,7 +26,7 @@ class ErrorInicioSesion extends StatelessWidget {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => Home()),
+            MaterialPageRoute(builder: (context) => const Home()),
             (Route<dynamic> route) => false);
         return false;
       },
@@ -61,22 +61,26 @@ class ErrorInicioSesion extends StatelessWidget {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 300, left: 70),
-                  child: Boton1(
-                    "VOLVER A INICIO",
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Boton1(
+                          "VOLVER A INICIO",
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => Home()),
+                          MaterialPageRoute(builder: (context) => const Home()),
                           (Route<dynamic> route) => false);
                     },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 300, left: 360),
-                  child: Boton1(
-                    "REINTENTAR INICIO SESIÓN",
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 160),
+                          child: Boton1(
+                            "REINTENTAR INICIO SESIÓN",
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
                           context,
@@ -85,8 +89,13 @@ class ErrorInicioSesion extends StatelessWidget {
                                   IniciandoSesionRegistro(_s,_contrasena)),
                           (Route<dynamic> route) => false);
                     },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+                
               ],
             ),
           ),

@@ -74,7 +74,7 @@ class _InicioSesionState extends State<InicioSesion> {
             children: [
               const ContainerTitle('Iniciar sesión'),
               Padding(
-                padding: const EdgeInsets.only(top: 110, left: 40),
+                padding: const EdgeInsets.only(top: 100, left: 50),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -84,7 +84,7 @@ class _InicioSesionState extends State<InicioSesion> {
                       children: [
                         const ContainerLabelForm('USUARIO'),
                         Padding(
-                          padding: const EdgeInsets.only(top: 20),
+                          padding: const EdgeInsets.only(top: 20,right: 80),
                           child: Container(
                             height: 45,
                             width: 250,
@@ -99,7 +99,8 @@ class _InicioSesionState extends State<InicioSesion> {
                             ),
                             child: TextFormField(
                               controller: _userController,
-                              decoration: const InputDecoration(
+                              keyboardType: TextInputType.visiblePassword,
+                                decoration: const InputDecoration(
                                 border: InputBorder.none,
                                 hintText: 'Ingrese su usuario',
                                 hintStyle: TextStyle(
@@ -117,7 +118,7 @@ class _InicioSesionState extends State<InicioSesion> {
                       ],
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 50),
+                      padding: const EdgeInsets.only(left: 10),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,7 +180,7 @@ class _InicioSesionState extends State<InicioSesion> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 30, top: 220),
+                padding: const EdgeInsets.only(left: 40, top: 210),
                 child: Stack(
                   children: [
                     Visibility(
@@ -208,7 +209,7 @@ class _InicioSesionState extends State<InicioSesion> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 320),
+                      padding: const EdgeInsets.only(left: 340),
                       child: Visibility(
                         visible: _errorContrasenaVisible,
                         child: Stack(
@@ -239,8 +240,8 @@ class _InicioSesionState extends State<InicioSesion> {
                 ),
               ),
               Positioned(
-                top: 320,
-                left: 130,
+                top: 280,
+                left: 160,
                 child: Container(
                   margin: const EdgeInsets.only(top: 0),
                   child: Row(

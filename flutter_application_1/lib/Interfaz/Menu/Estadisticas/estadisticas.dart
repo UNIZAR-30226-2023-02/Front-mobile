@@ -11,7 +11,15 @@ class Estadisticas extends StatelessWidget {
   const Estadisticas(this._s,this._eU, {Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return 
+    WillPopScope(onWillPop: () async {
+      Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => Menu(_s)),
+                (Route<dynamic> route) => false);
+                return false;
+    },child: Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -27,8 +35,7 @@ class Estadisticas extends StatelessWidget {
             children: [
               Container(
                 alignment: Alignment.center,
-                margin: const EdgeInsets.only(top: 20),
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.only(top: 20.0),
                 child: const Text(
                   'Mis estadísticas',
                   style: TextStyle(
@@ -40,8 +47,8 @@ class Estadisticas extends StatelessWidget {
                 ),
               ),
               Container(
-                height: 240, //120 sin poner el precio
-                margin: const EdgeInsets.symmetric(horizontal: 35),
+                height: 225,
+                margin: const EdgeInsets.only(left: 35,right: 35,top: 5),
                 decoration: BoxDecoration(
                   color: Colors.grey[800],
                   borderRadius: BorderRadius.circular(10),
@@ -56,12 +63,14 @@ class Estadisticas extends StatelessWidget {
                     child: Row(
                       children: <Widget>[
                         Container(
+                          
                           margin: const EdgeInsets.only(left: 7, right: 7),
                           child: Column(
                             children: [
                               //TODAS LAS TARJETAS DE ESTADISTICAS
                               Container(
-                                height: 225,
+                                
+                                height: 210,
                                 margin: const EdgeInsets.only(top: 5),
                                 decoration: BoxDecoration(
                                   color: Colors.grey[600],
@@ -78,14 +87,13 @@ class Estadisticas extends StatelessWidget {
                                       alignment: Alignment.center,
                                       //margin: const EdgeInsets.only(top: 5),
                                       padding: const EdgeInsets.only(
-                                          top: 10.0,
-                                          bottom: 4.0,
+                                          top: 5.0,
                                           left: 6.0,
                                           right: 6.0),
                                       child: const Text(
                                         'TOTAL',
                                         style: TextStyle(
-                                          fontSize: 20.0,
+                                          fontSize: 18.0,
                                           fontWeight: FontWeight.bold,
                                           color: Color.fromARGB(
                                               255, 255, 255, 255),
@@ -129,7 +137,7 @@ class Estadisticas extends StatelessWidget {
                             children: [
                               //TODAS LAS TARJETAS DE ESTADISTICAS
                               Container(
-                                height: 225,
+                                height: 210,
                                 margin: const EdgeInsets.only(top: 5),
                                 decoration: BoxDecoration(
                                   color:
@@ -147,14 +155,13 @@ class Estadisticas extends StatelessWidget {
                                       alignment: Alignment.center,
                                       //margin: const EdgeInsets.only(top: 5),
                                       padding: const EdgeInsets.only(
-                                          top: 10.0,
-                                          bottom: 4.0,
+                                          top: 5.0,
                                           left: 6.0,
                                           right: 6.0),
                                       child: const Text(
                                         'GEOGRAFÍA',
                                         style: TextStyle(
-                                          fontSize: 20.0,
+                                          fontSize: 18.0,
                                           fontWeight: FontWeight.bold,
                                           color: Color.fromARGB(
                                               255, 255, 255, 255),
@@ -193,7 +200,7 @@ class Estadisticas extends StatelessWidget {
                           child: Column(
                             children: [
                               Container(
-                                height: 225,
+                                height: 210,
                                 margin: const EdgeInsets.only(top: 5),
                                 decoration: BoxDecoration(
                                   color: const Color.fromARGB(255, 76, 175, 79),
@@ -210,11 +217,11 @@ class Estadisticas extends StatelessWidget {
                                       alignment: Alignment.center,
                                       //margin: const EdgeInsets.only(top: 5),
                                       padding: const EdgeInsets.only(
-                                          top: 16.0, left: 6.0, right: 6.0),
+                                          top: 5.0, left: 6.0, right: 6.0),
                                       child: const Text(
                                         'CIENCIA',
                                         style: TextStyle(
-                                          fontSize: 20.0,
+                                          fontSize: 18.0,
                                           fontWeight: FontWeight.bold,
                                           color: Color.fromARGB(
                                               255, 255, 255, 255),
@@ -254,7 +261,7 @@ class Estadisticas extends StatelessWidget {
                             children: [
                               //TODAS LAS TARJETAS DE ESTADISTICAS
                               Container(
-                                height: 225,
+                                height: 210,
                                 margin: const EdgeInsets.only(top: 5),
                                 decoration: BoxDecoration(
                                   color:
@@ -272,14 +279,13 @@ class Estadisticas extends StatelessWidget {
                                       alignment: Alignment.center,
                                       //margin: const EdgeInsets.only(top: 5),
                                       padding: const EdgeInsets.only(
-                                          top: 10.0,
-                                          bottom: 4.0,
+                                          top: 5.0,
                                           left: 6.0,
                                           right: 6.0),
                                       child: const Text(
                                         'HISTORIA',
                                         style: TextStyle(
-                                          fontSize: 20.0,
+                                          fontSize: 18.0,
                                           fontWeight: FontWeight.bold,
                                           color: Color.fromARGB(
                                               255, 255, 255, 255),
@@ -319,7 +325,7 @@ class Estadisticas extends StatelessWidget {
                             children: [
                               //TODAS LAS TARJETAS DE ESTADISTICAS
                               Container(
-                                height: 225,
+                                height: 210,
                                 margin: const EdgeInsets.only(top: 5),
                                 decoration: BoxDecoration(
                                   color:
@@ -337,14 +343,13 @@ class Estadisticas extends StatelessWidget {
                                       alignment: Alignment.center,
                                       //margin: const EdgeInsets.only(top: 5),
                                       padding: const EdgeInsets.only(
-                                          top: 10.0,
-                                          bottom: 4.0,
+                                          top: 5.0,
                                           left: 6.0,
                                           right: 6.0),
                                       child: const Text(
                                         'ENTRETENIMIENTO',
                                         style: TextStyle(
-                                          fontSize: 20.0,
+                                          fontSize: 18.0,
                                           fontWeight: FontWeight.bold,
                                           color: Color.fromARGB(
                                               255, 255, 255, 255),
@@ -384,7 +389,7 @@ class Estadisticas extends StatelessWidget {
                             children: [
                               //TODAS LAS TARJETAS DE ESTADISTICAS
                               Container(
-                                height: 225,
+                                height: 210,
                                 margin: const EdgeInsets.only(top: 5),
                                 decoration: BoxDecoration(
                                   color: const Color.fromARGB(255, 255, 153, 0),
@@ -401,14 +406,13 @@ class Estadisticas extends StatelessWidget {
                                       alignment: Alignment.center,
                                       //margin: const EdgeInsets.only(top: 5),
                                       padding: const EdgeInsets.only(
-                                          top: 10.0,
-                                          bottom: 4.0,
+                                          top: 5.0,
                                           left: 6.0,
                                           right: 6.0),
                                       child: const Text(
                                         'DEPORTES',
                                         style: TextStyle(
-                                          fontSize: 20.0,
+                                          fontSize: 18.0,
                                           fontWeight: FontWeight.bold,
                                           color: Color.fromARGB(
                                               255, 255, 255, 255),
@@ -448,7 +452,7 @@ class Estadisticas extends StatelessWidget {
                             children: [
                               //TODAS LAS TARJETAS DE ESTADISTICAS
                               Container(
-                                height: 225,
+                                height: 210,
                                 margin: const EdgeInsets.only(top: 5),
                                 decoration: BoxDecoration(
                                   color: const Color.fromARGB(255, 231, 40, 26),
@@ -465,14 +469,13 @@ class Estadisticas extends StatelessWidget {
                                       alignment: Alignment.center,
                                       //margin: const EdgeInsets.only(top: 5),
                                       padding: const EdgeInsets.only(
-                                          top: 10.0,
-                                          bottom: 4.0,
+                                          top: 5.0,
                                           left: 6.0,
                                           right: 6.0),
                                       child: const Text(
                                         'ARTE Y LITERATURA',
                                         style: TextStyle(
-                                          fontSize: 20.0,
+                                          fontSize: 18.0,
                                           fontWeight: FontWeight.bold,
                                           color: Color.fromARGB(
                                               255, 255, 255, 255),
@@ -515,7 +518,7 @@ class Estadisticas extends StatelessWidget {
                 alignment: Alignment.bottomCenter,
                 child:
                   Container(
-                    margin: const EdgeInsets.only(left: 0.0, top: 10),
+                    margin: const EdgeInsets.only(left: 0.0, top: 5),
                     child: Boton1(
                       "MENU",
                       onPressed: () {
@@ -530,7 +533,7 @@ class Estadisticas extends StatelessWidget {
             ],
           ),
         ),
-      ),
+      ),),
     );
   }
 }

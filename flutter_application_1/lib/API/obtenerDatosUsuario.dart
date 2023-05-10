@@ -29,6 +29,8 @@ class DatosUsuarioResponse {
 
   // ignore: non_constant_identifier_names
   void FillFields(http.Response r) {
+    
+    print("${r.statusCode}");
     if (r.statusCode <= 300) {
       final responseJson = json.decode(utf8.decode(r.bodyBytes));
 
@@ -43,6 +45,7 @@ class DatosUsuarioResponse {
         monedas = responseJson[M_key];
         List<dynamic> l = responseJson[A_key];
         amigos = l.map((item) => item as String).toList();
+        
       } else {
         OK = false;
       }
@@ -57,6 +60,8 @@ Future<DatosUsuarioResponse> obtenerDatosUsuario(DatosUsuarioPetition p) async {
   DatosUsuarioResponse r = DatosUsuarioResponse();
 
   final url = Uri.parse('$urlDir/api/usuarios/datos-yo/');
+
+  print("${p.token}");
 
   final response = await http.post(url, headers: {
     'Authorization': "Token ${p.token}",

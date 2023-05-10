@@ -95,10 +95,10 @@ class _RegistrandoUsuario extends State<RegistrandoUsuario> {
             image: const DecorationImage(
                 image: AssetImage('assets/tapete.png'), fit: BoxFit.fill),
           ),
-          child: Align(
+          child: const Align(
             alignment: Alignment.center,
             child: Stack(
-              children: const [
+              children: [
                 Padding(
                   padding: EdgeInsets.only(top: 15),
                   child: Text(

@@ -42,7 +42,7 @@ Future<UsarObjetoTiendaResponse> usarObjetoTienda(UsarObjetoTiendaPetition p) as
 
   UsarObjetoTiendaResponse r = UsarObjetoTiendaResponse();
 
-  final url = Uri.parse('$urlDir/api/tienda/objetos/');
+  final url = Uri.parse('$urlDir/api/tienda/usar/');
 
   final response = await http.post(url, headers: {
     'Authorization': "Token ${p.token}",

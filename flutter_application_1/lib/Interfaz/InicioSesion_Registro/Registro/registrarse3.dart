@@ -39,7 +39,7 @@ class _Registrarse3State extends State<Registrarse3>
   bool _isKeyboardVisible = false;
   bool _isVisible = false;
   bool _isFocus1 = false, _isFocus2 = false;
-  final _focusNode1 = FocusNode(), _focusNode2 = FocusNode();
+  final _focusNode1 = FocusNode(), _focusNode2 = FocusNode(),_focusNode3 = FocusNode();
 
   @override
   void initState() {
@@ -58,6 +58,7 @@ class _Registrarse3State extends State<Registrarse3>
     WidgetsBinding.instance.addObserver(this);
     _focusNode1.addListener(_handleFocus1Change);
     _focusNode2.addListener(_handleFocus2Change);
+    _focusNode3.addListener(_handleFocus3Change);
   }
 
   void _handleFocus1Change() {
@@ -71,6 +72,17 @@ class _Registrarse3State extends State<Registrarse3>
     if (_focusNode2.hasFocus) {
       // The text form field has focus, so the keyboard is being displayed.
       _isFocus2 = true;
+    }
+  }
+
+  void _handleFocus3Change() {
+    if (_focusNode3.hasFocus) {
+      // The text form field has focus, so the keyboard is being displayed.
+      _isVisible = false;
+      _focusNode1.unfocus();
+      _focusNode2.unfocus();
+      setState(() {
+      });
     }
   }
 
@@ -104,6 +116,8 @@ class _Registrarse3State extends State<Registrarse3>
     _focusNode1.dispose();
     _focusNode2.removeListener(_handleFocus2Change);
     _focusNode2.dispose();
+    _focusNode3.removeListener(_handleFocus2Change);
+    _focusNode3.dispose();
     super.dispose();
   }
 
@@ -171,8 +185,10 @@ class _Registrarse3State extends State<Registrarse3>
             key: _formKey,
             child: Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 40, left: 630),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 30, right: 40),
                   child: Text(
                     "$_nQuesitos/6",
                     style: const TextStyle(
@@ -182,14 +198,16 @@ class _Registrarse3State extends State<Registrarse3>
                       fontFamily: "Georgia",
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 60, left: 520),
+                ),),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 50, right: 30),
                   child: ContainerQuesitos(_quesitos),
-                ),
+                ),),
                 const ContainerTitle('Registrarse'),
                 Padding(
-                  padding: const EdgeInsets.only(top: 80, left: 40),
+                  padding: const EdgeInsets.only(top: 70, left: 40),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -215,6 +233,7 @@ class _Registrarse3State extends State<Registrarse3>
                               ),
                               child: TextFormField(
                                 controller: _phoneNumberController,
+                                focusNode: _focusNode3,
                                 keyboardType: TextInputType.number,
                                 decoration: const InputDecoration(
                                   border: InputBorder.none,
@@ -236,9 +255,10 @@ class _Registrarse3State extends State<Registrarse3>
                     ],
                   ),
                 ),
-                Positioned(
-                  top: 200,
-                  left: 40,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 180, left: 40),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,9 +302,9 @@ class _Registrarse3State extends State<Registrarse3>
                       ),
                     ],
                   ),
-                ),
+                ),),
                 Padding(
-                  padding: const EdgeInsets.only(left: 360, top: 110),
+                  padding: const EdgeInsets.only(left: 370, top: 100),
                   child: Stack(
                     children: [
                       Visibility(
@@ -316,7 +336,7 @@ class _Registrarse3State extends State<Registrarse3>
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 350, top: 230),
+                  padding: const EdgeInsets.only(left: 370, top: 210),
                   child: Stack(
                     children: [
                       Visibility(
@@ -327,7 +347,7 @@ class _Registrarse3State extends State<Registrarse3>
                             Padding(
                               padding: const EdgeInsets.only(),
                               child: SizedBox(
-                                width: 300,
+                                width: 280,
                                 height: 60,
                                 child: Padding(
                                   padding:
@@ -350,7 +370,7 @@ class _Registrarse3State extends State<Registrarse3>
                 Visibility(
                   visible: _isVisible,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 200),
+                    padding: const EdgeInsets.only(top: 155),
                     child: Container(
                       height: 40,
                       decoration: const BoxDecoration(
@@ -374,13 +394,12 @@ class _Registrarse3State extends State<Registrarse3>
                     ),
                   ),
                 ),
-                Positioned(
-                  top: 320,
-                  left: 130,
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 0),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: 
+                  Padding(padding: const EdgeInsets.only(bottom: 30),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Boton1(
                           "VOLVER",

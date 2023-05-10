@@ -1,7 +1,7 @@
 import 'package:flutter_application_1/Data_types/amigosUsuario.dart';
 import 'package:flutter_application_1/Data_types/datosUsuario.dart';
 import 'package:flutter_application_1/Interfaz/Menu/Estadisticas/estadisticas.dart';
-import 'package:flutter_application_1/Interfaz/Menu/Tienda/tiendaFichas.dart';
+import 'package:flutter_application_1/Interfaz/Menu/Tienda/tienda.dart';
 
 import 'dart:math';
 
@@ -555,37 +555,43 @@ class PulsaMenu extends StatelessWidget {
       }
     } else if (tipoBoton == "Verde") {
       //TIENDA
+      Future<DatosUsuarioResponse> f1 = obtenerDatosUsuario(
+          DatosUsuarioPetition(_s.getField(SesionFieldsCodes.token)));
+      DatosUsuarioResponse r1 = await f1;
       List<Ficha> fichas = <Ficha>[];
       List<Tablero> tableros = <Tablero>[];
-
-      Future<ObjetosTiendaResponse> f = obtenerObjetosTienda(
-          ObjetosTiendaPetition(_s.getField(SesionFieldsCodes.token)));
-      ObjetosTiendaResponse r = await f;
-
-      if (r.OK) {
-        for (var item in r.fichas) {
-          fichas.add(Ficha(
-              id: item['id'],
-              coste: item['coste'],
-              enUso: item['enUso'],
-              adquirido: item['adquirido'],
-              imagen: item['imagen']));
-        }
-
-        for (var item in r.tableros) {
-          tableros.add(Tablero(
-              id: item['id'],
-              coste: item['coste'],
-              enUso: item['enUso'],
-              adquirido: item['adquirido'],
-              imagen: item['imagen']));
-        }
+      int monedas = 0;
+      if (r1.OK) {
+        monedas = r1.monedas;
       }
+      Future<ObjetosTiendaResponse> f = obtenerObjetosTienda(
+            ObjetosTiendaPetition(_s.getField(SesionFieldsCodes.token)));
+        ObjetosTiendaResponse r = await f;
+
+        if (r.OK) {
+          for (var item in r.fichas) {
+            fichas.add(Ficha(
+                id: item['id'],
+                coste: item['coste'],
+                enUso: item['enUso'],
+                adquirido: item['adquirido'],
+                imagen: item['imagen']));
+          }
+
+          for (var item in r.tableros) {
+            tableros.add(Tablero(
+                id: item['id'],
+                coste: item['coste'],
+                enUso: item['enUso'],
+                adquirido: item['adquirido'],
+                imagen: item['imagen']));
+          }
+        }
 
       // ignore: use_build_context_synchronously
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => Tienda(_s, fichas, tableros)),
+          MaterialPageRoute(builder: (context) => Tienda(_s, fichas, tableros,monedas)),
           (Route<dynamic> route) => false);
     } else if (tipoBoton == "Naranja") {
       Future<DatosUsuarioResponse> f = obtenerDatosUsuario(

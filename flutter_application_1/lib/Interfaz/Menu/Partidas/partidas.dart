@@ -8,40 +8,19 @@ import '../../../../Data_types/sesion.dart';
 import '../home.dart';
 
 //ignore: must_be_immutable
-class Partidas extends StatefulWidget {
-  Partidas(this._s, {Key? key}) : super(key: key);
+class Partidas extends StatelessWidget {
+  const Partidas(this._s, {Key? key}) : super(key: key);
   final Sesion _s;
-
-  @override
-  // ignore: library_private_types_in_public_api, no_logic_in_create_state
-  _PartidasState createState() => _PartidasState(_s);
-}
-
-class _PartidasState extends State<Partidas> {
-  final _formKey = GlobalKey<FormState>();
-  Sesion _s;
-  _PartidasState(this._s);
-
-  String _sErrorAnadirAmigo = "", _sErrorEliminarAmigo = "";
-  bool _errorAnadirAmigo = false, _errorEliminarAmigo = false;
-  bool _amigoEliminado = false;
-  bool _amigoAnadido = false;
-  bool _datosAmigo = false;
-  bool _buscarPartida = true;
-
-  final TextEditingController _gameSearchController = TextEditingController();
-
-  void conseguirDatosAmigo(int index) async {}
-
-  void anadirAmigoUsuario() async {}
-
-  void eliminarAmigoUsuario() async {}
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: WillPopScope(
         onWillPop: () async {
+          Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => Menu(_s)),
+                (Route<dynamic> route) => false);
           return false;
         },
         child: Scaffold(
@@ -123,7 +102,7 @@ class _PartidasState extends State<Partidas> {
                                   alignment: Alignment.centerLeft,
                                   child: Padding(
                                     padding:
-                                        EdgeInsets.only(top: 160, left: 70),
+                                        EdgeInsets.only(top: 160, left: 80),
                                     child: Text(
                                       "CREAR PARTIDA",
                                       style: TextStyle(
@@ -172,7 +151,7 @@ class _PartidasState extends State<Partidas> {
                                   alignment: Alignment.centerRight,
                                   child: Padding(
                                     padding:
-                                        EdgeInsets.only(top: 160, right: 60),
+                                        EdgeInsets.only(top: 160, right: 50),
                                     child: Text(
                                       "BUSCAR PARTIDAS",
                                       style: TextStyle(
