@@ -1,6 +1,7 @@
 import 'package:flutter_application_1/Data_types/estadisticas.dart';
 import 'package:flutter_application_1/Interfaz/Menu/index.dart';
 
+import 'package:flutter_application_1/Interfaz/Menu/Estilo/index.dart';
 import 'package:flutter/material.dart';
 
 import '../../../Data_types/sesion.dart';

@@ -1,5 +1,6 @@
-import 'package:flutter_application_1/API/comprarObjetoTienda.dart';
+
 import 'package:flutter_application_1/Interfaz/Menu/index.dart';
+import 'package:flutter_application_1/Interfaz/Menu/Estilo/index.dart';
 import 'package:flutter/material.dart';
 
 import '../../../API/index.dart';
@@ -64,8 +65,9 @@ class _TiendaState extends State<Tienda> {
     } else {
       _errorComprarObjeto = true;
       _sErrorComprarObjeto = r.error;
-      if (_sErrorComprarObjeto == "")
+      if (_sErrorComprarObjeto == ""){
         _sErrorComprarObjeto = "No se pudo completar la compra";
+      }
     }
     _mostrarObjeto = false;
     setState(() {});
@@ -76,8 +78,8 @@ class _TiendaState extends State<Tienda> {
         UsarObjetoTiendaPetition(
             _s.getField(SesionFieldsCodes.token),
             _mostrarFichas
-                ? _fichas[_objeto].getField(FichaFieldsCodes.id)
-                : _tableros[_objeto].getField(TableroFieldsCodes.id)));
+                ? _fichas[index].getField(FichaFieldsCodes.id).toString()
+                : _tableros[index].getField(TableroFieldsCodes.id).toString()));
     UsarObjetoTiendaResponse r = await f;
     if (r.OK) {
       if (_mostrarFichas) {

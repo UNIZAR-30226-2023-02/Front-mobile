@@ -42,12 +42,17 @@ class _IniciandoSesion extends State<IniciandoSesion> {
     _setTimer();
   }
 
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
   void _setTimer() {
     _timer = Timer(const Duration(seconds: 4), () {
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Menu(_s)),
-          (Route<dynamic> route) => false);
+          MaterialPageRoute(builder: (context) => Menu(_s)));
     });
   }
 
