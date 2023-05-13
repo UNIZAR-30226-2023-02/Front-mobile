@@ -2,6 +2,7 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Interfaz/Menu/index.dart';
@@ -10,10 +11,11 @@ import 'package:flutter_application_1/Interfaz/Menu/Estilo/index.dart';
 import '../../../../Data_types/index.dart';
 
 import '../../../../API/index.dart';
+import '../../Juego/juego.dart';
 
 //ignore: must_be_immutable
 class Partidas extends StatefulWidget {
-  Partidas(this._s);
+  const Partidas(this._s, {Key? key}) : super(key: key);
   final Sesion _s;
   @override
   // ignore: library_private_types_in_public_api, no_logic_in_create_state
@@ -26,8 +28,8 @@ class _PartidasState extends State<Partidas> {
 
   List<InvitacionPartida> _i = <InvitacionPartida>[];
   int contador = 0;
-  String _sInvitaciones = "0";
-  bool _verInvitaciones = false;
+  String _sInvitaciones = "0", _webSocket = "";
+  bool _verInvitaciones = false, _partidaActiva = false;
 
   late Timer _timer;
 
@@ -47,6 +49,7 @@ class _PartidasState extends State<Partidas> {
   }
 
   _obtenerInvitacionesPartidas() async {
+    _mirarPartidaActiva();
     Future<ObtenerInvitacionesResponse> f = obtenerInvitaciones(
         ObtenerInvitacionesPetition(), _s.getField(SesionFieldsCodes.token));
     ObtenerInvitacionesResponse r = await f;
@@ -57,14 +60,33 @@ class _PartidasState extends State<Partidas> {
       } else {
         _sInvitaciones = "+99";
       }
-      setState(() {});
     }
+    setState(() {});
+  }
+
+  _mirarPartidaActiva() async {
+    Future<PartidaActivaResponse> f = partidaActiva(
+        PartidaActivaPetition(), _s.getField(SesionFieldsCodes.token));
+    PartidaActivaResponse r = await f;
+    if (r.OK) {
+      _partidaActiva = true;
+      _webSocket = r.ws;
+    } else {
+      _partidaActiva = false;
+    }
+  }
+
+  _unirseSala() {
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => Juego(_s, _webSocket)),
+        (Route<dynamic> route) => false);
   }
 
   @override
   void initState() {
     _obtenerInvitacionesPartidas();
-    _timer = Timer.periodic(const Duration(milliseconds: 3000), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       _obtenerInvitacionesPartidas();
     });
     super.initState();
@@ -72,6 +94,7 @@ class _PartidasState extends State<Partidas> {
 
   @override
   void dispose() {
+    print("dispose");
     _timer.cancel();
     super.dispose();
   }
@@ -113,7 +136,7 @@ class _PartidasState extends State<Partidas> {
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Padding(
-                          padding: const EdgeInsets.only(bottom: 50),
+                          padding: const EdgeInsets.only(bottom: 40),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(4),
                             child: Stack(
@@ -162,7 +185,7 @@ class _PartidasState extends State<Partidas> {
                       Align(
                         alignment: Alignment.topCenter,
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 60),
+                          padding: const EdgeInsets.only(top: 70),
                           child: SizedBox(
                             width: constraints.maxWidth / 1.1,
                             height: constraints.maxHeight / 1.7,
@@ -171,7 +194,7 @@ class _PartidasState extends State<Partidas> {
                                 Align(
                                   alignment: Alignment.topCenter,
                                   child: Padding(
-                                    padding: const EdgeInsets.only(top: 0),
+                                    padding: const EdgeInsets.only(top: 20),
                                     child: Stack(
                                       children: [
                                         GestureDetector(
@@ -235,7 +258,7 @@ class _PartidasState extends State<Partidas> {
                                 const Align(
                                   alignment: Alignment.center,
                                   child: Padding(
-                                    padding: EdgeInsets.only(top: 10),
+                                    padding: EdgeInsets.only(top: 40),
                                     child: Text(
                                       "Invitaciones",
                                       style: TextStyle(
@@ -396,6 +419,78 @@ class _PartidasState extends State<Partidas> {
                                     ),
                                   ),
                                 ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      _partidaActiva
+                          ? Align(
+                              alignment: Alignment.topCenter,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 25),
+                                child: Container(
+                                    height: constraints.maxHeight / 6,
+                                    width: constraints.maxWidth / 2,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.white),
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Colors.transparent),
+                                    child: Stack(
+                                      children: [
+                                        const Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Padding(
+                                            padding: EdgeInsets.only(left: 20),
+                                            child: Text(
+                                              "Tienes una partida activa",
+                                              style: TextStyle(
+                                                fontSize: 16.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                                fontFamily: "Baskerville",
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 20),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                print("hola");
+                                              },
+                                              child: Container(
+                                                height:
+                                                    constraints.maxHeight / 10,
+                                                width: constraints.maxWidth / 8,
+                                                decoration: BoxDecoration(
+                                                    color:
+                                                        const Color(0xFF164966),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    border: Border.all(
+                                                        color: Colors.white)),
+                                                child: const Align(
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    "Unirse",
+                                                    style: TextStyle(
+                                                      fontSize: 16.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white,
+                                                      fontFamily: "Baskerville",
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )),
                               ),
                             )
                           : const SizedBox.shrink(),

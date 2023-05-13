@@ -8,23 +8,15 @@ import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 
 import '../../Data_types/sesion.dart';
 
-class Juego extends StatelessWidget {
-  const Juego({Key? key}) : super(key: key);
-
+class Juego extends StatefulWidget {
+  const Juego(this._s, this._wS, {Key? key}) : super(key: key);
+  final String _wS;
+  final Sesion _s;
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: _Juego(),
-    );
-  }
+  _JuegoState createState() => _JuegoState();
 }
 
-class _Juego extends StatefulWidget {
-  @override
-  __JuegoState createState() => __JuegoState();
-}
-
-class __JuegoState extends State<_Juego> {
+class _JuegoState extends State<Juego> {
   Color Azul = Colors.blue;
   Color Naranja = Color.fromARGB(255, 240, 143, 17);
   Color Rojo = Color.fromARGB(255, 230, 44, 19);

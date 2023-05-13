@@ -14,20 +14,24 @@ class CrearSalaPetition {
       TR_key = 'tiempo_respuesta',
       PS_key = 'password_sala',
       NJ_key = 'n_jugadores',
-      TP_key = 'tipo_partida';
+      TP_key = 'tipo_partida',
+      T_key = 'tematica';
 
   // ignore: non_constant_identifier_names
   String nombreSala,
       tiempoRespuesta,
       contrasenaSala,
       numeroJugadores,
-      tipoPartida;
-  CrearSalaPetition(String nS, String tR, String cS, String nJ, String tP)
+      tipoPartida,
+      tematica;
+  CrearSalaPetition(
+      String nS, String tR, String cS, String nJ, String tP, String t)
       : nombreSala = nS,
         tiempoRespuesta = tR,
         contrasenaSala = cS,
         numeroJugadores = nJ,
-        tipoPartida = tP;
+        tipoPartida = tP,
+        tematica = t;
 }
 
 class CrearSalaResponse {
@@ -36,12 +40,14 @@ class CrearSalaResponse {
       ENS_key = 'error_nombre_sala',
       ETP_key = 'error_tipo_partida',
       ENJ_key = 'error_n_jugadores',
-      ETR_key = 'error_tiempo_respuesta';
+      ETR_key = 'error_tiempo_respuesta',
+      ET_key = 'error_tematica';
   // ignore: non_constant_identifier_names
   String errorNombreSala = "",
       errorTipoPartida = "",
       errorNJugadores = "",
-      errorTiempoRespuesta = "";
+      errorTiempoRespuesta = "",
+      errorTematica = "";
   // ignore: non_constant_identifier_names
   bool OK = false;
 
@@ -51,17 +57,17 @@ class CrearSalaResponse {
   void FillFields(http.Response r) {
     if (r.statusCode <= 300) {
       final responseJson = json.decode(utf8.decode(r.bodyBytes));
-
       String parameterValue = responseJson[OK_key];
 
       if (parameterValue == 'True') {
         OK = true;
+      } else {
+        OK = false;
         errorNombreSala = responseJson[ENS_key];
         errorTipoPartida = responseJson[ETP_key];
         errorNJugadores = responseJson[ENJ_key];
         errorTiempoRespuesta = responseJson[ENJ_key];
-      } else {
-        OK = false;
+        errorTematica = responseJson[ET_key];
       }
     }
   }
@@ -73,9 +79,7 @@ Future<CrearSalaResponse> crearSalaPartida(
   HttpOverrides.global = MyHttpOverrides();
 
   CrearSalaResponse r = CrearSalaResponse();
-
   final url = Uri.parse('$urlDir/api/salas/crear/');
-
   final response = await http.post(url, headers: {
     'Authorization': "Token $token",
   }, body: {
@@ -83,7 +87,8 @@ Future<CrearSalaResponse> crearSalaPartida(
     CrearSalaPetition.NJ_key: p.numeroJugadores,
     CrearSalaPetition.PS_key: p.contrasenaSala,
     CrearSalaPetition.TR_key: p.tiempoRespuesta,
-    CrearSalaPetition.TP_key: p.tipoPartida
+    CrearSalaPetition.TP_key: p.tipoPartida,
+    CrearSalaPetition.T_key: p.tematica
   });
 
   r.FillFields(response);

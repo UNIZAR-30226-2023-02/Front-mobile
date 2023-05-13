@@ -33,9 +33,9 @@ class DatosSalaPartida {
       case DatosSalaPartidaFieldsCodes.creador:
         return _creador;
       case DatosSalaPartidaFieldsCodes.tipoPartida:
-        return _nombre;
+        return _tipoPartida;
       case DatosSalaPartidaFieldsCodes.tipoSala:
-        return _nombre;
+        return _tipoSala;
     }
   }
 
@@ -59,7 +59,6 @@ class DatosSalaPartida {
       case DatosSalaPartidaFieldsCodes.tipoSala:
         _tipoSala = s;
         break;
-
     }
   }
 }

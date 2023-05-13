@@ -186,11 +186,10 @@ class _AmigosState extends State<Amigos> {
                   return Stack(
                     children: [
                       Align(
-                        alignment: Alignment.bottomCenter,
+                        alignment: Alignment.bottomLeft,
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 30),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          child: Stack(
                             children: [
                               Boton1("MENU", onPressed: () {
                                 Navigator.pushAndRemoveUntil(
@@ -200,7 +199,7 @@ class _AmigosState extends State<Amigos> {
                                     (Route<dynamic> route) => false);
                               }),
                               Padding(
-                                padding: const EdgeInsets.only(left: 200),
+                                padding: const EdgeInsets.only(left: 300),
                                 child: Boton1(
                                   "AÑADIR AMIGO",
                                   onPressed: () {
@@ -217,7 +216,7 @@ class _AmigosState extends State<Amigos> {
                       Align(
                         alignment: Alignment.topCenter,
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 65),
+                          padding: const EdgeInsets.only(top: 60),
                           child: Stack(
                             children: [
                               Container(
@@ -1147,6 +1146,80 @@ class _AmigosState extends State<Amigos> {
                               ),
                             )
                           : const SizedBox.shrink(),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 40),
+                          child: Stack(
+                            children: [
+                              GestureDetector(
+                                behavior: HitTestBehavior.deferToChild,
+                                onTap: () {
+                                  print("hola");
+                                  setState(() {});
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 50.0),
+                                  child: Container(
+                                    width: constraints.maxWidth / 8,
+                                    height: constraints.maxHeight / 8,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: const Color(0xFF164966),
+                                      border: Border.all(
+                                          color: Colors.white, width: 2),
+                                    ),
+                                    child: const Icon(
+                                      Icons.person_add,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              IgnorePointer(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 38.0, left: 35.0),
+                                  child: Container(
+                                    width: constraints.maxWidth / 12,
+                                    height: constraints.maxHeight / 12,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: const Color(0xFF164966),
+                                      border: Border.all(
+                                          color: Colors.white, width: 2),
+                                    ),
+                                    child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 5.0),
+                                        child: Text(
+                                          "0",
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                              color: Colors.white),
+                                        )),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 20),
+                          child: Text(
+                            "Solicitudes",
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontFamily: "Baskerville",
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   );
                 },
