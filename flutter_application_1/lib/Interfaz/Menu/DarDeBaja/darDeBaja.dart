@@ -45,7 +45,7 @@ class _DarDeBajaState extends State<DarDeBaja> {
         } else if (_bajaCompletada) {
           Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => Home()),
+              MaterialPageRoute(builder: (context) => const Home()),
               (Route<dynamic> route) => false);
         } else {
           Navigator.pushAndRemoveUntil(
@@ -115,11 +115,11 @@ class _DarDeBajaState extends State<DarDeBaja> {
                               Boton1(
                                 "NO",
                                 onPressed: () {
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Menu(_s)),
-                                      (Route<dynamic> route) => false);
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                              builder: (context) => Menu(_s)),
+                                          (Route<dynamic> route) => false);
                                 },
                               ),
                               Padding(
@@ -135,216 +135,243 @@ class _DarDeBajaState extends State<DarDeBaja> {
                           ),
                         ),
                       ),
-                      _errorBaja ? Container(
-                          height: constraints.maxHeight,
-                          width: constraints.maxWidth,
-                          decoration:
-                              const BoxDecoration(color: Color(0x80444444)),
-                          margin: const EdgeInsets.only(top: 0),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Stack(
-                              children: [
-                                Container(
-                                  width: constraints.maxWidth / 2,
-                                  height: constraints.maxHeight / 2.5,
-                                  decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: Colors.black,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.topCenter,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 20),
-                                          child: SizedBox(
-                                            height: constraints.maxHeight / 4.5,
-                                            width: constraints.maxWidth / 2.3,
-                                            child: const Text(
-                                              "No se ha podido dar de baja la cuenta",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  color: Color(0xFFb13636),
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 18,
-                                                  fontFamily: "Georgia"),
-                                            ),
-                                          ),
+                      _errorBaja
+                          ? Container(
+                              height: constraints.maxHeight,
+                              width: constraints.maxWidth,
+                              decoration:
+                                  const BoxDecoration(color: Color(0x80444444)),
+                              margin: const EdgeInsets.only(top: 0),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: constraints.maxWidth / 2,
+                                      height: constraints.maxHeight / 2.5,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 2,
                                         ),
                                       ),
-                                      Align(
-                                        alignment: Alignment.bottomCenter,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 10),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                            child: Stack(
-                                              children: <Widget>[
-                                                Positioned.fill(
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              30),
-                                                      color: Colors.black,
-                                                      border: Border.all(
-                                                          color: Colors.white,
-                                                          width: 2),
+                                      child: Stack(
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 20),
+                                              child: SizedBox(
+                                                height:
+                                                    constraints.maxHeight / 4.5,
+                                                width:
+                                                    constraints.maxWidth / 2.3,
+                                                child: const Text(
+                                                  "No se ha podido dar de baja la cuenta",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      color: Color(0xFFb13636),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18,
+                                                      fontFamily: "Georgia"),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.bottomCenter,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 10),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                child: Stack(
+                                                  children: <Widget>[
+                                                    Positioned.fill(
+                                                      child: Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(30),
+                                                          color: Colors.black,
+                                                          border: Border.all(
+                                                              color:
+                                                                  Colors.white,
+                                                              width: 2),
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
-                                                ),
-                                                TextButton(
-                                                  style: TextButton.styleFrom(
-                                                    foregroundColor:
-                                                        Colors.white,
-                                                    // padding: const EdgeInsets.all(16.0),
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 4,
-                                                            bottom: 4,
-                                                            left: 15,
-                                                            right: 15),
-                                                    textStyle: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 18,
-                                                        fontFamily: "Georgia"),
-                                                  ),
-                                                  onPressed: () {
-                                                    _errorBaja = false;
-                                                    setState(() {});
-                                                  },
-                                                  child: const Text("ACEPTAR"),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ) : const SizedBox.shrink(),
-                      _bajaCompletada ? Container(
-                          height: constraints.maxHeight,
-                          width: constraints.maxWidth,
-                          decoration:
-                              const BoxDecoration(color: Color(0x80444444)),
-                          margin: const EdgeInsets.only(top: 0),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Stack(
-                              children: [
-                                Container(
-                                  width: constraints.maxWidth / 2,
-                                  height: constraints.maxHeight / 2.5,
-                                  decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: Colors.black,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.topCenter,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 20),
-                                          child: SizedBox(
-                                            height: constraints.maxHeight / 4.5,
-                                            width: constraints.maxWidth / 2.3,
-                                            child: const Text(
-                                              "Se ha dado de baja su cuenta correctamente",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  color: Color(0xFF3dce00),
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 18,
-                                                  fontFamily: "Georgia"),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.bottomCenter,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 10),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                            child: Stack(
-                                              children: <Widget>[
-                                                Positioned.fill(
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              30),
-                                                      color: Colors.black,
-                                                      border: Border.all(
-                                                          color: Colors.white,
-                                                          width: 2),
+                                                    TextButton(
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        foregroundColor:
+                                                            Colors.white,
+                                                        // padding: const EdgeInsets.all(16.0),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 4,
+                                                                bottom: 4,
+                                                                left: 15,
+                                                                right: 15),
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 18,
+                                                                fontFamily:
+                                                                    "Georgia"),
+                                                      ),
+                                                      onPressed: () {
+                                                        _errorBaja = false;
+                                                        setState(() {});
+                                                      },
+                                                      child:
+                                                          const Text("ACEPTAR"),
                                                     ),
-                                                  ),
+                                                  ],
                                                 ),
-                                                TextButton(
-                                                  style: TextButton.styleFrom(
-                                                    foregroundColor:
-                                                        Colors.white,
-                                                    // padding: const EdgeInsets.all(16.0),
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 4,
-                                                            bottom: 4,
-                                                            left: 15,
-                                                            right: 15),
-                                                    textStyle: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 18,
-                                                        fontFamily: "Georgia"),
-                                                  ),
-                                                  onPressed: () {
-                                                    Navigator
-                                                        .pushAndRemoveUntil(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        Home()),
-                                                            (Route<dynamic>
-                                                                    route) =>
-                                                                false);
-                                                  },
-                                                  child: const Text("ACEPTAR"),
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                           ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      _bajaCompletada
+                          ? Container(
+                              height: constraints.maxHeight,
+                              width: constraints.maxWidth,
+                              decoration:
+                                  const BoxDecoration(color: Color(0x80444444)),
+                              margin: const EdgeInsets.only(top: 0),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: constraints.maxWidth / 2,
+                                      height: constraints.maxHeight / 2.5,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 2,
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                      child: Stack(
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 20),
+                                              child: SizedBox(
+                                                height:
+                                                    constraints.maxHeight / 4.5,
+                                                width:
+                                                    constraints.maxWidth / 2.3,
+                                                child: const Text(
+                                                  "Se ha dado de baja su cuenta correctamente",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      color: Color(0xFF3dce00),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18,
+                                                      fontFamily: "Georgia"),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.bottomCenter,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 10),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                child: Stack(
+                                                  children: <Widget>[
+                                                    Positioned.fill(
+                                                      child: Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(30),
+                                                          color: Colors.black,
+                                                          border: Border.all(
+                                                              color:
+                                                                  Colors.white,
+                                                              width: 2),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    TextButton(
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        foregroundColor:
+                                                            Colors.white,
+                                                        // padding: const EdgeInsets.all(16.0),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 4,
+                                                                bottom: 4,
+                                                                left: 15,
+                                                                right: 15),
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 18,
+                                                                fontFamily:
+                                                                    "Georgia"),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.of(context,
+                                                                rootNavigator:
+                                                                    true)
+                                                            .pushAndRemoveUntil(
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            const Home()),
+                                                                (Route<dynamic>
+                                                                        route) =>
+                                                                    false);
+                                                      },
+                                                      child:
+                                                          const Text("ACEPTAR"),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ) : const SizedBox.shrink(),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                     ],
                   );
                 },

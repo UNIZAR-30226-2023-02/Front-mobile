@@ -11,6 +11,7 @@ class ObtenerSalasPetition {
 class ObtenerSalasResponse {
   // ignore: constant_identifier_names
   List<DatosSalaPartida> salas = <DatosSalaPartida>[];
+  List<String> nombreSalas = <String>[];
 
   bool OK = false;
 
@@ -22,7 +23,14 @@ class ObtenerSalasResponse {
       final responseJson = json.decode(utf8.decode(r.bodyBytes));
       OK = true;
       for (var item in responseJson) {
-        salas.add(DatosSalaPartida(nombre: item['nombre_sala'],creador: item['creador_username'],tiempoRespuesta: item['tiempo_respuesta'].toString(),numeroJugadores: item['n_jugadores'].toString(),tipoPartida: item['tipo_partida'],tipoSala: item['nombre_sala']));
+        nombreSalas.add(item['nombre_sala']);
+        salas.add(DatosSalaPartida(
+            nombre: item['nombre_sala'],
+            creador: item['creador_username'],
+            tiempoRespuesta: item['tiempo_respuesta'].toString(),
+            numeroJugadores: item['n_jugadores'].toString(),
+            tipoPartida: item['tipo_partida'],
+            tipoSala: item['nombre_sala']));
       }
     }
   }

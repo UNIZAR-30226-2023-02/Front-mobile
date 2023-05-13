@@ -50,11 +50,6 @@ Future<LoginUserResponse> iniciarSesionUsuario(LoginUserPetition p) async {
   final url = Uri.parse('$urlDir/api/usuarios/login/');
 
   final response = await http.post(url, body: {
-    // 'username': "bhjfasd",
-    // 'password': "12345678",
-    // 'confirm_password': "12345678",
-    // 'fecha_nac': "22-01-22",
-    // 'correo': "urioew",
     'username': p.username,
     'password': p.password,
   });

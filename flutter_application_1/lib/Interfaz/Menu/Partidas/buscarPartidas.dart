@@ -12,70 +12,85 @@ import '../home.dart';
 
 //ignore: must_be_immutable
 class BuscarPartida extends StatefulWidget {
-  BuscarPartida(this._s, this._sP, {Key? key}) : super(key: key);
+  BuscarPartida(this._s, this._sP, this._sN, {Key? key}) : super(key: key);
   final Sesion _s;
   // ignore: non_constant_identifier_names
   List<DatosSalaPartida> _sP;
+  List<String> _sN;
 
   @override
   // ignore: library_private_types_in_public_api, no_logic_in_create_state
-  _BuscarPartidaState createState() => _BuscarPartidaState(_s, _sP);
+  _BuscarPartidaState createState() => _BuscarPartidaState(_s, _sP, _sN);
 }
 
-class _BuscarPartidaState extends State<BuscarPartida> {
+class _BuscarPartidaState extends State<BuscarPartida>
+    with WidgetsBindingObserver {
   final _formKey = GlobalKey<FormState>();
   late Timer _timer;
   final Sesion _s;
   List<DatosSalaPartida> _sP;
-  _BuscarPartidaState(this._s, this._sP);
+  List<String> _sN;
+  late List<String> _sF = <String>[];
+  _BuscarPartidaState(this._s, this._sP, this._sN);
 
-  bool _datosPartida = false;
-  bool _modoClasico = false, _modoEquipos = false, _modoTematica = false;
+  bool _teclado = false, _datosSala = false, _isFocus = false;
 
   final TextEditingController _gameSearchController = TextEditingController();
+  late ValueNotifier _cambios;
+  final FocusNode _focusNode = FocusNode();
 
-  String _errorCambioDatos = "";
-  bool _errorCampos = false;
-  bool _cambioRealizado = false;
-  bool _cambioDatos = false;
-
-  bool _passwordVisible = false;
-  bool _partidaPublica = true;
-
-  bool _isKeyboardVisible = false;
-  bool _isVisible1 = false, _isVisible2 = false;
-  bool _isFocus1 = false,
-      _isFocus2 = false,
-      _isFocus3 = false,
-      _isFocus4 = false;
-  final _focusNode1 = FocusNode(),
-      _focusNode2 = FocusNode(),
-      _focusNode3 = FocusNode(),
-      _focusNode4 = FocusNode(),
-      _focusNode5 = FocusNode(),
-      _focusNode6 = FocusNode();
+  String _filtro = "";
 
   @override
   void initState() {
-    _timer = Timer(const Duration(milliseconds: 2000), buscarSalas);
+    _filtrarSalas();
+    _timer = Timer.periodic(const Duration(milliseconds: 3000), (timer) {
+      _buscarSalas();
+    });
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus) {
+        _teclado = false;
+        _focusNode.unfocus();
+        setState(() {});
+      }
+    });
+
+    _cambios = ValueNotifier<String>(_gameSearchController.text);
+    _cambios.addListener(() {
+      _filtro = _cambios.value;
+      _filtrarSalas();
+      setState(() {});
+    });
+    _gameSearchController.addListener(() {
+      _cambios.value = _gameSearchController.text;
+    });
     super.initState();
   }
 
   @override
   void dispose() {
+    print("dispose");
+    _gameSearchController.dispose();
+    _focusNode.dispose();
+    _cambios.dispose();
     _timer.cancel();
     super.dispose();
   }
 
-  void buscarSalas() async {
+  _filtrarSalas() {
+    _sF = _sN.where((element) => element.contains(_filtro)).toList();
+  }
+
+  _buscarSalas() async {
     Future<ObtenerSalasResponse> f = obtenerSalas(
         ObtenerSalasPetition(), _s.getField(SesionFieldsCodes.token));
     ObtenerSalasResponse r = await f;
     if (r.OK) {
       _sP = r.salas;
+      _sN = r.nombreSalas;
+      _filtrarSalas();
+      setState(() {});
     }
-    setState(() {});
-    _timer = Timer(const Duration(milliseconds: 2000), buscarSalas);
   }
 
   @override
@@ -98,25 +113,52 @@ class _BuscarPartidaState extends State<BuscarPartida> {
               child: Stack(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 25),
-                    child: Container(
-                      alignment: Alignment.topCenter,
-                      child: const Text(
-                        "Buscar Partidas",
-                        style: TextStyle(
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFc9c154),
-                          fontFamily: "Baskerville",
-                        ),
-                      ),
-                    ),
+                    padding: const EdgeInsets.only(top: 15),
+                    child: _teclado
+                        ? Align(
+                            alignment: Alignment.topCenter,
+                            child: SizedBox(
+                              width: constraints.maxWidth / 4,
+                              height: constraints.maxHeight / 9,
+                              child: TextFormField(
+                                controller: _gameSearchController,
+                                focusNode: _focusNode,
+                                keyboardType: TextInputType.visiblePassword,
+                                decoration: const InputDecoration(
+                                  border: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.white),
+                                  ),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.white),
+                                  ),
+                                ),
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          )
+                        : Container(
+                            alignment: Alignment.topCenter,
+                            padding: const EdgeInsets.only(top: 10),
+                            child: const Text(
+                              "Buscar Partidas",
+                              style: TextStyle(
+                                fontSize: 30.0,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFc9c154),
+                                fontFamily: "Baskerville",
+                              ),
+                            ),
+                          ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 30, left: 500),
                     child: GestureDetector(
                       onTap: () {
                         print("hola");
+                        _teclado = true;
+                        _isFocus = true;
+                        _focusNode.requestFocus();
+                        setState(() {});
                       },
                       behavior: HitTestBehavior.deferToChild,
                       child: Container(
@@ -165,7 +207,7 @@ class _BuscarPartidaState extends State<BuscarPartida> {
                                 child: ListView.separated(
                                   padding:
                                       const EdgeInsets.only(top: 5, bottom: 5),
-                                  itemCount: _sP.length,
+                                  itemCount: _sF.length,
                                   separatorBuilder: (context, index) =>
                                       const Divider(
                                     color: Colors.grey,
@@ -173,8 +215,7 @@ class _BuscarPartidaState extends State<BuscarPartida> {
                                   ),
                                   itemBuilder: (context, index) {
                                     return ListTile(
-                                      title: Text(
-                                          "Sala:\t ${_sP[index].getField(DatosSalaPartidaFieldsCodes.nombre)}"),
+                                      title: Text("Sala:\t ${_sF[index]}"),
                                     );
                                   },
                                 ),

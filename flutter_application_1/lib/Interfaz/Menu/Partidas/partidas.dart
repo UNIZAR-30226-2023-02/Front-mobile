@@ -23,7 +23,7 @@ class Partidas extends StatefulWidget {
 class _PartidasState extends State<Partidas> {
   _PartidasState(this._s);
   final Sesion _s;
-  List<DatosSalaPartida> _sP = <DatosSalaPartida>[];
+
   List<InvitacionPartida> _i = <InvitacionPartida>[];
   int contador = 0;
   String _sInvitaciones = "0";
@@ -36,17 +36,17 @@ class _PartidasState extends State<Partidas> {
         ObtenerSalasPetition(), _s.getField(SesionFieldsCodes.token));
     ObtenerSalasResponse r = await f;
     if (r.OK) {
-      _sP = r.salas;
+      List<DatosSalaPartida> _sP = r.salas;
+      List<String> _sN = r.nombreSalas;
       // ignore: use_build_context_synchronously
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => BuscarPartida(_s, _sP)),
+        MaterialPageRoute(builder: (context) => BuscarPartida(_s, _sP, _sN)),
       );
     }
   }
 
-  Future<void> _obtenerInvitacionesPartidas() async {
-    Stopwatch stopwatch = Stopwatch()..start();
+  _obtenerInvitacionesPartidas() async {
     Future<ObtenerInvitacionesResponse> f = obtenerInvitaciones(
         ObtenerInvitacionesPetition(), _s.getField(SesionFieldsCodes.token));
     ObtenerInvitacionesResponse r = await f;
@@ -59,14 +59,12 @@ class _PartidasState extends State<Partidas> {
       }
       setState(() {});
     }
-    stopwatch.stop();
-    print('Time elapsed: ${stopwatch.elapsed.inMilliseconds}');
   }
 
   @override
   void initState() {
     _obtenerInvitacionesPartidas();
-    _timer = Timer.periodic(const Duration(milliseconds: 2000), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 3000), (timer) {
       _obtenerInvitacionesPartidas();
     });
     super.initState();
@@ -74,7 +72,6 @@ class _PartidasState extends State<Partidas> {
 
   @override
   void dispose() {
-    print("dispose");
     _timer.cancel();
     super.dispose();
   }
@@ -99,7 +96,7 @@ class _PartidasState extends State<Partidas> {
           resizeToAvoidBottomInset: false,
           // body: SingleChildScrollView (  //SOLUCION FONDO DE PANTALLA SE ESTRECHA AL SACAR TECLADO
           body: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
+            builder: (context, BoxConstraints constraints) {
               return Container(
                 height: constraints.maxHeight,
                 width: constraints.maxWidth,
@@ -117,14 +114,48 @@ class _PartidasState extends State<Partidas> {
                         alignment: Alignment.bottomCenter,
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 50),
-                          child: Boton1(
-                            "MENU",
-                            onPressed: () {
-                              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => Menu(_s)),
-                (Route<dynamic> route) => false);
-                            },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: Stack(
+                              children: <Widget>[
+                                Positioned.fill(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30),
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: <Color>[
+                                          Color(0xFFdee8eb),
+                                          Color(0xFFb0c7d0)
+                                        ],
+                                        stops: [0.4, 1.0],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: const Color(0xFF004461),
+                                    // padding: const EdgeInsets.all(16.0),
+                                    padding: const EdgeInsets.only(
+                                        top: 4, bottom: 4, left: 15, right: 15),
+                                    textStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        fontFamily: "Georgia"),
+                                  ),
+                                  onPressed: () async {
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pushAndRemoveUntil(
+                                            MaterialPageRoute(
+                                                builder: (context) => Menu(_s)),
+                                            (Route<dynamic> route) => false);
+                                  },
+                                  child: const Text("MENU"),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

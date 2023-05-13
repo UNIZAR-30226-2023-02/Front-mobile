@@ -19,19 +19,17 @@ class ObtenerInvitacionesResponse {
 
   // ignore: non_constant_identifier_names
   void FillFields(http.Response r) {
-    
     if (r.statusCode <= 300) {
       final responseJson = json.decode(utf8.decode(r.bodyBytes));
 
       String parameterValue = responseJson['OK'];
       if (parameterValue == 'True') {
         OK = true;
-      } else {
-        OK = false;
-        
-      }
-      for (var item in responseJson['peticiones']) {
-        invitaciones.add(InvitacionPartida(nombreSala: item['ws'],nombreAmigo: item['me_invita']));
+
+        for (var item in responseJson['peticiones']) {
+          invitaciones.add(InvitacionPartida(
+              nombreSala: item['ws'], nombreAmigo: item['me_invita']));
+        }
       }
     }
   }

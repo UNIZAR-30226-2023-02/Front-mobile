@@ -118,6 +118,8 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
     // Check whether the keyboard is currently visible.
     final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
     _isKeyboardVisible = bottomInset > 480.0;
+
+    print("k: $_isKeyboardVisible f:");
     if (_isKeyboardVisible && (_isFocus1 || _isFocus2)) {
       _isVisible1 = true;
       setState(() {});
@@ -485,14 +487,26 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                   alignment: Alignment.bottomCenter,
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 30),
-                    child: Stack(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Visibility(
-                          visible: !_cambioDatos,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Boton1(
+                        _cambioDatos
+                            ? Boton1(
+                                "CANCELAR",
+                                onPressed: () {
+                                  _cambioDatos = false;
+                                  _mailController.text = _dU.getField(
+                                      DatosUsuarioFieldsCodes
+                                          .correoElectronico);
+                                  _birthDateController.text = _dU.getField(
+                                      DatosUsuarioFieldsCodes.fechaNacimiento);
+                                  _phoneNumberController.text = _dU.getField(
+                                      DatosUsuarioFieldsCodes.telefonoMovil);
+
+                                  setState(() {});
+                                },
+                              )
+                            : Boton1(
                                 "MENU",
                                 onPressed: () {
                                   Navigator.pushAndRemoveUntil(
@@ -502,9 +516,16 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                                       (Route<dynamic> route) => false);
                                 },
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 200),
-                                child: Boton1(
+                        Padding(
+                          padding: const EdgeInsets.only(left: 200),
+                          child: _cambioDatos
+                              ? Boton1(
+                                  "CONFIRMAR",
+                                  onPressed: () {
+                                    _comprobarDatos(context);
+                                  },
+                                )
+                              : Boton1(
                                   "CAMBIAR DATOS",
                                   onPressed: () {
                                     _cambioDatos = true;
@@ -520,41 +541,6 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                                     _focusNode5.unfocus();
                                   },
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Visibility(
-                          visible: _cambioDatos,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Boton1(
-                                "CANCELAR",
-                                onPressed: () {
-                                  _cambioDatos = false;
-                                  _mailController.text = _dU.getField(
-                                      DatosUsuarioFieldsCodes
-                                          .correoElectronico);
-                                  _birthDateController.text = _dU.getField(
-                                      DatosUsuarioFieldsCodes.fechaNacimiento);
-                                  _phoneNumberController.text = _dU.getField(
-                                      DatosUsuarioFieldsCodes.telefonoMovil);
-
-                                  setState(() {});
-                                },
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 200),
-                                child: Boton1(
-                                  "CONFIRMAR",
-                                  onPressed: () {
-                                    _comprobarDatos(context);
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
                       ],
                     ),
@@ -562,214 +548,247 @@ class _PerfilState extends State<Perfil> with WidgetsBindingObserver {
                 ),
                 LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
-                    return Visibility(
-                      visible: _errorCampos,
-                      child: Container(
-                        height: constraints.maxHeight,
-                        width: constraints.maxWidth,
-                        decoration:
-                            const BoxDecoration(color: Color(0x80444444)),
-                        margin: const EdgeInsets.only(top: 0),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Stack(
-                            children: [
-                              Container(
-                                width: constraints.maxWidth / 2,
-                                height: constraints.maxHeight / 2.2,
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: Colors.black,
-                                    width: 2,
-                                  ),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(top: 0),
-                                        child: SizedBox(
-                                          height: constraints.maxHeight / 3.5,
-                                          width: constraints.maxWidth / 2.3,
-                                          child: Text(
-                                            _errorCambioDatos,
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                                color: Color(0xFFb13636),
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18,
-                                                fontFamily: "Georgia"),
+                    return Stack(
+                      children: [
+                        _errorCampos
+                            ? Container(
+                                height: constraints.maxHeight,
+                                width: constraints.maxWidth,
+                                decoration: const BoxDecoration(
+                                    color: Color(0x80444444)),
+                                margin: const EdgeInsets.only(top: 0),
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        width: constraints.maxWidth / 2,
+                                        height: constraints.maxHeight / 2.2,
+                                        decoration: BoxDecoration(
+                                          color: Colors.black,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: 2,
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.bottomCenter,
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 10),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Positioned.fill(
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            30),
-                                                    color: Colors.black,
-                                                    border: Border.all(
-                                                        color: Colors.white,
-                                                        width: 2),
+                                        child: Stack(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.center,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 0),
+                                                child: SizedBox(
+                                                  height:
+                                                      constraints.maxHeight /
+                                                          3.5,
+                                                  width: constraints.maxWidth /
+                                                      2.3,
+                                                  child: Text(
+                                                    _errorCambioDatos,
+                                                    textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                        color:
+                                                            Color(0xFFb13636),
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 18,
+                                                        fontFamily: "Georgia"),
                                                   ),
                                                 ),
                                               ),
-                                              TextButton(
-                                                style: TextButton.styleFrom(
-                                                  foregroundColor: Colors.white,
-                                                  // padding: const EdgeInsets.all(16.0),
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 4,
-                                                          bottom: 4,
-                                                          left: 15,
-                                                          right: 15),
-                                                  textStyle: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 18,
-                                                      fontFamily: "Georgia"),
-                                                ),
-                                                onPressed: () {
-                                                  _errorCampos = false;
-                                                  setState(() {});
-                                                },
-                                                child: const Text("ACEPTAR"),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    return Visibility(
-                      visible: _cambioRealizado,
-                      child: Container(
-                        height: constraints.maxHeight,
-                        width: constraints.maxWidth,
-                        decoration:
-                            const BoxDecoration(color: Color(0x80444444)),
-                        margin: const EdgeInsets.only(top: 0),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Stack(
-                            children: [
-                              Container(
-                                width: constraints.maxWidth / 2,
-                                height: constraints.maxHeight / 2.2,
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: Colors.black,
-                                    width: 2,
-                                  ),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(top: 0),
-                                        child: SizedBox(
-                                          height: constraints.maxHeight / 4.5,
-                                          width: constraints.maxWidth / 2.3,
-                                          child: const Text(
-                                            "Los datos han sido modificados correctamente",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Color(0xFF3dce00),
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18,
-                                                fontFamily: "Georgia"),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.bottomCenter,
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 20),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Positioned.fill(
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            30),
-                                                    color: Colors.black,
-                                                    border: Border.all(
-                                                        color: Colors.white,
-                                                        width: 2),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 10),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  child: Stack(
+                                                    children: <Widget>[
+                                                      Positioned.fill(
+                                                        child: Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        30),
+                                                            color: Colors.black,
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .white,
+                                                                width: 2),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                        style: TextButton
+                                                            .styleFrom(
+                                                          foregroundColor:
+                                                              Colors.white,
+                                                          // padding: const EdgeInsets.all(16.0),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  top: 4,
+                                                                  bottom: 4,
+                                                                  left: 15,
+                                                                  right: 15),
+                                                          textStyle:
+                                                              const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 18,
+                                                                  fontFamily:
+                                                                      "Georgia"),
+                                                        ),
+                                                        onPressed: () {
+                                                          _errorCampos = false;
+                                                          setState(() {});
+                                                        },
+                                                        child: const Text(
+                                                            "ACEPTAR"),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
-                                              TextButton(
-                                                style: TextButton.styleFrom(
-                                                  foregroundColor: Colors.white,
-                                                  // padding: const EdgeInsets.all(16.0),
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 4,
-                                                          bottom: 4,
-                                                          left: 15,
-                                                          right: 15),
-                                                  textStyle: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 18,
-                                                      fontFamily: "Georgia"),
-                                                ),
-                                                onPressed: () {
-                                                  _cambioRealizado = false;
-                                                  _cambioDatos = false;
-                                                  setState(() {});
-                                                },
-                                                child: const Text("ACEPTAR"),
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                              )
+                            : const SizedBox.shrink(),
+                        _cambioRealizado
+                            ? Container(
+                                height: constraints.maxHeight,
+                                width: constraints.maxWidth,
+                                decoration: const BoxDecoration(
+                                    color: Color(0x80444444)),
+                                margin: const EdgeInsets.only(top: 0),
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        width: constraints.maxWidth / 2,
+                                        height: constraints.maxHeight / 2.2,
+                                        decoration: BoxDecoration(
+                                          color: Colors.black,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: Stack(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.center,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 0),
+                                                child: SizedBox(
+                                                  height:
+                                                      constraints.maxHeight /
+                                                          4.5,
+                                                  width: constraints.maxWidth /
+                                                      2.3,
+                                                  child: const Text(
+                                                    "Los datos han sido modificados correctamente",
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color:
+                                                            Color(0xFF3dce00),
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 18,
+                                                        fontFamily: "Georgia"),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 20),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  child: Stack(
+                                                    children: <Widget>[
+                                                      Positioned.fill(
+                                                        child: Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        30),
+                                                            color: Colors.black,
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .white,
+                                                                width: 2),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                        style: TextButton
+                                                            .styleFrom(
+                                                          foregroundColor:
+                                                              Colors.white,
+                                                          // padding: const EdgeInsets.all(16.0),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  top: 4,
+                                                                  bottom: 4,
+                                                                  left: 15,
+                                                                  right: 15),
+                                                          textStyle:
+                                                              const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 18,
+                                                                  fontFamily:
+                                                                      "Georgia"),
+                                                        ),
+                                                        onPressed: () {
+                                                          _cambioRealizado =
+                                                              false;
+                                                          _cambioDatos = false;
+                                                          setState(() {});
+                                                        },
+                                                        child: const Text(
+                                                            "ACEPTAR"),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ],
                     );
                   },
                 ),

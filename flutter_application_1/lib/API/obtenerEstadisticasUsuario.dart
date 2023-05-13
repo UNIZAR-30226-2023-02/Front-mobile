@@ -29,10 +29,13 @@ class EstadisticasUsuarioResponse {
       M_key = 'mal',
       P_key = 'porcentaje';
   // ignore: non_constant_identifier_names
-  List<String> preguntas = <String>[],incorrectas = <String>[],correctas = <String>[],aciertos = <String>[];
+  List<String> preguntas = <String>[],
+      incorrectas = <String>[],
+      correctas = <String>[],
+      aciertos = <String>[];
   // ignore: non_constant_identifier_names
   bool OK = false;
-  String errorUsuario = "",quesitos = "";
+  String errorUsuario = "", quesitos = "";
 
   EstadisticasUsuarioResponse();
 
@@ -46,7 +49,7 @@ class EstadisticasUsuarioResponse {
       if (parameterValue == 'True') {
         OK = true;
         quesitos = responseJson[Q_key];
-        Map<String,dynamic> aux;
+        Map<String, dynamic> aux;
 
         // total
         preguntas.add(responseJson[TP_key]);
@@ -57,56 +60,55 @@ class EstadisticasUsuarioResponse {
         // geografía
         aux = responseJson[G_key];
         preguntas.add(aux[T_key]!);
-        incorrectas.add(aux[B_key]!);
-        correctas.add(aux[M_key]!);
+        incorrectas.add(aux[M_key]!);
+        correctas.add(aux[B_key]!);
         aciertos.add(aux[P_key]!);
-      
+
         // ciencia
         aux = responseJson[C_key];
         preguntas.add(aux[T_key]!);
-        incorrectas.add(aux[B_key]!);
-        correctas.add(aux[M_key]!);
+        incorrectas.add(aux[M_key]!);
+        correctas.add(aux[B_key]!);
         aciertos.add(aux[P_key]!);
 
         // historia
         aux = responseJson[H_key];
         preguntas.add(aux[T_key]!);
-        incorrectas.add(aux[B_key]!);
-        correctas.add(aux[M_key]!);
+        incorrectas.add(aux[M_key]!);
+        correctas.add(aux[B_key]!);
         aciertos.add(aux[P_key]!);
 
         // entretenimiento
         aux = responseJson[E_key];
         preguntas.add(aux[T_key]!);
-        incorrectas.add(aux[B_key]!);
-        correctas.add(aux[M_key]!);
+        incorrectas.add(aux[M_key]!);
+        correctas.add(aux[B_key]!);
         aciertos.add(aux[P_key]!);
 
         // deportes
         aux = responseJson[D_key];
         preguntas.add(aux[T_key]!);
-        incorrectas.add(aux[B_key]!);
-        correctas.add(aux[M_key]!);
+        incorrectas.add(aux[M_key]!);
+        correctas.add(aux[B_key]!);
         aciertos.add(aux[P_key]!);
 
-        // arte 
+        // arte
         aux = responseJson[A_key];
         preguntas.add(aux[T_key]!);
-        incorrectas.add(aux[B_key]!);
-        correctas.add(aux[M_key]!);
+        incorrectas.add(aux[M_key]!);
+        correctas.add(aux[B_key]!);
         aciertos.add(aux[P_key]!);
-        
       } else {
         OK = false;
         errorUsuario = responseJson[EU_key];
-        
       }
     }
   }
 }
 
 // ignore: non_constant_identifier_names
-Future<EstadisticasUsuarioResponse> obtenerEstadisticasUsuario(EstadisticasUsuarioPetition p) async {
+Future<EstadisticasUsuarioResponse> obtenerEstadisticasUsuario(
+    EstadisticasUsuarioPetition p) async {
   HttpOverrides.global = MyHttpOverrides();
 
   EstadisticasUsuarioResponse r = EstadisticasUsuarioResponse();

@@ -21,6 +21,7 @@ class _MenuState extends State<Menu> {
   final Sesion _s;
   _MenuState(this._s);
   bool _cerrarSesion = false;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -295,14 +296,20 @@ class _MenuState extends State<Menu> {
                 alignment: Alignment.bottomLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 50, bottom: 50),
-                  child: Transform.flip(
-                    flipX: true,child: IconButton(icon: const Icon(Icons.exit_to_app,
-                    color: Colors.white,size: 60,),
-                    onPressed: () {
-                      _cerrarSesion = true;
-                      setState(() {});
-                    },
-                  ),),
+                  child: Transform.scale(
+                    scaleX: -1,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.exit_to_app,
+                        color: Colors.white,
+                        size: 60,
+                      ),
+                      onPressed: () {
+                        _cerrarSesion = true;
+                        setState(() {});
+                      },
+                    ),
+                  ),
                 ),
               ),
               _cerrarSesion
@@ -360,7 +367,7 @@ class _MenuState extends State<Menu> {
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       const Home()),
-                                              (Route<dynamic> route) => false);
+                                              (route) => route.isFirst);
                                         },
                                       ),
                                     ),

@@ -1,4 +1,3 @@
-
 import 'package:flutter_application_1/Interfaz/Menu/index.dart';
 import 'package:flutter_application_1/Interfaz/Menu/Estilo/index.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +64,7 @@ class _TiendaState extends State<Tienda> {
     } else {
       _errorComprarObjeto = true;
       _sErrorComprarObjeto = r.error;
-      if (_sErrorComprarObjeto == ""){
+      if (_sErrorComprarObjeto == "") {
         _sErrorComprarObjeto = "No se pudo completar la compra";
       }
     }
@@ -483,420 +482,415 @@ class _TiendaState extends State<Tienda> {
               ),
               LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
-                  return Visibility(
-                    visible: _mostrarObjeto,
-                    child: _mostrarObjeto
-                        ? Container(
-                            height: constraints.maxHeight,
-                            width: constraints.maxWidth,
-                            decoration:
-                                const BoxDecoration(color: Color(0x80444444)),
-                            margin: const EdgeInsets.only(top: 0),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Container(
-                                width: constraints.maxWidth / 1.5,
-                                height: constraints.maxHeight / 1.5,
-                                margin: const EdgeInsets.only(
-                                    left: 10.0, right: 10.0),
-                                decoration: BoxDecoration(
-                                    color: const Color(0xFF164966),
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                        color: Colors.white, width: 2.0)),
-                                child: Stack(
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(top: 60),
-                                        child: SizedBox(
-                                          height: constraints.maxHeight / 2.0,
-                                          width: constraints.maxWidth / 2.8,
-                                          child: Text(
-                                            _mostrarFichas
-                                                ? "¿Desea confirmar la compra de la ficha?"
-                                                : "¿Desea confirmar la compra del tablero?",
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              fontSize: 20.0,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              fontFamily: "Baskerville",
+                  return Stack(
+                    children: [
+                      _mostrarObjeto
+                          ? Container(
+                              height: constraints.maxHeight,
+                              width: constraints.maxWidth,
+                              decoration:
+                                  const BoxDecoration(color: Color(0x80444444)),
+                              margin: const EdgeInsets.only(top: 0),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  width: constraints.maxWidth / 1.5,
+                                  height: constraints.maxHeight / 1.5,
+                                  margin: const EdgeInsets.only(
+                                      left: 10.0, right: 10.0),
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xFF164966),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                          color: Colors.white, width: 2.0)),
+                                  child: Stack(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 60),
+                                          child: SizedBox(
+                                            height: constraints.maxHeight / 2.0,
+                                            width: constraints.maxWidth / 2.8,
+                                            child: Text(
+                                              _mostrarFichas
+                                                  ? "¿Desea confirmar la compra de la ficha?"
+                                                  : "¿Desea confirmar la compra del tablero?",
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                fontSize: 20.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                                fontFamily: "Baskerville",
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 30),
-                                        child: Container(
-                                          width: 160,
-                                          height: 200,
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xFF164966),
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 2.0)),
-                                          child: Stack(
-                                            children: [
-                                              Container(
-                                                width: 140,
-                                                height: 140,
-                                                decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                    image: NetworkImage(_mostrarFichas
-                                                        ? '$urlDir${_fichas[_objeto].getField(FichaFieldsCodes.imagen)}'
-                                                        : '$urlDir${_tableros[_objeto].getField(TableroFieldsCodes.imagen)}'),
-                                                    fit: BoxFit.cover,
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 30),
+                                          child: Container(
+                                            width: 160,
+                                            height: 200,
+                                            decoration: BoxDecoration(
+                                                color: const Color(0xFF164966),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 2.0)),
+                                            child: Stack(
+                                              children: [
+                                                Container(
+                                                  width: 140,
+                                                  height: 140,
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: NetworkImage(_mostrarFichas
+                                                          ? '$urlDir${_fichas[_objeto].getField(FichaFieldsCodes.imagen)}'
+                                                          : '$urlDir${_tableros[_objeto].getField(TableroFieldsCodes.imagen)}'),
+                                                      fit: BoxFit.cover,
+                                                    ),
                                                   ),
+                                                  margin: const EdgeInsets
+                                                      .symmetric(horizontal: 8),
                                                 ),
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8),
-                                              ),
-                                              Container(
-                                                alignment:
-                                                    Alignment.bottomCenter,
-                                                //margin: const EdgeInsets.only(top: 5),
-                                                padding: const EdgeInsets.only(
-                                                    top: 10.0),
-                                                child: Padding(
+                                                Container(
+                                                  alignment:
+                                                      Alignment.bottomCenter,
+                                                  //margin: const EdgeInsets.only(top: 5),
                                                   padding:
                                                       const EdgeInsets.only(
-                                                    bottom: 20,
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Text(
-                                                        _mostrarFichas
-                                                            ? '${_fichas[_objeto].getField(FichaFieldsCodes.coste)}'
-                                                            : '${_tableros[_objeto].getField(TableroFieldsCodes.coste)}',
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: const TextStyle(
-                                                          fontSize: 14.0,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.white,
-                                                          fontFamily:
-                                                              "Baskerville",
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        width: 30,
-                                                        height: 30,
-                                                        decoration:
-                                                            const BoxDecoration(
-                                                          image:
-                                                              DecorationImage(
-                                                            image: AssetImage(
-                                                                'assets/Moneda.png'),
-                                                            fit: BoxFit
-                                                                .scaleDown,
+                                                          top: 10.0),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                      bottom: 20,
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Text(
+                                                          _mostrarFichas
+                                                              ? '${_fichas[_objeto].getField(FichaFieldsCodes.coste)}'
+                                                              : '${_tableros[_objeto].getField(TableroFieldsCodes.coste)}',
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 14.0,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Colors.white,
+                                                            fontFamily:
+                                                                "Baskerville",
                                                           ),
                                                         ),
-                                                        margin: const EdgeInsets
-                                                                .symmetric(
-                                                            horizontal: 8),
-                                                      ),
-                                                    ],
+                                                        Container(
+                                                          width: 30,
+                                                          height: 30,
+                                                          decoration:
+                                                              const BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image: AssetImage(
+                                                                  'assets/Moneda.png'),
+                                                              fit: BoxFit
+                                                                  .scaleDown,
+                                                            ),
+                                                          ),
+                                                          margin:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      8),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.bottomLeft,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 50, bottom: 40),
+                                          child: Stack(
+                                            children: [
+                                              Boton1(
+                                                "NO",
+                                                onPressed: () {
+                                                  _mostrarObjeto = false;
+                                                  setState(() {});
+                                                },
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 100),
+                                                child: Boton1(
+                                                  "SI",
+                                                  onPressed: () {
+                                                    comprarObjeto();
+                                                  },
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 50, bottom: 40),
-                                        child: Stack(
-                                          children: [
-                                            Boton1(
-                                              "NO",
-                                              onPressed: () {
-                                                _mostrarObjeto = false;
-                                                setState(() {});
-                                              },
-                                            ),
-                                            Padding(
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      _errorComprarObjeto
+                          ? Container(
+                              height: constraints.maxHeight,
+                              width: constraints.maxWidth,
+                              decoration:
+                                  const BoxDecoration(color: Color(0x80444444)),
+                              margin: const EdgeInsets.only(top: 0),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: constraints.maxWidth / 2,
+                                      height: constraints.maxHeight / 2.5,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: Stack(
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Padding(
                                               padding: const EdgeInsets.only(
-                                                  left: 100),
-                                              child: Boton1(
-                                                "SI",
-                                                onPressed: () {
-                                                  comprarObjeto();
-                                                },
+                                                  top: 30),
+                                              child: SizedBox(
+                                                height:
+                                                    constraints.maxHeight / 4.5,
+                                                width:
+                                                    constraints.maxWidth / 2.3,
+                                                child: Text(
+                                                  _sErrorComprarObjeto,
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                      color: Color(0xFFb13636),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18,
+                                                      fontFamily: "Georgia"),
+                                                ),
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.bottomCenter,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 20),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                child: Stack(
+                                                  children: <Widget>[
+                                                    Positioned.fill(
+                                                      child: Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(30),
+                                                          color: Colors.black,
+                                                          border: Border.all(
+                                                              color:
+                                                                  Colors.white,
+                                                              width: 2),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    TextButton(
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        foregroundColor:
+                                                            Colors.white,
+                                                        // padding: const EdgeInsets.all(16.0),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 4,
+                                                                bottom: 4,
+                                                                left: 15,
+                                                                right: 15),
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 18,
+                                                                fontFamily:
+                                                                    "Georgia"),
+                                                      ),
+                                                      onPressed: () {
+                                                        _errorComprarObjeto =
+                                                            false;
+                                                        setState(() {});
+                                                      },
+                                                      child:
+                                                          const Text("ACEPTAR"),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                            ),
-                          )
-                        : Container(),
-                  );
-                },
-              ),
-              LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-                  return Visibility(
-                    visible: _errorComprarObjeto,
-                    child: Container(
-                      height: constraints.maxHeight,
-                      width: constraints.maxWidth,
-                      decoration: const BoxDecoration(color: Color(0x80444444)),
-                      margin: const EdgeInsets.only(top: 0),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: constraints.maxWidth / 2,
-                              height: constraints.maxHeight / 2.5,
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 2,
-                                ),
-                              ),
-                              child: Stack(
-                                children: [
-                                  Align(
-                                    alignment: Alignment.topCenter,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 30),
-                                      child: SizedBox(
-                                        height: constraints.maxHeight / 4.5,
-                                        width: constraints.maxWidth / 2.3,
-                                        child: Text(
-                                          _sErrorComprarObjeto,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                              color: Color(0xFFb13636),
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
-                                              fontFamily: "Georgia"),
+                            )
+                          : const SizedBox.shrink(),
+                      _compraRealizada
+                          ? Container(
+                              height: constraints.maxHeight,
+                              width: constraints.maxWidth,
+                              decoration:
+                                  const BoxDecoration(color: Color(0x80444444)),
+                              margin: const EdgeInsets.only(top: 0),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: constraints.maxWidth / 2,
+                                      height: constraints.maxHeight / 2.5,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 2,
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 20),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(4),
-                                        child: Stack(
-                                          children: <Widget>[
-                                            Positioned.fill(
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
-                                                  color: Colors.black,
-                                                  border: Border.all(
-                                                      color: Colors.white,
-                                                      width: 2),
+                                      child: Stack(
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 30),
+                                              child: SizedBox(
+                                                height:
+                                                    constraints.maxHeight / 4.5,
+                                                width:
+                                                    constraints.maxWidth / 2.3,
+                                                child: const Text(
+                                                  "Commpra completada",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      color: Color(0xFF3dce00),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18,
+                                                      fontFamily: "Georgia"),
                                                 ),
                                               ),
                                             ),
-                                            TextButton(
-                                              style: TextButton.styleFrom(
-                                                foregroundColor: Colors.white,
-                                                // padding: const EdgeInsets.all(16.0),
-                                                padding: const EdgeInsets.only(
-                                                    top: 4,
-                                                    bottom: 4,
-                                                    left: 15,
-                                                    right: 15),
-                                                textStyle: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18,
-                                                    fontFamily: "Georgia"),
-                                              ),
-                                              onPressed: () {
-                                                _errorComprarObjeto = false;
-                                                setState(() {});
-                                              },
-                                              child: const Text("ACEPTAR"),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-              LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-                  return Visibility(
-                    visible: _compraRealizada,
-                    child: Container(
-                      height: constraints.maxHeight,
-                      width: constraints.maxWidth,
-                      decoration: const BoxDecoration(color: Color(0x80444444)),
-                      margin: const EdgeInsets.only(top: 0),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: constraints.maxWidth / 2,
-                              height: constraints.maxHeight / 2.5,
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 2,
-                                ),
-                              ),
-                              child: Stack(
-                                children: [
-                                  Align(
-                                    alignment: Alignment.topCenter,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 30),
-                                      child: SizedBox(
-                                        height: constraints.maxHeight / 4.5,
-                                        width: constraints.maxWidth / 2.3,
-                                        child: const Text(
-                                          "Commpra completada",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color: Color(0xFF3dce00),
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
-                                              fontFamily: "Georgia"),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 20),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(4),
-                                        child: Stack(
-                                          children: <Widget>[
-                                            Positioned.fill(
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
-                                                  color: Colors.black,
-                                                  border: Border.all(
-                                                      color: Colors.white,
-                                                      width: 2),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.bottomCenter,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 20),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                child: Stack(
+                                                  children: <Widget>[
+                                                    Positioned.fill(
+                                                      child: Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(30),
+                                                          color: Colors.black,
+                                                          border: Border.all(
+                                                              color:
+                                                                  Colors.white,
+                                                              width: 2),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    TextButton(
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        foregroundColor:
+                                                            Colors.white,
+                                                        // padding: const EdgeInsets.all(16.0),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 4,
+                                                                bottom: 4,
+                                                                left: 15,
+                                                                right: 15),
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 18,
+                                                                fontFamily:
+                                                                    "Georgia"),
+                                                      ),
+                                                      onPressed: () {
+                                                        _compraRealizada =
+                                                            false;
+                                                        setState(() {});
+                                                      },
+                                                      child:
+                                                          const Text("ACEPTAR"),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ),
-                                            TextButton(
-                                              style: TextButton.styleFrom(
-                                                foregroundColor: Colors.white,
-                                                // padding: const EdgeInsets.all(16.0),
-                                                padding: const EdgeInsets.only(
-                                                    top: 4,
-                                                    bottom: 4,
-                                                    left: 15,
-                                                    right: 15),
-                                                textStyle: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18,
-                                                    fontFamily: "Georgia"),
-                                              ),
-                                              onPressed: () {
-                                                _compraRealizada = false;
-                                                setState(() {});
-                                              },
-                                              child: const Text("ACEPTAR"),
-                                            ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                            )
+                          : const SizedBox.shrink(),
+                    ],
                   );
                 },
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class TileButton extends StatelessWidget {
-  final Color color = const Color.fromARGB(0, 66, 66, 66);
-  final VoidCallback onPressed;
-  final String pathImagen;
-
-  const TileButton(
-      {Key? key, required this.onPressed, required this.pathImagen})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Stack(
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            color: color,
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-          ),
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(pathImagen),
-                fit: BoxFit.cover,
-              ),
-            ),
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-          ),
-        ],
       ),
     );
   }
