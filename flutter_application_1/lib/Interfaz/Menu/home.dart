@@ -699,6 +699,10 @@ class PulsaMenu extends StatelessWidget {
       }
     } else if (tipoBoton == "Rojo") {
       //CONTACTO Y REDES
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => RedesSociales(_s)),
+          (Route<dynamic> route) => false);
     } else if (tipoBoton == "Rosa") {
       //DARSE DE BAJA
       Navigator.pushAndRemoveUntil(

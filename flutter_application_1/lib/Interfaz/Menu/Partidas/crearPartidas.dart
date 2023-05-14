@@ -84,7 +84,8 @@ class _CrearPartidaState extends State<CrearPartida> {
         // ignore: use_build_context_synchronously
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => Juego(_s, r.ws)),
+            MaterialPageRoute(
+                builder: (context) => Juego(_s, r.ws, tipoPartida)),
             (Route<dynamic> route) => false);
       }
     } else {

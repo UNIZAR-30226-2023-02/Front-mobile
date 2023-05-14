@@ -1,7 +1,10 @@
 // ignore: file_names
 // ignore_for_file: prefer_interpolation_to_compose_strings
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/API/rechazarAmigo.dart';
 import 'package:flutter_application_1/Data_types/amigosUsuario.dart';
 import 'package:flutter_application_1/Data_types/datosUsuario.dart';
 import 'package:flutter_application_1/API/index.dart';
@@ -28,6 +31,7 @@ class _AmigosState extends State<Amigos> {
   late DatosUsuario _dA = DatosUsuario();
   AmigosUsuario _a;
   _AmigosState(this._s, this._a);
+  List<String> _aP = <String>[];
   EstadisticasUsuario _eA =
       EstadisticasUsuario("", <String>[], <String>[], <String>[], <String>[]);
 
@@ -38,12 +42,34 @@ class _AmigosState extends State<Amigos> {
   bool _datosAmigo = false;
   bool _estadisticasAmigo = false;
   bool _anadirAmigo = false;
-  String amigo = "";
+  bool _verPeticiones = false,
+      _solicitudEnviada = false,
+      _errorSolicitud = false,
+      _errorAceptarAmigo = false,
+      _errorRechazarAmigo = false,
+      _amigoAceptado = false;
+  String _amigo = "",
+      _sPeticiones = "0",
+      _sErrorSolicitud = "",
+      _sErrorAceptarAmigo = "",
+      _sErrorRechazarAmigo = "";
+
+  late Timer _timer;
 
   final TextEditingController _friendSearchController = TextEditingController();
 
   @override
+  void initState() {
+    _obtenerPeticionesAmistad();
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      _obtenerPeticionesAmistad();
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
+    _timer.cancel();
     _friendSearchController.dispose();
     super.dispose();
   }
@@ -60,27 +86,91 @@ class _AmigosState extends State<Amigos> {
     setState(() {});
   }
 
-  void anadirAmigoUsuario() async {
+  _enviarSolicitudAmistad() async {
     String amigo = _friendSearchController.text;
     if (amigo == "") {
-      _errorAnadirAmigo = true;
-      _sErrorAnadirAmigo = "El nombre de usuario está vacío.";
+      _errorSolicitud = true;
+      _sErrorSolicitud = "El nombre de usuario está vacío.";
     } else {
       Future<AnadirAmigoResponse> f = anadirAmigo(
           AnadirAmigoPetition(_s.getField(SesionFieldsCodes.token), amigo));
       AnadirAmigoResponse r = await f;
       if (r.OK) {
-        _a.amigos.add(amigo);
-        _amigoAnadido = true;
+        _solicitudEnviada = true;
       } else {
-        _sErrorAnadirAmigo = r.error;
-        _errorAnadirAmigo = true;
+        _sErrorSolicitud = r.error;
+        _errorSolicitud = true;
       }
     }
     setState(() {});
   }
 
-  void eliminarAmigoUsuario() async {
+  _aceptarSolicitud(int index) async {
+    _amigo = _aP[index];
+    Future<AceptarAmigoResponse> f = aceptarAmigo(
+        AceptarAmigoPetition(_amigo), _s.getField(SesionFieldsCodes.token));
+    AceptarAmigoResponse r = await f;
+    if (r.OK) {
+      _aP.remove(_amigo);
+      _a.amigos.add(_amigo);
+      _amigoAceptado = true;
+      if (_aP.length < 100) {
+        _sPeticiones = "${_aP.length}";
+      } else {
+        _sPeticiones = "+99";
+      }
+    } else {
+      _errorAceptarAmigo = true;
+      _sErrorAceptarAmigo = r.error;
+    }
+    setState(() {});
+  }
+
+  _rechazarSolicitud(int index) async {
+    String amigo = _aP[index];
+    Future<RechazarAmigoResponse> f = rechazarAmigo(
+        RechazarAmigoPetition(amigo), _s.getField(SesionFieldsCodes.token));
+    RechazarAmigoResponse r = await f;
+    if (r.OK) {
+      _aP.remove(amigo);
+      if (_aP.length < 100) {
+        _sPeticiones = "${_aP.length}";
+      } else {
+        _sPeticiones = "+99";
+      }
+    } else {
+      _errorRechazarAmigo = true;
+      _sErrorRechazarAmigo = r.error;
+    }
+    setState(() {});
+  }
+
+  _obtenerAmigos() async {
+    Future<DatosUsuarioResponse> f = obtenerDatosUsuario(
+        DatosUsuarioPetition(_s.getField(SesionFieldsCodes.token)));
+    DatosUsuarioResponse r = await f;
+    if (r.OK) {
+      _a = AmigosUsuario(r.amigos);
+    }
+  }
+
+  _obtenerPeticionesAmistad() async {
+    _obtenerAmigos();
+    Future<ObtenerPeticionesResponse> f = obtenerPeticionesAmistad(
+        ObtenerPeticionesPetition(), _s.getField(SesionFieldsCodes.token));
+    ObtenerPeticionesResponse r = await f;
+    if (r.OK) {
+      _aP = r.peticiones;
+      if (_aP.length < 100) {
+        _sPeticiones = "${_aP.length}";
+      } else {
+        _sPeticiones = "+99";
+      }
+    }
+    setState(() {});
+  }
+
+  eliminarAmigoUsuario() async {
     String amigo = _dA.getField(DatosUsuarioFieldsCodes.usuario);
 
     Future<EliminarAmigoResponse> f = eliminarAmigo(
@@ -97,11 +187,11 @@ class _AmigosState extends State<Amigos> {
     setState(() {});
   }
 
-  void verEstadisticasAmigo(int index) async {
-    amigo = _a.amigos[index];
+  verEstadisticasAmigo(int index) async {
+    _amigo = _a.amigos[index];
     _estadisticasAmigo = true;
     Future<EstadisticasAmigoResponse> f =
-        obtenerEstadisticasAmigo(EstadisticasAmigoPetition(amigo));
+        obtenerEstadisticasAmigo(EstadisticasAmigoPetition(_amigo));
     EstadisticasAmigoResponse r = await f;
     if (r.OK) {
       _eA = EstadisticasUsuario(
@@ -115,12 +205,23 @@ class _AmigosState extends State<Amigos> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (_anadirAmigo) {
-          if (_amigoAnadido) {
-            _amigoAnadido = false;
+        if (_verPeticiones) {
+          if (_amigoAceptado) {
+            _amigoAceptado = false;
+          } else if (_errorAceptarAmigo) {
+            _errorAceptarAmigo = true;
+          } else if (_errorRechazarAmigo) {
+            _errorRechazarAmigo = true;
+          } else {
+            _verPeticiones = false;
+          }
+          setState(() {});
+        } else if (_anadirAmigo) {
+          if (_solicitudEnviada) {
+            _solicitudEnviada = false;
             _friendSearchController.text = "";
-          } else if (_errorAnadirAmigo) {
-            _errorAnadirAmigo = false;
+          } else if (_errorSolicitud) {
+            _errorSolicitud = false;
           } else {
             _anadirAmigo = false;
           }
@@ -185,20 +286,30 @@ class _AmigosState extends State<Amigos> {
                 builder: (BuildContext context, BoxConstraints constraints) {
                   return Stack(
                     children: [
-                      Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 30),
-                          child: Stack(
-                            children: [
-                              Boton1("MENU", onPressed: () {
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Menu(_s)),
-                                    (Route<dynamic> route) => false);
+                      Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  left: constraints.maxWidth / 5,
+                                  bottom: constraints.maxHeight / 10),
+                              child: Boton1("MENU", onPressed: () {
+                                Navigator.of(context, rootNavigator: true)
+                                    .pushAndRemoveUntil(
+                                        MaterialPageRoute(
+                                            builder: (context) => Menu(_s)),
+                                        (Route<dynamic> route) => false);
                               }),
-                              Padding(
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  right: constraints.maxWidth / 9,
+                                  bottom: constraints.maxHeight / 10),
+                              child: Padding(
                                 padding: const EdgeInsets.only(left: 300),
                                 child: Boton1(
                                   "AÑADIR AMIGO",
@@ -209,7 +320,80 @@ class _AmigosState extends State<Amigos> {
                                   },
                                 ),
                               ),
+                            ),
+                          )
+                        ],
+                      ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 40),
+                          child: Stack(
+                            children: [
+                              GestureDetector(
+                                behavior: HitTestBehavior.deferToChild,
+                                onTap: () {
+                                  _verPeticiones = true;
+                                  setState(() {});
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 50.0),
+                                  child: Container(
+                                    width: constraints.maxWidth / 8,
+                                    height: constraints.maxHeight / 8,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: const Color(0xFF164966),
+                                      border: Border.all(
+                                          color: Colors.white, width: 2),
+                                    ),
+                                    child: const Icon(
+                                      Icons.person_add,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              IgnorePointer(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 38.0, left: 35.0),
+                                  child: Container(
+                                    width: constraints.maxWidth / 12,
+                                    height: constraints.maxHeight / 12,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: const Color(0xFF164966),
+                                      border: Border.all(
+                                          color: Colors.white, width: 2),
+                                    ),
+                                    child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 5.0),
+                                        child: Text(
+                                          _sPeticiones,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(color: Colors.white),
+                                        )),
+                                  ),
+                                ),
+                              ),
                             ],
+                          ),
+                        ),
+                      ),
+                      const Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 20),
+                          child: Text(
+                            "Solicitudes Amistad",
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontFamily: "Baskerville",
+                            ),
                           ),
                         ),
                       ),
@@ -301,11 +485,11 @@ class _AmigosState extends State<Amigos> {
                                               alignment: Alignment.bottomCenter,
                                               child: Padding(
                                                 padding: const EdgeInsets.only(
-                                                    bottom: 20),
+                                                    bottom: 30),
                                                 child: Boton1(
-                                                  "AÑADIR",
+                                                  "ENVIAR SOLICITUD DE AMISTAD",
                                                   onPressed: () {
-                                                    anadirAmigoUsuario();
+                                                    _enviarSolicitudAmistad();
                                                   },
                                                 ),
                                               ),
@@ -344,7 +528,7 @@ class _AmigosState extends State<Amigos> {
                                               alignment: Alignment.topCenter,
                                               child: Padding(
                                                 padding: const EdgeInsets.only(
-                                                    top: 60),
+                                                    top: 50),
                                                 child: Container(
                                                   height: 50,
                                                   width: 370,
@@ -366,7 +550,7 @@ class _AmigosState extends State<Amigos> {
                                                         const InputDecoration(
                                                       border: InputBorder.none,
                                                       hintText:
-                                                          'Introduzca el nombre de usuario a añadir',
+                                                          'Introduzca el nombre del usuario a añadir',
                                                       hintStyle: TextStyle(
                                                           fontFamily:
                                                               "Baskerville",
@@ -389,7 +573,7 @@ class _AmigosState extends State<Amigos> {
                               ),
                             )
                           : const SizedBox.shrink(),
-                      _errorAnadirAmigo
+                      _errorSolicitud
                           ? Container(
                               height: constraints.maxHeight,
                               width: constraints.maxWidth,
@@ -428,7 +612,7 @@ class _AmigosState extends State<Amigos> {
                                                   width: constraints.maxWidth /
                                                       2.3,
                                                   child: Text(
-                                                    _sErrorAnadirAmigo,
+                                                    _sErrorSolicitud,
                                                     textAlign: TextAlign.center,
                                                     style: const TextStyle(
                                                         color:
@@ -490,7 +674,7 @@ class _AmigosState extends State<Amigos> {
                                                                       "Georgia"),
                                                         ),
                                                         onPressed: () {
-                                                          _errorAnadirAmigo =
+                                                          _errorSolicitud =
                                                               false;
                                                           setState(() {});
                                                         },
@@ -729,7 +913,7 @@ class _AmigosState extends State<Amigos> {
                                                           constraints.maxWidth /
                                                               2,
                                                       child: Text(
-                                                        "Estadisticas de $amigo",
+                                                        "Estadisticas de $_amigo",
                                                         textAlign:
                                                             TextAlign.center,
                                                         style: const TextStyle(
@@ -916,7 +1100,7 @@ class _AmigosState extends State<Amigos> {
                               ),
                             )
                           : const SizedBox.shrink(),
-                      _amigoAnadido
+                      _solicitudEnviada
                           ? Container(
                               height: constraints.maxHeight,
                               width: constraints.maxWidth,
@@ -951,7 +1135,7 @@ class _AmigosState extends State<Amigos> {
                                                 width:
                                                     constraints.maxWidth / 2.3,
                                                 child: Text(
-                                                  "${_friendSearchController.text} ahora es tu amigo",
+                                                  "Se ha enviado una solicitud a ${_friendSearchController.text}",
                                                   textAlign: TextAlign.center,
                                                   style: const TextStyle(
                                                       color: Color(0xFF3dce00),
@@ -967,7 +1151,7 @@ class _AmigosState extends State<Amigos> {
                                             alignment: Alignment.bottomCenter,
                                             child: Padding(
                                               padding: const EdgeInsets.only(
-                                                  bottom: 20),
+                                                  bottom: 10),
                                               child: ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(4),
@@ -1013,7 +1197,8 @@ class _AmigosState extends State<Amigos> {
                                                       onPressed: () {
                                                         _friendSearchController
                                                             .text = "";
-                                                        _amigoAnadido = false;
+                                                        _solicitudEnviada =
+                                                            false;
                                                         setState(() {});
                                                       },
                                                       child:
@@ -1146,80 +1331,508 @@ class _AmigosState extends State<Amigos> {
                               ),
                             )
                           : const SizedBox.shrink(),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 40),
-                          child: Stack(
-                            children: [
-                              GestureDetector(
-                                behavior: HitTestBehavior.deferToChild,
-                                onTap: () {
-                                  print("hola");
-                                  setState(() {});
-                                },
+                      _verPeticiones
+                          ? Container(
+                              height: constraints.maxHeight,
+                              width: constraints.maxWidth,
+                              decoration:
+                                  const BoxDecoration(color: Color(0x60444444)),
+                              child: Align(
+                                alignment: Alignment.center,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(top: 50.0),
+                                  padding: const EdgeInsets.only(top: 0),
                                   child: Container(
-                                    width: constraints.maxWidth / 8,
-                                    height: constraints.maxHeight / 8,
+                                    width: constraints.maxWidth / 1.3,
+                                    height: constraints.maxHeight / 1.3,
                                     decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
                                       color: const Color(0xFF164966),
+                                      borderRadius: BorderRadius.circular(20),
                                       border: Border.all(
-                                          color: Colors.white, width: 2),
+                                        color: Colors.white,
+                                        width: 1,
+                                      ),
                                     ),
-                                    child: const Icon(
-                                      Icons.person_add,
-                                      color: Colors.white,
+                                    child: Stack(
+                                      children: [
+                                        Align(
+                                          alignment: Alignment.center,
+                                          child: Stack(
+                                            children: [
+                                              SizedBox(
+                                                width:
+                                                    constraints.maxWidth / 1.7,
+                                                height:
+                                                    constraints.maxHeight / 1.8,
+                                                child: ListView.separated(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 5, bottom: 5),
+                                                  itemCount: _aP.length,
+                                                  separatorBuilder:
+                                                      (context, index) =>
+                                                          const Divider(
+                                                    color: Colors.transparent,
+                                                    thickness: 1.5,
+                                                  ),
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return Container(
+                                                      decoration: BoxDecoration(
+                                                          color: Colors.white,
+                                                          border: Border.all(
+                                                              color:
+                                                                  Colors.white),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      20)),
+                                                      child: Stack(
+                                                        children: [
+                                                          ListTile(
+                                                              title: Text(
+                                                                  _aP[index])),
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .centerRight,
+                                                            child: Padding(
+                                                              padding: EdgeInsets.only(
+                                                                  top: 5,
+                                                                  bottom: 5,
+                                                                  right: constraints
+                                                                          .maxWidth /
+                                                                      6),
+                                                              child: Boton1(
+                                                                "Rechazar",
+                                                                onPressed: () {
+                                                                  _rechazarSolicitud(
+                                                                      index);
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .centerRight,
+                                                            child: Padding(
+                                                              padding: EdgeInsets.only(
+                                                                  top: 5,
+                                                                  bottom: 5,
+                                                                  right: constraints
+                                                                          .maxWidth /
+                                                                      50),
+                                                              child: Boton1(
+                                                                "Aceptar",
+                                                                onPressed: () {
+                                                                  _aceptarSolicitud(
+                                                                      index);
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.topRight,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 7, right: 7),
+                                            child: Container(
+                                              width: 33,
+                                              height: 33,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 1),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.topRight,
+                                          child: IconButton(
+                                              iconSize: 31,
+                                              icon: const Icon(
+                                                Icons.close,
+                                                color: Colors.white,
+                                              ),
+                                              onPressed: () {
+                                                _verPeticiones = false;
+                                                setState(() {});
+                                              }),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                               ),
-                              IgnorePointer(
+                            )
+                          : const SizedBox.shrink(),
+                      _errorAceptarAmigo
+                          ? Container(
+                              height: constraints.maxHeight,
+                              width: constraints.maxWidth,
+                              decoration:
+                                  const BoxDecoration(color: Color(0x80444444)),
+                              margin: const EdgeInsets.only(top: 0),
+                              child: Align(
+                                alignment: Alignment.topCenter,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 38.0, left: 35.0),
-                                  child: Container(
-                                    width: constraints.maxWidth / 12,
-                                    height: constraints.maxHeight / 12,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: const Color(0xFF164966),
-                                      border: Border.all(
-                                          color: Colors.white, width: 2),
-                                    ),
-                                    child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 5.0),
-                                        child: Text(
-                                          "0",
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                              color: Colors.white),
-                                        )),
+                                  padding: const EdgeInsets.only(top: 85),
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        width: constraints.maxWidth / 2,
+                                        height: constraints.maxHeight / 2.5,
+                                        decoration: BoxDecoration(
+                                          color: Colors.black,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: Stack(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.topCenter,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 25),
+                                                child: SizedBox(
+                                                  height:
+                                                      constraints.maxHeight /
+                                                          4.5,
+                                                  width: constraints.maxWidth /
+                                                      2.3,
+                                                  child: Text(
+                                                    _sErrorAceptarAmigo,
+                                                    textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                        color:
+                                                            Color(0xFFb13636),
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 18,
+                                                        fontFamily: "Georgia"),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 10),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  child: Stack(
+                                                    children: <Widget>[
+                                                      Positioned.fill(
+                                                        child: Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        30),
+                                                            color: Colors.black,
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .white,
+                                                                width: 2),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                        style: TextButton
+                                                            .styleFrom(
+                                                          foregroundColor:
+                                                              Colors.white,
+                                                          // padding: const EdgeInsets.all(16.0),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  top: 4,
+                                                                  bottom: 4,
+                                                                  left: 15,
+                                                                  right: 15),
+                                                          textStyle:
+                                                              const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 18,
+                                                                  fontFamily:
+                                                                      "Georgia"),
+                                                        ),
+                                                        onPressed: () {
+                                                          _errorAceptarAmigo =
+                                                              false;
+                                                          setState(() {});
+                                                        },
+                                                        child: const Text(
+                                                            "ACEPTAR"),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Padding(
-                          padding: EdgeInsets.only(bottom: 20),
-                          child: Text(
-                            "Solicitudes",
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontFamily: "Baskerville",
-                            ),
-                          ),
-                        ),
-                      ),
+                            )
+                          : const SizedBox.shrink(),
+                      _errorRechazarAmigo
+                          ? Container(
+                              height: constraints.maxHeight,
+                              width: constraints.maxWidth,
+                              decoration:
+                                  const BoxDecoration(color: Color(0x80444444)),
+                              margin: const EdgeInsets.only(top: 0),
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 85),
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        width: constraints.maxWidth / 2,
+                                        height: constraints.maxHeight / 2.5,
+                                        decoration: BoxDecoration(
+                                          color: Colors.black,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: Stack(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.topCenter,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 25),
+                                                child: SizedBox(
+                                                  height:
+                                                      constraints.maxHeight /
+                                                          4.5,
+                                                  width: constraints.maxWidth /
+                                                      2.3,
+                                                  child: Text(
+                                                    _sErrorRechazarAmigo,
+                                                    textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                        color:
+                                                            Color(0xFFb13636),
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 18,
+                                                        fontFamily: "Georgia"),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 10),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  child: Stack(
+                                                    children: <Widget>[
+                                                      Positioned.fill(
+                                                        child: Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        30),
+                                                            color: Colors.black,
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .white,
+                                                                width: 2),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                        style: TextButton
+                                                            .styleFrom(
+                                                          foregroundColor:
+                                                              Colors.white,
+                                                          // padding: const EdgeInsets.all(16.0),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  top: 4,
+                                                                  bottom: 4,
+                                                                  left: 15,
+                                                                  right: 15),
+                                                          textStyle:
+                                                              const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 18,
+                                                                  fontFamily:
+                                                                      "Georgia"),
+                                                        ),
+                                                        onPressed: () {
+                                                          _errorRechazarAmigo =
+                                                              false;
+                                                          setState(() {});
+                                                        },
+                                                        child: const Text(
+                                                            "ACEPTAR"),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      _amigoAceptado
+                          ? Container(
+                              height: constraints.maxHeight,
+                              width: constraints.maxWidth,
+                              decoration:
+                                  const BoxDecoration(color: Color(0x80444444)),
+                              margin: const EdgeInsets.only(top: 0),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: constraints.maxWidth / 2,
+                                      height: constraints.maxHeight / 2.5,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: Stack(
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 30),
+                                              child: SizedBox(
+                                                height:
+                                                    constraints.maxHeight / 4.5,
+                                                width:
+                                                    constraints.maxWidth / 2.3,
+                                                child: Text(
+                                                  "$_amigo y tú ahora sois amigos",
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                      color: Color(0xFF3dce00),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18,
+                                                      fontFamily: "Georgia"),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.bottomCenter,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 20),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                child: Stack(
+                                                  children: <Widget>[
+                                                    Positioned.fill(
+                                                      child: Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(30),
+                                                          color: Colors.black,
+                                                          border: Border.all(
+                                                              color:
+                                                                  Colors.white,
+                                                              width: 2),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    TextButton(
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        foregroundColor:
+                                                            Colors.white,
+                                                        // padding: const EdgeInsets.all(16.0),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 4,
+                                                                bottom: 4,
+                                                                left: 15,
+                                                                right: 15),
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 18,
+                                                                fontFamily:
+                                                                    "Georgia"),
+                                                      ),
+                                                      onPressed: () {
+                                                        _amigoAceptado = false;
+                                                        setState(() {});
+                                                      },
+                                                      child:
+                                                          const Text("ACEPTAR"),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                     ],
                   );
                 },

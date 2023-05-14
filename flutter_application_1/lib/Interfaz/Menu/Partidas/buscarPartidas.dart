@@ -123,7 +123,9 @@ class _BuscarPartidaState extends State<BuscarPartida>
       // ignore: use_build_context_synchronously
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => Juego(_s, r.ws)),
+          MaterialPageRoute(
+              builder: (context) => Juego(_s, r.ws,
+                  _sala.getField(DatosSalaPartidaFieldsCodes.tipoPartida))),
           (Route<dynamic> route) => false);
     } else {
       _sErrorUnirse = r.errorSala;

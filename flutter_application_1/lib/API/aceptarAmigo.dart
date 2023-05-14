@@ -4,15 +4,13 @@ import 'package:flutter_application_1/Data_types/datosUsuario.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class AnadirAmigoPetition {
-  String token, amigo;
+class AceptarAmigoPetition {
+  String amigo;
 
-  AnadirAmigoPetition(String t, String a)
-      : token = t,
-        amigo = a;
+  AceptarAmigoPetition(String a) : amigo = a;
 }
 
-class AnadirAmigoResponse {
+class AceptarAmigoResponse {
   // ignore: constant_identifier_names
   static const String OK_key = 'OK', E_key = 'error';
   // ignore: non_constant_identifier_names
@@ -20,7 +18,7 @@ class AnadirAmigoResponse {
   // ignore: non_constant_identifier_names
   bool OK = false;
 
-  AnadirAmigoResponse();
+  AceptarAmigoResponse();
 
   // ignore: non_constant_identifier_names
   void FillFields(http.Response r) {
@@ -39,15 +37,16 @@ class AnadirAmigoResponse {
 }
 
 // ignore: non_constant_identifier_names
-Future<AnadirAmigoResponse> anadirAmigo(AnadirAmigoPetition p) async {
+Future<AceptarAmigoResponse> aceptarAmigo(
+    AceptarAmigoPetition p, String token) async {
   HttpOverrides.global = MyHttpOverrides();
 
-  AnadirAmigoResponse r = AnadirAmigoResponse();
+  AceptarAmigoResponse r = AceptarAmigoResponse();
 
-  final url = Uri.parse('$urlDir/api/usuarios/add/amigo/');
+  final url = Uri.parse('$urlDir/api/usuarios/aceptar/amigo/');
 
   final response = await http.post(url, headers: {
-    'Authorization': "Token ${p.token}",
+    'Authorization': "Token $token",
   }, body: {
     'amigo': p.amigo,
   });

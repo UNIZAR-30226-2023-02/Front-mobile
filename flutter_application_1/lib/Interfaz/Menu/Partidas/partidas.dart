@@ -28,7 +28,7 @@ class _PartidasState extends State<Partidas> {
 
   List<InvitacionPartida> _i = <InvitacionPartida>[];
   int contador = 0;
-  String _sInvitaciones = "0", _webSocket = "";
+  String _sInvitaciones = "0", _webSocket = "", _tipoPartida = "";
   bool _verInvitaciones = false, _partidaActiva = false;
 
   late Timer _timer;
@@ -71,15 +71,29 @@ class _PartidasState extends State<Partidas> {
     if (r.OK) {
       _partidaActiva = true;
       _webSocket = r.ws;
+      _tipoPartida = r.tipo;
     } else {
       _partidaActiva = false;
     }
   }
 
-  _unirseSala() {
+  _unirseSalaActiva() {
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => Juego(_s, _webSocket)),
+        MaterialPageRoute(
+            builder: (context) => Juego(_s, _webSocket, _tipoPartida)),
+        (Route<dynamic> route) => false);
+  }
+
+  _aceptarPeticion(int index) {
+    InvitacionPartida i = _i[index];
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Juego(
+                _s,
+                i.getField(InvitacionPartidaFieldsCodes.webSocket),
+                i.getField(InvitacionPartidaFieldsCodes.tipoPartida))),
         (Route<dynamic> route) => false);
   }
 
@@ -94,7 +108,6 @@ class _PartidasState extends State<Partidas> {
 
   @override
   void dispose() {
-    print("dispose");
     _timer.cancel();
     super.dispose();
   }
@@ -367,61 +380,6 @@ class _PartidasState extends State<Partidas> {
                           ),
                         ),
                       ),
-                      _verInvitaciones
-                          ? Container(
-                              height: constraints.maxHeight,
-                              width: constraints.maxWidth,
-                              decoration:
-                                  const BoxDecoration(color: Color(0x60444444)),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 0),
-                                  child: Container(
-                                    width: constraints.maxWidth / 1.3,
-                                    height: constraints.maxHeight / 1.3,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF164966),
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Stack(
-                                        children: [
-                                          SizedBox(
-                                            width: constraints.maxWidth / 1.7,
-                                            height: constraints.maxHeight / 1.8,
-                                            child: ListView.separated(
-                                              padding: const EdgeInsets.only(
-                                                  top: 5, bottom: 5),
-                                              itemCount: _i.length,
-                                              separatorBuilder:
-                                                  (context, index) =>
-                                                      const Divider(
-                                                color: Colors.grey,
-                                                thickness: 1.5,
-                                              ),
-                                              itemBuilder: (context, index) {
-                                                return ListTile(
-                                                  title: Text(_i[index].getField(
-                                                      InvitacionPartidaFieldsCodes
-                                                          .nombreSala)),
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            )
-                          : const SizedBox.shrink(),
                       _partidaActiva
                           ? Align(
                               alignment: Alignment.topCenter,
@@ -458,7 +416,7 @@ class _PartidasState extends State<Partidas> {
                                                 right: 20),
                                             child: GestureDetector(
                                               onTap: () {
-                                                print("hola");
+                                                _unirseSalaActiva();
                                               },
                                               child: Container(
                                                 height:
@@ -491,6 +449,134 @@ class _PartidasState extends State<Partidas> {
                                         ),
                                       ],
                                     )),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      _verInvitaciones
+                          ? Container(
+                              height: constraints.maxHeight,
+                              width: constraints.maxWidth,
+                              decoration:
+                                  const BoxDecoration(color: Color(0x60444444)),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 0),
+                                  child: Container(
+                                    width: constraints.maxWidth / 1.3,
+                                    height: constraints.maxHeight / 1.3,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF164966),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Align(
+                                          alignment: Alignment.center,
+                                          child: Stack(
+                                            children: [
+                                              SizedBox(
+                                                width:
+                                                    constraints.maxWidth / 1.7,
+                                                height:
+                                                    constraints.maxHeight / 1.8,
+                                                child: ListView.separated(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 5, bottom: 5),
+                                                  itemCount: _i.length,
+                                                  separatorBuilder:
+                                                      (context, index) =>
+                                                          const Divider(
+                                                    color: Colors.transparent,
+                                                    thickness: 1.5,
+                                                  ),
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return Container(
+                                                      decoration: BoxDecoration(
+                                                          color: Colors.white,
+                                                          border: Border.all(
+                                                              color:
+                                                                  Colors.white),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      20)),
+                                                      child: Stack(
+                                                        children: [
+                                                          ListTile(
+                                                              title: Text(_i[
+                                                                      index]
+                                                                  .getField(
+                                                                      InvitacionPartidaFieldsCodes
+                                                                          .nombreSala))),
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .centerRight,
+                                                            child: Padding(
+                                                              padding: EdgeInsets.only(
+                                                                  top: 5,
+                                                                  bottom: 5,
+                                                                  right: constraints
+                                                                          .maxWidth /
+                                                                      50),
+                                                              child: Boton1(
+                                                                "Aceptar",
+                                                                onPressed: () {
+                                                                  _aceptarPeticion(
+                                                                      index);
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.topRight,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 7, right: 7),
+                                            child: Container(
+                                              width: 33,
+                                              height: 33,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 1),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.topRight,
+                                          child: IconButton(
+                                              iconSize: 31,
+                                              icon: const Icon(
+                                                Icons.close,
+                                                color: Colors.white,
+                                              ),
+                                              onPressed: () {
+                                                _verInvitaciones = false;
+                                                setState(() {});
+                                              }),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
                             )
                           : const SizedBox.shrink(),

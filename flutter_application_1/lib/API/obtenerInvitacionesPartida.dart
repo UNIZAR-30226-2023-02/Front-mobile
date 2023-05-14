@@ -11,9 +11,17 @@ class ObtenerInvitacionesPetition {
 class ObtenerInvitacionesResponse {
   // ignore: constant_identifier_names, non_constant_identifier_names
   List<InvitacionPartida> invitaciones = <InvitacionPartida>[];
-
+  static const String OK_KEY = 'OK',
+      P_KEY = 'peticiones',
+      NS_KEY = 'nombre_sala',
+      NA_KEY = 'me_invita',
+      TP_KEY = 'tipo_partida',
+      WS_KEY = 'ws',
+      NJ_KEY = 'n_jugadores',
+      E_KEY = 'error';
   // ignore: non_constant_identifier_names
   bool OK = false;
+  String error = "";
 
   ObtenerInvitacionesResponse();
 
@@ -22,14 +30,20 @@ class ObtenerInvitacionesResponse {
     if (r.statusCode <= 300) {
       final responseJson = json.decode(utf8.decode(r.bodyBytes));
 
-      String parameterValue = responseJson['OK'];
+      String parameterValue = responseJson[OK_KEY];
       if (parameterValue == 'True') {
         OK = true;
 
-        for (var item in responseJson['peticiones']) {
+        for (var item in responseJson[P_KEY]) {
           invitaciones.add(InvitacionPartida(
-              nombreSala: item['ws'], nombreAmigo: item['me_invita']));
+              nombreSala: item[NS_KEY],
+              nombreAmigo: item[NA_KEY],
+              tipoPartida: item[TP_KEY],
+              numeroJugadores: item[NJ_KEY],
+              webSocket: item[WS_KEY]));
         }
+      } else {
+        error = responseJson[E_KEY];
       }
     }
   }

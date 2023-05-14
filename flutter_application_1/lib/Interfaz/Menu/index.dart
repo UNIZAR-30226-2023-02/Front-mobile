@@ -8,3 +8,4 @@ export 'Partidas/buscarPartidas.dart';
 export 'Estadisticas/estadisticas.dart';
 export 'Estadisticas/estadisticasAmigos.dart';
 export 'DarDeBaja/darDeBaja.dart';
+export 'RedesSociales/redesSociales.dart';

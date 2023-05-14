@@ -12,9 +12,12 @@ class PartidaActivaPetition {
 
 class PartidaActivaResponse {
   // ignore: constant_identifier_names
-  static const String OK_key = 'OK', E_key = 'error', WS_KEY = 'ws_partida';
+  static const String OK_key = 'OK',
+      E_key = 'error',
+      WS_KEY = 'ws_partida',
+      T_KEY = 'tipo';
   // ignore: non_constant_identifier_names
-  String error = "", ws = "";
+  String error = "", ws = "", tipo = "";
   // ignore: non_constant_identifier_names
   bool OK = false;
 
@@ -29,6 +32,7 @@ class PartidaActivaResponse {
       if (parameterValue == 'True') {
         OK = true;
         ws = responseJson[WS_KEY];
+        tipo = responseJson[T_KEY];
       } else {
         error = responseJson[E_key];
       }

@@ -9,9 +9,10 @@ import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 import '../../Data_types/sesion.dart';
 
 class Juego extends StatefulWidget {
-  const Juego(this._s, this._wS, {Key? key}) : super(key: key);
+  const Juego(this._s, this._wS, this._tP, {Key? key}) : super(key: key);
   final String _wS;
   final Sesion _s;
+  final String _tP;
   @override
   _JuegoState createState() => _JuegoState();
 }
