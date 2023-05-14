@@ -2,12 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Api/api.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/index.dart';
-import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
 import 'package:flutter_application_1/Data_types/registro.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
+//ignore: must_be_immutable
 class ConfirmarRegistro extends StatefulWidget {
   Registro r;
   ConfirmarRegistro(this.r, {Key? key}) : super(key: key);
@@ -48,21 +48,29 @@ class _ConfirmarRegistroState extends State<ConfirmarRegistro>
           ),
           child: Stack(
             children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 40, left: 630),
-                child: Text(
-                  "6/6",
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xfff7f6f6),
-                    fontFamily: "Georgia",
+              const Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 30, right: 40),
+                  child: Text(
+                    "6/6",
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xfff7f6f6),
+                      fontFamily: "Georgia",
+                    ),
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 60, left: 520),
-                child: ContainerQuesitos(List<bool>.filled(6, true)),
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 50, right: 30),
+                  child: ContainerQuesitos(
+                    List<bool>.filled(6, true),
+                  ),
+                ),
               ),
               const ContainerTitle('Registrarse'),
               const Padding(
@@ -89,13 +97,12 @@ class _ConfirmarRegistroState extends State<ConfirmarRegistro>
                   ),
                 ),
               ),
-              Positioned(
-                top: 320,
-                left: 130,
-                child: Container(
-                  margin: const EdgeInsets.only(top: 0),
+              Align(
+                  alignment: Alignment.bottomCenter,
+                  child: 
+                  Padding(padding: const EdgeInsets.only(bottom: 40),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Boton1(
                         "VOLVER",
@@ -126,7 +133,7 @@ class _ConfirmarRegistroState extends State<ConfirmarRegistro>
                   children: [
                     Container(
                       decoration:
-                          const BoxDecoration(color: Colors.transparent),
+                          const BoxDecoration(color: Color(0x80444444)),
                     ),
                     Align(
                       alignment: Alignment.topCenter,

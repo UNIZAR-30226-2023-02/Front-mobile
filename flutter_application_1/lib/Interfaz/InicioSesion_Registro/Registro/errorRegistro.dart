@@ -14,6 +14,7 @@ import 'package:flutter_application_1/Data_types/registro.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/index.dart';
 import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 
+//ignore: must_be_immutable
 class ErrorRegistro extends StatelessWidget {
   Registro r;
   ErrorRegistro(this.r, {Key? key}) : super(key: key);
@@ -59,29 +60,38 @@ class ErrorRegistro extends StatelessWidget {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 300, left: 70),
-                  child: Boton1(
-                    "VOLVER A INICIO",
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => Home()),
-                          (Route<dynamic> route) => false);
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 300, left: 360),
-                  child: Boton1(
-                    "REINTENTAR REGISTRO",
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RegistrandoUsuario(r)),
-                          (Route<dynamic> route) => false);
-                    },
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Boton1(
+                          "VOLVER A INICIO",
+                          onPressed: () {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => const Home()),
+                                (Route<dynamic> route) => false);
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 200),
+                          child: Boton1(
+                            "REINTENTAR REGISTRO",
+                            onPressed: () {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          RegistrandoUsuario(r)),
+                                  (Route<dynamic> route) => false);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

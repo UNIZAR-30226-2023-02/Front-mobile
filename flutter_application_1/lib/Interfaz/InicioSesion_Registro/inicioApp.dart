@@ -7,7 +7,6 @@ import 'dart:async';
 
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/home.dart';
-import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
 
 class InicioApp extends StatefulWidget {
   const InicioApp({Key? key}) : super(key: key);

@@ -7,26 +7,21 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_application_1/Interfaz/Menu/home.dart';
+
 import 'package:flutter/services.dart';
 import 'package:web_socket_channel/io.dart';
 
-class Juego extends StatelessWidget {
-  const Juego({Key? key}) : super(key: key);
 
+class Juego extends StatefulWidget {
+  const Juego(this._s, this._wS, this._tP, {Key? key}) : super(key: key);
+  final String _wS;
+  final Sesion _s;
+  final String _tP;
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: _Juego(),
-    );
-  }
+  _JuegoState createState() => _JuegoState();
 }
 
-class _Juego extends StatefulWidget {
-  @override
-  __JuegoState createState() => __JuegoState();
-}
-
-class __JuegoState extends State<_Juego> {
+class _JuegoState extends State<Juego> {
   Color Azul = Colors.blue;
   Color Naranja = const Color.fromARGB(255, 240, 143, 17);
   Color Rojo = const Color.fromARGB(255, 230, 44, 19);
@@ -186,6 +181,7 @@ class __JuegoState extends State<_Juego> {
       });
     });
   }
+
   @override
   void dispose() {
     super.dispose();
@@ -573,11 +569,14 @@ class __JuegoState extends State<_Juego> {
         child: Stack(
           children: [
             Positioned(
-              top: screenSize.height / 2 - 50, // ajustar la posición vertical del hexágono
-              left: screenSize.width / 2 - 50, // ajustar la posición horizontal del hexágono
+              top: screenSize.height / 2 -
+                  50, // ajustar la posición vertical del hexágono
+              left: screenSize.width / 2 -
+                  50, // ajustar la posición horizontal del hexágono
               child: Stack(
                 children: [
                   Transform.translate(
+
                     offset: const Offset(-145, -129),
                     child: Container(
                       width: 360,
@@ -609,6 +608,7 @@ class __JuegoState extends State<_Juego> {
                       ),
                     ),
                   ),
+
                   
                   
                   Visibility(
@@ -624,6 +624,7 @@ class __JuegoState extends State<_Juego> {
                           color: Color.fromARGB(255, 255, 255, 255),
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.none
+
                         ),
                       ),
                     ),
@@ -642,6 +643,7 @@ class __JuegoState extends State<_Juego> {
                         //   ),
                         // ),
 
+
                         child: Image(image: AssetImage(imagenesJugadores[0]),fit: BoxFit.fill,),
                       ),
                     ),
@@ -658,6 +660,7 @@ class __JuegoState extends State<_Juego> {
                             image: AssetImage('assets/trivial_blanco.png'),
                             fit: BoxFit.fill,
                           ),
+
                         ),
                       ),
                     ),
@@ -677,6 +680,7 @@ class __JuegoState extends State<_Juego> {
                           color: Color.fromARGB(255, 255, 255, 255),
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.none
+
                         ),
                       ),
                     ),
@@ -709,6 +713,7 @@ class __JuegoState extends State<_Juego> {
                     ),
                   ),
 
+
                   Visibility(
                     visible: jVisibles[2],
                     child: Transform.translate(  //Texto J2
@@ -722,10 +727,12 @@ class __JuegoState extends State<_Juego> {
                           color: Color.fromARGB(255, 255, 255, 255),
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.none
+
                         ),
                       ),
                     ),
                   ),
+
                   Visibility(
                     visible: jVisibles[2],
                     child:Transform.translate(  //Imagen J2
@@ -749,10 +756,12 @@ class __JuegoState extends State<_Juego> {
                             image: AssetImage('assets/trivial_blanco.png'),
                             fit: BoxFit.fill,
                           ),
+
                         ),
                       ),
                     ),
                   ),
+
 
                   Visibility(
                     visible: jVisibles[3],
@@ -767,6 +776,7 @@ class __JuegoState extends State<_Juego> {
                           color: Color.fromARGB(255, 255, 255, 255),
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.none
+
                         ),
                       ),
                     ),
@@ -794,10 +804,12 @@ class __JuegoState extends State<_Juego> {
                             image: AssetImage('assets/trivial_blanco.png'),
                             fit: BoxFit.fill,
                           ),
+
                         ),
                       ),
                     ),
                   ),
+
 
                   Visibility(
                     visible: jVisibles[4],
@@ -812,10 +824,12 @@ class __JuegoState extends State<_Juego> {
                           color: Color.fromARGB(255, 255, 255, 255),
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.none
+
                         ),
                       ),
                     ),
                   ),
+
                   Visibility(
                     visible: jVisibles[4],
                     child: Transform.translate(  //Imagen J4
@@ -1593,7 +1607,6 @@ class __JuegoState extends State<_Juego> {
                       ),
                     ),
                   ),
-                  
 
                   //C61
                   Transform.rotate(
@@ -1659,7 +1672,7 @@ class __JuegoState extends State<_Juego> {
                         },
                       ),
                     ),
-                  ),          
+                  ),
 
                   //C27
                   Transform.rotate(
@@ -3887,6 +3900,7 @@ class __JuegoState extends State<_Juego> {
               ),
             ),
 
+
             Visibility(
               visible: preguntaActiva,
               child:Container(
@@ -4053,9 +4067,8 @@ class _HexagonClipper extends CustomClipper<Path> {
     // path.lineTo(size.width * 0.5, 0); //centro arriba (linea arriba derecha)
     // path.lineTo(size.width, size.height * 0.4); //punto derecho
     // path.lineTo(size.width * 0.8, size.height); //abajo derecha
-    // path.lineTo(size.width * 0.2, size.height); //abajo izquierda 
+    // path.lineTo(size.width * 0.2, size.height); //abajo izquierda
     // path.lineTo(size.width * 0, size.height * 0.4); //punto izquierdo
-
 
     path.moveTo(w * 0.5, 0);
     path.lineTo(w, h * 0.25);
@@ -4063,7 +4076,6 @@ class _HexagonClipper extends CustomClipper<Path> {
     path.lineTo(w * 0.5, h);
     path.lineTo(0, h * 0.75);
     path.lineTo(0, h * 0.25);
-
 
     path.close();
     return path;
@@ -4084,7 +4096,6 @@ class _RectangleClipper extends CustomClipper<Path> {
     path.lineTo(w * 0.56, 0);
     path.lineTo(w * 0.56, h * 0.3);
     path.lineTo(0, h * 0.3);
-
 
     path.close();
     return path;
@@ -4108,7 +4119,7 @@ class _EsquinaClipper extends CustomClipper<Path> {
     path.lineTo(0.55 * w, h);
     // path.lineTo(0.25 * w, h);
     path.lineTo(28, h);
-    path.lineTo(-28, -50);  //arriba izq
+    path.lineTo(-28, -50); //arriba izq
     path.close();
 
     // path.moveTo(10,20);
@@ -4134,7 +4145,7 @@ class _Esquina2Clipper extends CustomClipper<Path> {
     path.moveTo(0.25 * w, 0);
     path.lineTo(1 * w, -300);
     path.lineTo(0.55 * w, h);
-    path.lineTo(30, h +8);
+    path.lineTo(30, h + 8);
     path.lineTo(-19, -60);
     path.close();
 
@@ -4165,6 +4176,7 @@ class _Esquina3Clipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
+
 /////////////////////////////////////////////////////////
 class HexagonButton extends StatelessWidget {
   final Color color;
@@ -4294,8 +4306,6 @@ class Esquina3Button extends StatelessWidget {
       ),
     );
   }
-
-
 }
 /////////////////////////////////////////////////////////
 
@@ -4303,7 +4313,8 @@ class BotonDado extends StatelessWidget {
   final String textContrasenya;
   final VoidCallback onPressed;
   final int turno;
- const BotonDado(String t, {Key? key, required this.onPressed, required this.turno})
+  const BotonDado(String t,
+      {Key? key, required this.onPressed, required this.turno})
       : textContrasenya = t,
         super(key: key);
 
@@ -4328,23 +4339,23 @@ class BotonDado extends StatelessWidget {
             ),
           ),
           TextButton(
-          style: TextButton.styleFrom(
-            foregroundColor: const Color(0xFF004461),
-            padding: const EdgeInsets.only(top: 4, bottom: 4, left: 15, right: 15),
-            textStyle: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              fontFamily: "Georgia"),
-          ),
-          onPressed: turno == 1 ? onPressed : null,
-          child: Text(textContrasenya),
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFF004461),
+              padding:
+                  const EdgeInsets.only(top: 4, bottom: 4, left: 15, right: 15),
+              textStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontFamily: "Georgia"),
+            ),
+            onPressed: turno == 1 ? onPressed : null,
+            child: Text(textContrasenya),
           ),
         ],
       ),
     );
   }
 }
-
 
 class TrianglePainter extends CustomPainter {
   final Color color;

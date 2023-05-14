@@ -1,13 +1,12 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/index.dart';
-import 'package:flutter_application_1/Interfaz/Menu/homeMenu.dart';
 import 'package:flutter_application_1/Data_types/registro.dart';
 import 'package:flutter_application_1/Interfaz/InicioSesion_Registro/Estilo/index.dart';
 import 'package:http/http.dart';
 
 import '../../../API/api.dart';
-
+//ignore: must_be_immutable
 class Registrarse2 extends StatefulWidget {
   Registro _r;
   List<bool> _quesitos;
@@ -37,7 +36,7 @@ class _Registrarse2State extends State<Registrarse2>
   bool _isKeyboardVisible = false;
   bool _isVisible = false;
   bool _isFocus1 = false, _isFocus2 = false;
-  final _focusNode1 = FocusNode(), _focusNode2 = FocusNode();
+  final _focusNode1 = FocusNode(), _focusNode2 = FocusNode(),_focusNode3 = FocusNode();
 
   bool _password1Visible = false, _password2Visible = false;
 
@@ -57,6 +56,7 @@ class _Registrarse2State extends State<Registrarse2>
     WidgetsBinding.instance.addObserver(this);
     _focusNode1.addListener(_handleFocus1Change);
     _focusNode2.addListener(_handleFocus2Change);
+    _focusNode3.addListener(_handleFocus3Change);
   }
 
   void _handleFocus1Change() {
@@ -73,12 +73,23 @@ class _Registrarse2State extends State<Registrarse2>
     }
   }
 
+  void _handleFocus3Change() {
+    if (_focusNode3.hasFocus) {
+      // The text form field has focus, so the keyboard is being displayed.
+      _isVisible = false;
+      _focusNode1.unfocus();
+      _focusNode2.unfocus();
+      setState(() {
+      });
+    }
+  }
+
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
     // Check whether the keyboard is currently visible.
     final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
-    _isKeyboardVisible = bottomInset > 500.0;
+    _isKeyboardVisible = bottomInset > 480.0;
     if (_isKeyboardVisible && (_isFocus1 || _isFocus2)) {
       _isVisible = true;
       setState(() {});
@@ -104,6 +115,8 @@ class _Registrarse2State extends State<Registrarse2>
     _focusNode1.dispose();
     _focusNode2.removeListener(_handleFocus2Change);
     _focusNode2.dispose();
+    _focusNode3.removeListener(_handleFocus2Change);
+    _focusNode3.dispose();
     super.dispose();
   }
 
@@ -163,8 +176,10 @@ class _Registrarse2State extends State<Registrarse2>
             key: _formKey,
             child: Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 40, left: 630),
+                 Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 30, right: 40),
                   child: Text(
                     "$_nQuesitos/6",
                     style: const TextStyle(
@@ -174,14 +189,16 @@ class _Registrarse2State extends State<Registrarse2>
                       fontFamily: "Georgia",
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 60, left: 520),
+                ),),
+                 Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 50, right: 30),
                   child: ContainerQuesitos(_quesitos),
-                ),
+                ),),
                 const ContainerTitle('Registrarse'),
                 Padding(
-                  padding: const EdgeInsets.only(top: 80, left: 40),
+                  padding: const EdgeInsets.only(top: 70, left: 40),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -208,6 +225,7 @@ class _Registrarse2State extends State<Registrarse2>
                               child: TextFormField(
                                 obscureText: !_password1Visible,
                                 controller: _passwordController,
+                                focusNode: _focusNode3,
                                 keyboardType: TextInputType.visiblePassword,
                                 decoration: InputDecoration(
                                   suffixIcon: IconButton(
@@ -244,9 +262,10 @@ class _Registrarse2State extends State<Registrarse2>
                     ],
                   ),
                 ),
-                Positioned(
-                  top: 200,
-                  left: 40,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 180, left: 40),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -302,10 +321,10 @@ class _Registrarse2State extends State<Registrarse2>
                         ),
                       ),
                     ],
-                  ),
+                  ),),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 350, top: 120),
+                  padding: const EdgeInsets.only(left: 360, top: 100),
                   child: Stack(
                     children: [
                       Visibility(
@@ -339,7 +358,7 @@ class _Registrarse2State extends State<Registrarse2>
                 Visibility(
                   visible: _isVisible,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 160),
+                    padding: const EdgeInsets.only(top: 155),
                     child: Container(
                       height: 40,
                       decoration: const BoxDecoration(
@@ -379,13 +398,12 @@ class _Registrarse2State extends State<Registrarse2>
                     ),
                   ),
                 ),
-                Positioned(
-                  top: 320,
-                  left: 130,
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: 
+                  Padding(padding: const EdgeInsets.only(bottom: 30),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Boton1(
                           "VOLVER",
