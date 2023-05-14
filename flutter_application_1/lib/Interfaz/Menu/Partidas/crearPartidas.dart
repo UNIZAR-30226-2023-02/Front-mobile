@@ -4,10 +4,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Data_types/index.dart';
 import 'package:flutter_application_1/API/index.dart';
+import 'package:flutter_application_1/Interfaz/Juego/salaEspera.dart';
 import 'package:flutter_application_1/Interfaz/Menu/Estilo/index.dart';
 
 import '../../../../Data_types/sesion.dart';
 import '../../Juego/juego.dart';
+import '../../Juego/juego_copia.dart';
 import '../home.dart';
 
 //ignore: must_be_immutable
@@ -75,19 +77,14 @@ class _CrearPartidaState extends State<CrearPartida> {
     CrearSalaResponse r = await f;
     if (r.OK) {
       // ignore: use_build_context_synchronously
-      Future<ValidarSalaResponse> f = validarSalaPartida(
-          ValidarSalaPetition(
-              _dSP.getField(DatosSalaPartidaFieldsCodes.nombre), aux),
-          _s.getField(SesionFieldsCodes.token));
-      ValidarSalaResponse r = await f;
-      if (r.OK) {
-        // ignore: use_build_context_synchronously
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Juego(_s, r.ws, tipoPartida)),
-            (Route<dynamic> route) => false);
-      }
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SalaEspera(
+                  _s,
+                  '$wsDir/ws/lobby/${_dSP.getField(DatosSalaPartidaFieldsCodes.nombre)}/?username=${_s.getField(SesionFieldsCodes.usuario)}&password=$aux',
+                  tipoPartida)),
+          (Route<dynamic> route) => false);
     } else {
       _errorCampos = true;
       if (r.errorNombreSala != "") {

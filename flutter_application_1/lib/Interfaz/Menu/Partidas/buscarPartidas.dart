@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Data_types/index.dart';
 import 'package:flutter_application_1/API/index.dart';
 import 'package:flutter_application_1/Interfaz/Juego/juego.dart';
+import 'package:flutter_application_1/Interfaz/Juego/salaEspera.dart';
 import 'package:flutter_application_1/Interfaz/Menu/Estilo/index.dart';
 
+import '../../Juego/juego_copia.dart';
 import '../home.dart';
 
 //ignore: must_be_immutable
@@ -124,7 +126,7 @@ class _BuscarPartidaState extends State<BuscarPartida>
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) => Juego(_s, r.ws,
+              builder: (context) => SalaEspera(_s, '$wsDir${r.ws}',
                   _sala.getField(DatosSalaPartidaFieldsCodes.tipoPartida))),
           (Route<dynamic> route) => false);
     } else {

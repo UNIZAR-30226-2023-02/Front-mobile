@@ -1,4 +1,4 @@
-import 'dart:io';
+/*import 'dart:io';
 import 'dart:math';
 import 'dart:async';
 import 'dart:ui';
@@ -10,509 +10,198 @@ import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 import 'package:flutter/services.dart';
 import 'package:web_socket_channel/io.dart';
 
-class Juego2 extends StatelessWidget {
-  const Juego2({Key? key}) : super(key: key);
+import '../../API/index.dart';
+import '../../Data_types/index.dart';
 
+class Juego extends StatefulWidget {
+  const Juego(this._s, this._wS, this._tP, {Key? key}) : super(key: key);
+  final String _wS, _tP;
+  final Sesion _s;
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: _Juego(),
-    );
-  }
+  _JuegoState createState() => _JuegoState(_s, _wS, _tP);
 }
 
-class _Juego extends StatefulWidget {
+class _JuegoState extends State<Juego> {
+  _JuegoState(this._s, this._wS, this._tP);
+  final String _wS, _tP;
+  final Sesion _s;
+  late IOWebSocketChannel _socket;
+
+  static const String MensajeDado = '';
+
   @override
-  __JuegoState createState() => __JuegoState();
-}
-
-class __JuegoState extends State<_Juego> {
-  Color Azul = Colors.blue;
-  Color Naranja = const Color.fromARGB(255, 240, 143, 17);
-  Color Rojo = const Color.fromARGB(255, 230, 44, 19);
-  Color Rosa = const Color.fromARGB(255, 230, 32, 187);
-  Color Verde = const Color.fromARGB(255, 53, 224, 18);
-  Color Amarillo = const Color.fromARGB(255, 219, 205, 0);
-  Color Blanco = const Color.fromARGB(255, 255, 255, 255);
-  Color colorPregunta = Colors.blue;
-  Color Gris = Colors.grey;
-  bool ok = false;
-
-
-  // List<Color> colorCasillasFijo = [ const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 240, 143, 17),
-  //                               const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 219, 205, 0), 
-  //                               const Color.fromARGB(255, 230, 44, 19), const Color.fromARGB(255, 255, 255, 255), 
-  //                               Colors.blue, const Color.fromARGB(255, 255, 255, 255),
-  //                               Colors.blue, const Color.fromARGB(255, 255, 255, 255),
-  //                               const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 53, 224, 18),
-  //                               const Color.fromARGB(255, 255, 255, 255),const Color.fromARGB(255, 230, 44, 19), 
-  //                               const Color.fromARGB(255, 255, 255, 255),const Color.fromARGB(255, 230, 44, 19), 
-  //                               const Color.fromARGB(255, 255, 255, 255),Colors.blue,
-  //                               const Color.fromARGB(255, 230, 32, 187), const Color.fromARGB(255, 255, 255, 255), 
-  //                               const Color.fromARGB(255, 53, 224, 18), const Color.fromARGB(255, 255, 255, 255), 
-  //                               const Color.fromARGB(255, 53, 224, 18), const Color.fromARGB(255, 255, 255, 255), 
-  //                               const Color.fromARGB(255, 230, 44, 19), const Color.fromARGB(255, 219, 205, 0), 
-  //                               const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 230, 32, 187), 
-  //                               const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 230, 32, 187), 
-  //                               const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 53, 224, 18),
-  //                               const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 255, 255, 255), 
-  //                               const Color.fromARGB(255, 219, 205, 0), const Color.fromARGB(255, 255, 255, 255), 
-  //                               const Color.fromARGB(255, 219, 205, 0), const Color.fromARGB(255, 255, 255, 255), 
-  //                               const Color.fromARGB(255, 230, 32, 187), Colors.blue,
-  //                               const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 240, 143, 17),
-  //                               const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 219, 205, 0), 
-  //                               Colors.blue, const Color.fromARGB(255, 230, 44, 19), 
-  //                               const Color.fromARGB(255, 230, 32, 187), Colors.blue,
-  //                               const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 230, 44, 19), 
-  //                               const Color.fromARGB(255, 53, 224, 18), const Color.fromARGB(255, 219, 205, 0),
-  //                               const Color.fromARGB(255, 230, 44, 19), Colors.blue,
-  //                               const Color.fromARGB(255, 53, 224, 18), const Color.fromARGB(255, 230, 32, 187),
-  //                               const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 53, 224, 18),
-  //                               const Color.fromARGB(255, 230, 44, 19), const Color.fromARGB(255, 230, 32, 187),
-  //                               const Color.fromARGB(255, 219, 205, 0), Colors.blue,
-  //                               const Color.fromARGB(255, 230, 32, 187), const Color.fromARGB(255, 53, 224, 18),
-  //                               const Color.fromARGB(255, 219, 205, 0), const Color.fromARGB(255, 240, 143, 17),
-  //                               const Color.fromARGB(255, 230, 44, 19), const Color.fromARGB(255, 219, 205, 0),
-  //                               const Color.fromARGB(255, 230, 32, 187), const Color.fromARGB(255, 240, 143, 17),
-  //                               Colors.blue, const Color.fromARGB(255, 53, 224, 18),
-  //                               const Color.fromARGB(255, 255, 255, 255), 
-  //                             ];
-
-  List<Color> colorCasillas = [ const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 240, 143, 17),
-                                const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 219, 205, 0), 
-                                const Color.fromARGB(255, 230, 44, 19), const Color.fromARGB(255, 255, 255, 255), 
-                                Colors.blue, const Color.fromARGB(255, 255, 255, 255),
-                                Colors.blue, const Color.fromARGB(255, 255, 255, 255),
-                                const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 53, 224, 18),
-                                const Color.fromARGB(255, 255, 255, 255),const Color.fromARGB(255, 230, 44, 19), 
-                                const Color.fromARGB(255, 255, 255, 255),const Color.fromARGB(255, 230, 44, 19), 
-                                const Color.fromARGB(255, 255, 255, 255),Colors.blue,
-                                const Color.fromARGB(255, 230, 32, 187), const Color.fromARGB(255, 255, 255, 255), 
-                                const Color.fromARGB(255, 53, 224, 18), const Color.fromARGB(255, 255, 255, 255), 
-                                const Color.fromARGB(255, 53, 224, 18), const Color.fromARGB(255, 255, 255, 255), 
-                                const Color.fromARGB(255, 230, 44, 19), const Color.fromARGB(255, 219, 205, 0), 
-                                const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 230, 32, 187), 
-                                const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 230, 32, 187), 
-                                const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 53, 224, 18),
-                                const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 255, 255, 255), 
-                                const Color.fromARGB(255, 219, 205, 0), const Color.fromARGB(255, 255, 255, 255), 
-                                const Color.fromARGB(255, 219, 205, 0), const Color.fromARGB(255, 255, 255, 255), 
-                                const Color.fromARGB(255, 230, 32, 187), Colors.blue,
-                                const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 240, 143, 17),
-                                const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 219, 205, 0), 
-                                Colors.blue, const Color.fromARGB(255, 230, 44, 19), 
-                                const Color.fromARGB(255, 230, 32, 187), Colors.blue,
-                                const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 230, 44, 19), 
-                                const Color.fromARGB(255, 53, 224, 18), const Color.fromARGB(255, 219, 205, 0),
-                                const Color.fromARGB(255, 230, 44, 19), Colors.blue,
-                                const Color.fromARGB(255, 53, 224, 18), const Color.fromARGB(255, 230, 32, 187),
-                                const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 53, 224, 18),
-                                const Color.fromARGB(255, 230, 44, 19), const Color.fromARGB(255, 230, 32, 187),
-                                const Color.fromARGB(255, 219, 205, 0), Colors.blue,
-                                const Color.fromARGB(255, 230, 32, 187), const Color.fromARGB(255, 53, 224, 18),
-                                const Color.fromARGB(255, 219, 205, 0), const Color.fromARGB(255, 240, 143, 17),
-                                const Color.fromARGB(255, 230, 44, 19), const Color.fromARGB(255, 219, 205, 0),
-                                const Color.fromARGB(255, 230, 32, 187), const Color.fromARGB(255, 240, 143, 17),
-                                Colors.blue, const Color.fromARGB(255, 53, 224, 18),
-                                const Color.fromARGB(255, 255, 255, 255), 
-                              ];
-  
-
-  void _cambiarColor2(String tema) {
-    if(tema == "historia"){
-      setState(() {
-        colorPregunta = Amarillo;
-      });
-    }else if(tema == "arte"){
-      setState(() {
-        colorPregunta = Rojo;
-      });
-    }else if(tema == "ciencia"){
-      setState(() {
-        colorPregunta = Verde;
-      });
-    }else if(tema == "geografia"){
-      setState(() {
-        colorPregunta = Azul;
-      });
-    }else if(tema == "deporte"){
-      setState(() {
-        colorPregunta = Naranja;
-      });
-    }else if(tema == "entretenimiento"){
-      setState(() {
-        colorPregunta = Rosa;
-      });
-    }    
-  }
-
-  List<bool> casillaCambia = [false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                              false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                              false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                              false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                              false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                              false, false, false,];
-
-  List<Color> colorVariado = [Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, 
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey,];
-  
-
-  //Color colorVariado = Colors.grey;
-  late Timer _t;
-  Color _getNextColor(int casilla) { //Si el color actual es gris se pone de su color y sino se pone gris
-    if (colorVariado[casilla] == Colors.grey) {
-      return colorCasillas[casilla];
-    } else{
-      return Colors.grey;
-    }
-  }
-
   void initState() {
     super.initState();
-    _t = Timer.periodic(Duration(milliseconds: 500), (t) {
-      setState(() {
-        // colorVariado[0] = _getNextColor(0); // Cambia el color del cuadrado
-        colorVariado[1] = _getNextColor(1);
-        // colorVariado[2] = _getNextColor(2);
-        // colorVariado[3] = _getNextColor(3);
-        // colorVariado[4] = _getNextColor(4);
-        // colorVariado[5] = _getNextColor(5);
-        colorVariado[6] = _getNextColor(6);
-      });
+    _socket = IOWebSocketChannel.connect('$wsDir$_wS');
+    _socket.stream.listen((event) {
+      _listenSocket();
     });
   }
 
-  void dispose2() {
-    _t.cancel(); // Cancela el temporizador al cerrar la pantalla
-    super.dispose();
-  }
-
-  void pulsar(int casilla){
-    if(casillaCambia[casilla]){
-      casillaCambia[casilla] = false;
-    }else{
-      casillaCambia[casilla] = true;
-    }
-  }
-
-
-  // void _cambiarColor2() {
-  //   setState(() {
-  //     Bcolor2 = Colors.green;
-  //   });
-  // }
-  // void _cambiarColor1() {
-  //   setState(() {
-  //     Bcolor1 = Colors.green;
-  //   });
-  // }
-
-  //CONTADOR--------------------------------------------------------
-  int _countdownTime = 10;
-  Timer? _timer;
-  void startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_countdownTime > 0) {
-          _countdownTime--;
-        } else {
-          timer.cancel();
-        }
-      });
-    });
-  }
   @override
   void dispose() {
+    _socket.sink.close();
     super.dispose();
-    _timer?.cancel();
   }
 
-  //DADO------------------------------------------------------------
-  int _diceNumber = 1;
-  int turno = 1;
-
-  void _rollDice() {
-    setState(() {
-      _diceNumber = Random().nextInt(6) + 1;
-      turno = 0;
-    });
-  }
-
-  void _resetTurno() {
-    setState(() {
-      turno = 1;
-    });
-  }
-
-  //RELACIONADO CON PREGUNTA-------------------------------------------------------------
-  bool preguntaActiva = false;
-  String preguntaTema = "";
-  String pregunta = "";
-  String respuesta1 = "";
-  String respuesta2 = "";
-  String respuesta3 = "";
-  String respuesta4 = "";
-  Color ColorRespuesta1 = const Color.fromARGB(255, 255, 255, 255);
-  Color ColorRespuesta2 = const Color.fromARGB(255, 255, 255, 255);
-  Color ColorRespuesta3 = const Color.fromARGB(255, 255, 255, 255);
-  Color ColorRespuesta4 = const Color.fromARGB(255, 255, 255, 255);
-
-  void mostrarPregunta(){
-    ColorRespuesta1 = const Color.fromARGB(255, 255, 255, 255);
-    ColorRespuesta2 = const Color.fromARGB(255, 255, 255, 255);
-    ColorRespuesta3 = const Color.fromARGB(255, 255, 255, 255);
-    ColorRespuesta4 = const Color.fromARGB(255, 255, 255, 255);
-    preguntaActiva = true;
-  }
-  void ocultarPregunta(){
-    preguntaActiva = false;
-  }
-
-  void cambiarPregunta(String _preguntaTema, String _pregunta, String _respuesta1, String _respuesta2, String _respuesta3, String _respuesta4) {
-    setState(() {
-      preguntaTema = _preguntaTema;
-      pregunta = _pregunta;
-      respuesta1 = _respuesta1;
-      respuesta2 = _respuesta2;
-      respuesta3 = _respuesta3;
-      respuesta4 = _respuesta4;
-    });
-  }
-
-  void colorRespuesta(int numRespuesta, bool bien){
-    if(bien){
-      if(numRespuesta == 1){
-        ColorRespuesta1 = Color.fromARGB(255, 37, 163, 12);
-      }else if(numRespuesta == 2){
-        ColorRespuesta2 = Color.fromARGB(255, 37, 163, 12);
-      }else if(numRespuesta == 3){
-        ColorRespuesta3 = Color.fromARGB(255, 37, 163, 12);
-      }else if(numRespuesta == 4){
-        ColorRespuesta4 = Color.fromARGB(255, 37, 163, 12);
-      }
-    }else{
-      if(numRespuesta == 1){
-        ColorRespuesta1 = Color.fromARGB(255, 148, 28, 13);
-      }else if(numRespuesta == 2){
-        ColorRespuesta2 = Color.fromARGB(255, 148, 28, 13);
-      }else if(numRespuesta == 3){
-        ColorRespuesta3 = Color.fromARGB(255, 148, 28, 13);
-      }else if(numRespuesta == 4){
-        ColorRespuesta4 = Color.fromARGB(255, 148, 28, 13);
-      }
+  void _enviarMensaje(String m) {
+    final String mensaje = jsonEncode({'message': '', 'adad': 'akdjk'});
+    switch (m) {
+      case MensajeDado:
+        break;
     }
+    _socket.sink.add(mensaje);
   }
 
-  //ACTIVOS?------------------------------------
-  List<bool> jVisibles = [true,true,true,true,true,true];
-  //JUGADORES-------------------------------------
-  int numJ = 6; //numero de jugadores en la partida
-  List<String> nombresJugadores = ['j1','j2','j3','j4','j5','j6'];
-  //IMAGENES------------------------------
-  List<String> imagenesJugadores = ['assets/perfil.png','assets/perfil.png','assets/perfil.png','assets/perfil.png','assets/perfil.png','assets/perfil.png'];
-  //FICHAS---------------------------
-  List<String> fichasJugadores = ['http://51.142.118.71:8000/static/images/objetos/1-amarillo.png','http://51.142.118.71:8000/static/images/objetos/1-rojo.png',
-                                  'http://51.142.118.71:8000/static/images/objetos/1-rosa.png','http://51.142.118.71:8000/static/images/objetos/1-verde.png',
-                                  'http://51.142.118.71:8000/static/images/objetos/1-azul.png','http://51.142.118.71:8000/static/images/objetos/1-naranja.png'];
-  //------------------------------------------
-
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> WEB SOCKET <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
-      //ANOTACIONES----------------------------------------------------------------------------------------//
-      //-Creo que al meter aqui las opciones de ejecución del socket se comprobaran y repecto a esos datos
-      //    hacemos el build del tablero
-      //
-      //
-      //FIN ANOTACIONES-----------------------------------------------------------------------------------//
-  bool msgIni = true;
-
-  void cargarEstado_nombresImagenesJug(List<String> r_nombres){
-    int j = 0;
-    for(var n in r_nombres){
-      nombresJugadores[j] = n;
-      j++;
-    }
-  }
-
-  void cargarEstado_fichasJug(List<String> r_fichas){
-    int j = 0;
-    for(var n in r_fichas){
-      fichasJugadores[j] = n;
-      j++;
-    }
-  }
-
-  //hace visibles los nombres, imagenes y quesitos de los jugadores de la partida
-  void habilitarJugadores(){
-    for(int p=0;p < numJ;p++){
-      jVisibles[p] = true;
-    }
-  }
-
-  void ejecutarSocket(){
-    final channel = IOWebSocketChannel.connect('');
-
-    if(msgIni){
+  void _listenSocket() {
+    if (msgIni) {
       msgIni = false;
-      channel.stream.listen((message){
-      Map<String, dynamic> decodedResponse = json.decode(message);
-      String r_ok = decodedResponse['OK'];
-      List<dynamic> r_jugadores = decodedResponse['jugadores'];
-      List<String> r_nombres = [];
-      List<String> r_posiciones = [];
-      List<List<dynamic>> r_quesitos = [];
-      List<String> r_turnos = [];
-      List<String> r_fichas = [];
-      List<String> r_tableros = [];
-      List<bool> r_activos = [];
-      // String r_type = decodedResponse['type'];
-      // String r_subtype = decodedResponse['subtype'];
-      for(var jugador in r_jugadores){
-        //Esto lo puedo comprimir con lo de abajo
-        String nombre = jugador['jugador'];
-        String posicion = jugador['posicion'];
-        List<dynamic> quesitos = jugador['quesitos'];
-        String turno = jugador['turno'];
-        String ficha = jugador['ficha'];
-        String tablero = jugador['tablero'];
-        bool activo = jugador['activo'];
-        
-        r_nombres.add(nombre);
-        r_posiciones.add(posicion);
-        r_quesitos.add(quesitos);
-        r_turnos.add(turno);
-        r_fichas.add(ficha);
-        r_tableros.add(tablero);
-        r_activos.add(activo);
-      }
-      String r_tiempo_pregunta = decodedResponse['tiempo_pregunta'];
-      String r_tiempo_elegir_casilla = decodedResponse['tiempo_elegir_casilla'];
-      String r_error = decodedResponse['error'];
+      channel.stream.listen((message) {
+        Map<String, dynamic> decodedResponse = json.decode(message);
+        String r_ok = decodedResponse['OK'];
+        List<dynamic> r_jugadores = decodedResponse['jugadores'];
+        List<String> r_nombres = [];
+        List<String> r_posiciones = [];
+        List<List<dynamic>> r_quesitos = [];
+        List<String> r_turnos = [];
+        List<String> r_fichas = [];
+        List<String> r_tableros = [];
+        List<bool> r_activos = [];
+        // String r_type = decodedResponse['type'];
+        // String r_subtype = decodedResponse['subtype'];
+        for (var jugador in r_jugadores) {
+          //Esto lo puedo comprimir con lo de abajo
+          String nombre = jugador['jugador'];
+          String posicion = jugador['posicion'];
+          List<dynamic> quesitos = jugador['quesitos'];
+          String turno = jugador['turno'];
+          String ficha = jugador['ficha'];
+          String tablero = jugador['tablero'];
+          bool activo = jugador['activo'];
 
-      //CARGAR JUGADORES
-      if(r_ok == "true"){
-        numJ = r_jugadores.length;
-        cargarEstado_nombresImagenesJug(r_nombres);
-        
-        //cargarEstado_posicionesJug(Njugadores, r_posiciones);
-        //cargarEstado_quesosJug(Njugadores, r_quesitos);
+          r_nombres.add(nombre);
+          r_posiciones.add(posicion);
+          r_quesitos.add(quesitos);
+          r_turnos.add(turno);
+          r_fichas.add(ficha);
+          r_tableros.add(tablero);
+          r_activos.add(activo);
+        }
+        String r_tiempo_pregunta = decodedResponse['tiempo_pregunta'];
+        String r_tiempo_elegir_casilla =
+            decodedResponse['tiempo_elegir_casilla'];
+        String r_error = decodedResponse['error'];
 
-        cargarEstado_fichasJug(r_fichas);
-        
-        //¿como cargo un tablero para cada usuario?
-        //cargarEstado_tablerosJug();Tengo que cargar un tablero para cada usuario
-      }
+        //CARGAR JUGADORES
+        if (r_ok == "true") {
+          numJ = r_jugadores.length;
+          cargarEstado_nombresImagenesJug(r_nombres);
 
+          //cargarEstado_posicionesJug(Njugadores, r_posiciones);
+          //cargarEstado_quesosJug(Njugadores, r_quesitos);
+
+          cargarEstado_fichasJug(r_fichas);
+
+          //¿como cargo un tablero para cada usuario?
+          //cargarEstado_tablerosJug();Tengo que cargar un tablero para cada usuario
+        }
       });
     }
-    
 
-      // switch(r_type){
-      //   case "Respuesta":
-      //     print("tipo: Respuesta");
+    // switch(r_type){
+    //   case "Respuesta":
+    //     print("tipo: Respuesta");
 
-      //     switch (r_subtype){
-      //       case "Dado_casillas":
-      //         print("subtipo: Dado_casillas");
-      //       break;
+    //     switch (r_subtype){
+    //       case "Dado_casillas":
+    //         print("subtipo: Dado_casillas");
+    //       break;
 
-      //       case "Pregunta":
-      //         print("subtipo: Pregunta");
-      //       break;
-      //     }
-      //   break;
+    //       case "Pregunta":
+    //         print("subtipo: Pregunta");
+    //       break;
+    //     }
+    //   break;
 
-      //   case "Accion":
-      //     print("tipo: Accion");
+    //   case "Accion":
+    //     print("tipo: Accion");
 
-      //     switch (r_subtype){
-      //       case "Dados":
-      //         print("subtipo: Dados");
-      //       break;
-      //     }
-      //   break;
+    //     switch (r_subtype){
+    //       case "Dados":
+    //         print("subtipo: Dados");
+    //       break;
+    //     }
+    //   break;
 
-      //   case "Fin":
-      //     print("tipo: Fin");
-      //   break;
+    //   case "Fin":
+    //     print("tipo: Fin");
+    //   break;
 
-      //   case "Chat":
-      //     print("tipo: Chat");
-      //   break;
+    //   case "Chat":
+    //     print("tipo: Chat");
+    //   break;
 
-      //   case "Peticion":
-      //     print("tipo: Peticion");
+    //   case "Peticion":
+    //     print("tipo: Peticion");
 
-      //     switch (r_subtype){
-      //       case "Tirar_dado":
-      //         print("subtipo: Tirar_dado");
-      //       break;
+    //     switch (r_subtype){
+    //       case "Tirar_dado":
+    //         print("subtipo: Tirar_dado");
+    //       break;
 
-      //       case "Movimiento_casilla":
-      //         print("subtipo: Movimiento_casilla");
-      //       break;
-      //     }
-      //   break;
+    //       case "Movimiento_casilla":
+    //         print("subtipo: Movimiento_casilla");
+    //       break;
+    //     }
+    //   break;
 
-      //   case "Actualizacion":
-      //     print("tipo: Actualizacion");
+    //   case "Actualizacion":
+    //     print("tipo: Actualizacion");
 
-      //     switch (r_subtype){
-      //       case "Pausar_partida":
-      //         print("subtipo: Pausar_partida");
-      //       break;
+    //     switch (r_subtype){
+    //       case "Pausar_partida":
+    //         print("subtipo: Pausar_partida");
+    //       break;
 
-      //       case "Continuar_partida":
-      //         print("subtipo: Continuar_partida");
-      //       break;
+    //       case "Continuar_partida":
+    //         print("subtipo: Continuar_partida");
+    //       break;
 
-      //       case "Contestar_pregunta":
-      //         print("subtipo: Contestar_pregunta");
+    //       case "Contestar_pregunta":
+    //         print("subtipo: Contestar_pregunta");
 
-      //         if(enunciado == "noContestada"){
+    //         if(enunciado == "noContestada"){
 
-      //         }else{
-      //           switch (r_subtype){
-      //             case "Ciencia":
-      //             break;
+    //         }else{
+    //           switch (r_subtype){
+    //             case "Ciencia":
+    //             break;
 
-      //             case "Arte":
-      //             break;
+    //             case "Arte":
+    //             break;
 
-      //             case "Deportes":
-      //             break;
+    //             case "Deportes":
+    //             break;
 
-      //             case "Entretenimiento":
-      //             break;
+    //             case "Entretenimiento":
+    //             break;
 
-      //             case "Geografia":
-      //             break;
+    //             case "Geografia":
+    //             break;
 
-      //             case "Historia":
-      //             break;
-      //           }
-      //         }
-      //       break;
+    //             case "Historia":
+    //             break;
+    //           }
+    //         }
+    //       break;
 
-      //       case "Fin_partida":
-      //       break;
-      //     }
-      //   break;
-      //}
-
-    
+    //       case "Fin_partida":
+    //       break;
+    //     }
+    //   break;
+    //}
   }
-  
-  
-  
+
 // bool parpadeoOON = true;
 // Future<void> prueba() async {
 //   while (true) {
@@ -520,22 +209,19 @@ class __JuegoState extends State<_Juego> {
 //     setState(() {
 //       parpadeoOON = true;
 //     });
-    
+
 //     // esperar 500 milisegundos
 //     await Future.delayed(Duration(milliseconds: 500));
-    
+
 //     // cambiar el valor de parpadeoOON a false para que el botón sea invisible
 //     setState(() {
 //       parpadeoOON = false;
 //     });
-    
+
 //     // esperar 500 milisegundos
 //     await Future.delayed(Duration(milliseconds: 500));
 //   }
 // }
-
-
-
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FIN WEB SOCKET <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
 
@@ -556,39 +242,42 @@ class __JuegoState extends State<_Juego> {
         child: Stack(
           children: [
             Positioned(
-              top: screenSize.height / 2 - 50, // ajustar la posición vertical del hexágono
-              left: screenSize.width / 2 - 50, // ajustar la posición horizontal del hexágono
+              top: screenSize.height / 2 -
+                  50, // ajustar la posición vertical del hexágono
+              left: screenSize.width / 2 -
+                  50, // ajustar la posición horizontal del hexágono
               child: Stack(
                 children: [
-                  
-                  Transform.translate(  //Contador
+                  Transform.translate(
+                    //Contador
                     offset: const Offset(-150, -128),
                     child: Text(
                       '$_countdownTime',
                       style: TextStyle(fontSize: 48),
                     ),
                   ),
-                  
+
                   Visibility(
                     visible: jVisibles[0],
-                    child: Transform.translate(  //Texto J0
+                    child: Transform.translate(
+                      //Texto J0
                       offset: const Offset(-262, -128),
                       child: Text(
                         nombresJugadores[0],
                         style: const TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 12.0,
-                          //color: Color(0xFFc9c154),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none
-                        ),
+                            fontFamily: "Baskerville",
+                            fontSize: 12.0,
+                            //color: Color(0xFFc9c154),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[0],
-                    child: Transform.translate(  //Imagen J0
+                    child: Transform.translate(
+                      //Imagen J0
                       offset: const Offset(-265, -110),
                       child: Container(
                         width: 70,
@@ -599,13 +288,17 @@ class __JuegoState extends State<_Juego> {
                         //     fit: BoxFit.fill,
                         //   ),
                         // ),
-                        child: Image(image: AssetImage(imagenesJugadores[0]),fit: BoxFit.fill,),
+                        child: Image(
+                          image: AssetImage(imagenesJugadores[0]),
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[0],
-                    child: Transform.translate(  //Putos J0
+                    child: Transform.translate(
+                      //Putos J0
                       offset: const Offset(-205, -60),
                       child: Container(
                         width: 40,
@@ -619,39 +312,43 @@ class __JuegoState extends State<_Juego> {
                       ),
                     ),
                   ),
-                  
 
                   Visibility(
                     visible: jVisibles[1],
-                    child: Transform.translate(  //Texto J1
+                    child: Transform.translate(
+                      //Texto J1
                       offset: const Offset(-262, -8),
                       child: Text(
                         nombresJugadores[1],
                         style: const TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 12.0,
-                          //color: Color(0xFFc9c154),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none
+                            fontFamily: "Baskerville",
+                            fontSize: 12.0,
+                            //color: Color(0xFFc9c154),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: jVisibles[1],
+                    child: Transform.translate(
+                      //Imagen J1
+                      offset: const Offset(-265, 10),
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        child: Image(
+                          image: AssetImage(imagenesJugadores[1]),
+                          fit: BoxFit.fill,
                         ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[1],
-                    child: Transform.translate(  //Imagen J1
-                      offset: const Offset(-265, 10),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(image: AssetImage(imagenesJugadores[1]),fit: BoxFit.fill,),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[1],
-                    child: Transform.translate(  //Putos J1
+                    child: Transform.translate(
+                      //Putos J1
                       offset: const Offset(-205, 60),
                       child: Container(
                         width: 40,
@@ -668,35 +365,40 @@ class __JuegoState extends State<_Juego> {
 
                   Visibility(
                     visible: jVisibles[2],
-                    child: Transform.translate(  //Texto J2
+                    child: Transform.translate(
+                      //Texto J2
                       offset: const Offset(-262, 112),
                       child: Text(
                         nombresJugadores[2],
                         style: const TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 12.0,
-                          //color: Color(0xFFc9c154),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none
+                            fontFamily: "Baskerville",
+                            fontSize: 12.0,
+                            //color: Color(0xFFc9c154),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: jVisibles[2],
+                    child: Transform.translate(
+                      //Imagen J2
+                      offset: const Offset(-265, 130),
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        child: Image(
+                          image: AssetImage(imagenesJugadores[2]),
+                          fit: BoxFit.fill,
                         ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[2],
-                    child:Transform.translate(  //Imagen J2
-                      offset: const Offset(-265, 130),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(image: AssetImage(imagenesJugadores[2]),fit: BoxFit.fill,),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[2],
-                    child: Transform.translate(  //Putos J2
+                    child: Transform.translate(
+                      //Putos J2
                       offset: const Offset(-205, 180),
                       child: Container(
                         width: 40,
@@ -713,35 +415,40 @@ class __JuegoState extends State<_Juego> {
 
                   Visibility(
                     visible: jVisibles[3],
-                    child: Transform.translate(  //Texto J3
+                    child: Transform.translate(
+                      //Texto J3
                       offset: const Offset(293, -128),
                       child: Text(
                         nombresJugadores[3],
                         style: const TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 12.0,
-                          //color: Color(0xFFc9c154),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none
+                            fontFamily: "Baskerville",
+                            fontSize: 12.0,
+                            //color: Color(0xFFc9c154),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: jVisibles[3],
+                    child: Transform.translate(
+                      //Imagen J3
+                      offset: const Offset(290, -110),
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        child: Image(
+                          image: AssetImage(imagenesJugadores[3]),
+                          fit: BoxFit.fill,
                         ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[3],
-                    child: Transform.translate(  //Imagen J3
-                      offset: const Offset(290, -110),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(image: AssetImage(imagenesJugadores[3]),fit: BoxFit.fill,),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[3],
-                    child: Transform.translate(  //Putos J3
+                    child: Transform.translate(
+                      //Putos J3
                       offset: const Offset(260, -60),
                       child: Container(
                         width: 40,
@@ -758,35 +465,40 @@ class __JuegoState extends State<_Juego> {
 
                   Visibility(
                     visible: jVisibles[4],
-                    child: Transform.translate(  //Texto J4
+                    child: Transform.translate(
+                      //Texto J4
                       offset: const Offset(293, -8),
                       child: Text(
                         nombresJugadores[4],
                         style: const TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 12.0,
-                          //color: Color(0xFFc9c154),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none
+                            fontFamily: "Baskerville",
+                            fontSize: 12.0,
+                            //color: Color(0xFFc9c154),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: jVisibles[4],
+                    child: Transform.translate(
+                      //Imagen J4
+                      offset: const Offset(290, 10),
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        child: Image(
+                          image: AssetImage(imagenesJugadores[4]),
+                          fit: BoxFit.fill,
                         ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[4],
-                    child: Transform.translate(  //Imagen J4
-                      offset: const Offset(290, 10),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(image: AssetImage(imagenesJugadores[4]),fit: BoxFit.fill,),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[4],
-                    child: Transform.translate(  //Putos J4
+                    child: Transform.translate(
+                      //Putos J4
                       offset: const Offset(260, 60),
                       child: Container(
                         width: 40,
@@ -803,35 +515,40 @@ class __JuegoState extends State<_Juego> {
 
                   Visibility(
                     visible: jVisibles[5],
-                    child: Transform.translate(  //Texto J5
+                    child: Transform.translate(
+                      //Texto J5
                       offset: const Offset(293, 112),
                       child: Text(
                         nombresJugadores[5],
                         style: const TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 12.0,
-                          //color: Color(0xFFc9c154),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none
+                            fontFamily: "Baskerville",
+                            fontSize: 12.0,
+                            //color: Color(0xFFc9c154),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: jVisibles[5],
+                    child: Transform.translate(
+                      //Imagen J5
+                      offset: const Offset(290, 130),
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        child: Image(
+                          image: AssetImage(imagenesJugadores[5]),
+                          fit: BoxFit.fill,
                         ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[5],
-                    child: Transform.translate(  //Imagen J5
-                      offset: const Offset(290, 130),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(image: AssetImage(imagenesJugadores[5]),fit: BoxFit.fill,),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[5],
-                    child: Transform.translate(  //Putos J5
+                    child: Transform.translate(
+                      //Putos J5
                       offset: const Offset(260, 180),
                       child: Container(
                         width: 40,
@@ -847,13 +564,14 @@ class __JuegoState extends State<_Juego> {
                   ),
 
                   //c1 boton
-                 
 
                   //C72
                   Transform.translate(
                     offset: const Offset(0, 0),
                     child: HexagonButton(
-                      color: casillaCambia[72] == true ? colorVariado[72] : colorCasillas[72],
+                      color: casillaCambia[72] == true
+                          ? colorVariado[72]
+                          : colorCasillas[72],
                       onPressed: () {
                         //_cambiardecolor2();
                         setState(() {
@@ -1006,7 +724,9 @@ class __JuegoState extends State<_Juego> {
                     child: Transform.translate(
                       offset: const Offset(-150, 75),
                       child: RectangleButton(
-                        color: casillaCambia[6] == true ? colorVariado[6] : colorCasillas[6],
+                        color: casillaCambia[6] == true
+                            ? colorVariado[6]
+                            : colorCasillas[6],
                         onPressed: () {
                           //_cambiarColor2();
                           pulsar(6);
@@ -1021,7 +741,9 @@ class __JuegoState extends State<_Juego> {
                     child: Transform.translate(
                       offset: const Offset(-150, 55),
                       child: RectangleButton(
-                        color: casillaCambia[5] == true ? colorVariado[5] : colorCasillas[5],
+                        color: casillaCambia[5] == true
+                            ? colorVariado[5]
+                            : colorCasillas[5],
                         onPressed: () {
                           //_cambiarColor2();
                           pulsar(5);
@@ -1036,7 +758,9 @@ class __JuegoState extends State<_Juego> {
                     child: Transform.translate(
                       offset: const Offset(-150, 35),
                       child: RectangleButton(
-                        color: casillaCambia[4] == true ? colorVariado[4] : colorCasillas[4],
+                        color: casillaCambia[4] == true
+                            ? colorVariado[4]
+                            : colorCasillas[4],
                         onPressed: () {
                           //_cambiarColor2();
                           pulsar(4);
@@ -1051,7 +775,9 @@ class __JuegoState extends State<_Juego> {
                     child: Transform.translate(
                       offset: const Offset(-150, 15),
                       child: RectangleButton(
-                        color: casillaCambia[3] == true ? colorVariado[3] : colorCasillas[3],
+                        color: casillaCambia[3] == true
+                            ? colorVariado[3]
+                            : colorCasillas[3],
                         onPressed: () {
                           //_cambiarColor2();
                           pulsar(3);
@@ -1066,7 +792,9 @@ class __JuegoState extends State<_Juego> {
                     child: Transform.translate(
                       offset: const Offset(-150, -5),
                       child: RectangleButton(
-                        color: casillaCambia[2] == true ? colorVariado[2] : colorCasillas[2],
+                        color: casillaCambia[2] == true
+                            ? colorVariado[2]
+                            : colorCasillas[2],
                         onPressed: () {
                           //_cambiarColor2();
                           pulsar(2);
@@ -1082,7 +810,9 @@ class __JuegoState extends State<_Juego> {
                       offset: const Offset(-150, -25), //-150,-25
                       child: IgnorePointer(
                         child: RectangleButton(
-                          color: casillaCambia[1] == true ? colorVariado[1] : colorCasillas[1],
+                          color: casillaCambia[1] == true
+                              ? colorVariado[1]
+                              : colorCasillas[1],
                           onPressed: () {
                             //_cambiarColor2();
                             pulsar(1);
@@ -1092,8 +822,7 @@ class __JuegoState extends State<_Juego> {
                       ),
                     ),
                   ),
-                  
-                      
+
                   //     child: ElevatedButton(
                   //       onPressed: () {
                   //         print('1');
@@ -1106,7 +835,7 @@ class __JuegoState extends State<_Juego> {
                   //                 ),
                   //   ),
                   // ),
-                  
+
                   //C8
                   Transform.rotate(
                     angle: -148 * pi / 180,
@@ -1490,7 +1219,6 @@ class __JuegoState extends State<_Juego> {
                     ),
                   ),
 
-
                   //C29
                   Transform.rotate(
                     angle: -329 * pi / 180,
@@ -1569,7 +1297,6 @@ class __JuegoState extends State<_Juego> {
                       ),
                     ),
                   ),
-                  
 
                   //C61
                   Transform.rotate(
@@ -1635,7 +1362,7 @@ class __JuegoState extends State<_Juego> {
                         },
                       ),
                     ),
-                  ),          
+                  ),
 
                   //C27
                   Transform.rotate(
@@ -1903,7 +1630,7 @@ class __JuegoState extends State<_Juego> {
                   // ),
 
                   //ImagenDado
-                  Transform.translate(  
+                  Transform.translate(
                     offset: const Offset(190, -120),
                     child: Image.asset(
                       'assets/cara$_diceNumber.png',
@@ -1912,7 +1639,9 @@ class __JuegoState extends State<_Juego> {
                   ),
                   //BotonDado
                   Padding(
-                    padding: EdgeInsets.only(top: 180, left: 168), // ajusta los valores según tus necesidades
+                    padding: EdgeInsets.only(
+                        top: 180,
+                        left: 168), // ajusta los valores según tus necesidades
                     child: BotonDado(
                       'Tirar',
                       onPressed: _rollDice,
@@ -1958,82 +1687,101 @@ class __JuegoState extends State<_Juego> {
                         ),
                       ),
                     ),
-                  ),            
+                  ),
 
-                  
-                   
                   //FICHAS---------------------------------------------------------------------------------------------
                   Visibility(
                     visible: jVisibles[0],
-                    child: Transform.translate(  //Ficha J0
+                    child: Transform.translate(
+                      //Ficha J0
                       offset: const Offset(0, 0),
                       child: Container(
                         width: 15,
                         height: 15,
-                        child: Image.network(fichasJugadores[0],fit: BoxFit.fill,),
+                        child: Image.network(
+                          fichasJugadores[0],
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[1],
-                    child: Transform.translate(  //Ficha J1
+                    child: Transform.translate(
+                      //Ficha J1
                       offset: const Offset(10, 10),
                       child: Container(
                         width: 15,
                         height: 15,
-                        child: Image.network(fichasJugadores[1],fit: BoxFit.fill,),
+                        child: Image.network(
+                          fichasJugadores[1],
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[2],
-                    child: Transform.translate(  //Ficha J2
+                    child: Transform.translate(
+                      //Ficha J2
                       offset: const Offset(20, 20),
                       child: Container(
                         width: 15,
                         height: 15,
-                        child: Image.network(fichasJugadores[2],fit: BoxFit.fill,),
+                        child: Image.network(
+                          fichasJugadores[2],
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[3],
-                    child: Transform.translate(  //Ficha J3
+                    child: Transform.translate(
+                      //Ficha J3
                       offset: const Offset(30, 30),
                       child: Container(
                         width: 15,
                         height: 15,
-                        child: Image.network(fichasJugadores[3],fit: BoxFit.fill,),
+                        child: Image.network(
+                          fichasJugadores[3],
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[4],
-                    child: Transform.translate(  //Ficha J4
+                    child: Transform.translate(
+                      //Ficha J4
                       offset: const Offset(40, 40),
                       child: Container(
                         width: 15,
                         height: 15,
-                        child: Image.network(fichasJugadores[4],fit: BoxFit.fill,),
+                        child: Image.network(
+                          fichasJugadores[4],
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[5],
-                    child: Transform.translate(  //Ficha J5
+                    child: Transform.translate(
+                      //Ficha J5
                       offset: const Offset(50, 50),
                       child: Container(
                         width: 15,
                         height: 15,
-                        child: Image.network(fichasJugadores[5],fit: BoxFit.fill,),
+                        child: Image.network(
+                          fichasJugadores[5],
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
-                
-
                 ],
               ),
-
             ),
 
             //c1 boton
@@ -2054,7 +1802,7 @@ class __JuegoState extends State<_Juego> {
             //                 ),
             //   ),
             // ),
-             Transform.rotate(
+            Transform.rotate(
               angle: -90 * pi / 180,
               child: Transform.translate(
                 offset: const Offset(-318, 316), //-150,-25
@@ -2062,7 +1810,9 @@ class __JuegoState extends State<_Juego> {
                   width: 39,
                   height: 22,
                   decoration: ShapeDecoration(
-                    color: casillaCambia[1] == true ? colorVariado[1] : colorCasillas[1],
+                    color: casillaCambia[1] == true
+                        ? colorVariado[1]
+                        : colorCasillas[1],
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(5),
@@ -2077,18 +1827,15 @@ class __JuegoState extends State<_Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Colors.transparent, 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Colors.transparent,
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
                 ),
               ),
             ),
-
-            
-
-            
 
             //PREGUNTAS-----------------------------------------------------------------------------------------
             Visibility(
@@ -2103,7 +1850,7 @@ class __JuegoState extends State<_Juego> {
                       color: Color.fromARGB(68, 0, 0, 0),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Center( 
+                    child: Center(
                       child: Container(
                         width: 400,
                         height: 250,
@@ -2115,7 +1862,8 @@ class __JuegoState extends State<_Juego> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             const Padding(
-                              padding: EdgeInsets.only(top: 20.0, left: 160, bottom: 210),
+                              padding: EdgeInsets.only(
+                                  top: 20.0, left: 160, bottom: 210),
                               child: Text(
                                 'HISTORIA',
                                 style: TextStyle(
@@ -2126,8 +1874,6 @@ class __JuegoState extends State<_Juego> {
                                 ),
                               ),
                             ),
-
-
                             Expanded(
                               child: Align(
                                 alignment: Alignment.topRight,
@@ -2151,9 +1897,6 @@ class __JuegoState extends State<_Juego> {
                                 ),
                               ),
                             ),
-
-                            
-                            
                           ],
                         ),
                       ),
@@ -2165,7 +1908,7 @@ class __JuegoState extends State<_Juego> {
 
             Visibility(
               visible: preguntaActiva,
-              child:Container(
+              child: Container(
                 alignment: Alignment.centerLeft,
                 child: const Padding(
                   padding: EdgeInsets.only(left: 205, bottom: 140),
@@ -2181,7 +1924,7 @@ class __JuegoState extends State<_Juego> {
                 ),
               ),
             ),
-            
+
             Visibility(
               visible: preguntaActiva,
               child: Padding(
@@ -2213,7 +1956,7 @@ class __JuegoState extends State<_Juego> {
                 ),
               ),
             ),
-            
+
             Visibility(
               visible: preguntaActiva,
               child: Padding(
@@ -2309,9 +2052,6 @@ class __JuegoState extends State<_Juego> {
                 ),
               ),
             ),
-
-            
-
           ],
         ),
       ),
@@ -2319,356 +2059,12 @@ class __JuegoState extends State<_Juego> {
   }
 }
 
-class _HexagonClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    final double w = size.width;
-    final double h = size.height;
-    // path.moveTo(size.width * 0.5, 0); //centro arriba (linea arriba izquierda)
-    // path.lineTo(size.width * 0.5, 0); //centro arriba (linea arriba derecha)
-    // path.lineTo(size.width, size.height * 0.4); //punto derecho
-    // path.lineTo(size.width * 0.8, size.height); //abajo derecha
-    // path.lineTo(size.width * 0.2, size.height); //abajo izquierda 
-    // path.lineTo(size.width * 0, size.height * 0.4); //punto izquierdo
-
-
-    path.moveTo(w * 0.5, 0);
-    path.lineTo(w, h * 0.25);
-    path.lineTo(w, h * 0.75);
-    path.lineTo(w * 0.5, h);
-    path.lineTo(0, h * 0.75);
-    path.lineTo(0, h * 0.25);
-
-
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
-class _RectangleClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    final double w = size.width;
-    final double h = size.height;
-
-    path.moveTo(0, 0);
-    path.lineTo(w * 0.56, 0);
-    path.lineTo(w * 0.56, h * 0.3);
-    path.lineTo(0, h * 0.3);
-
-
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
-class _EsquinaClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    final double w = size.width;
-    final double h = size.height;
-
-    path.moveTo(0.25 * w, 0);
-    path.lineTo(0.75 * w, 0);
-    // path.lineTo(w, 0.5 * h);
-    // path.lineTo(w, 0.7 * h);
-    path.lineTo(0.55 * w, h);
-    // path.lineTo(0.25 * w, h);
-    path.lineTo(28, h);
-    path.lineTo(-28, -50);  //arriba izq
-    path.close();
-
-    // path.moveTo(10,20);
-    // path.lineTo(size.width * 0.2, 0);
-    // path.lineTo(size.width * 0.8, 0);
-    // path.lineTo(size.width, size.height);
-    // path.lineTo(0, size.height);
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
-class _Esquina2Clipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    final double w = size.width;
-    final double h = size.height;
-
-    path.moveTo(0.25 * w, 0);
-    path.lineTo(1 * w, -300);
-    path.lineTo(0.55 * w, h);
-    path.lineTo(30, h +8);
-    path.lineTo(-19, -60);
-    path.close();
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
-class _Esquina3Clipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    final double w = size.width;
-    final double h = size.height;
-
-    path.moveTo(0.25 * w, 0);
-    path.lineTo(w, -130);
-    path.lineTo(0.55 * w, h);
-    path.lineTo(35, h + 8);
-    path.lineTo(-19, -200);
-    path.close();
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-/////////////////////////////////////////////////////////
-class HexagonButton extends StatelessWidget {
-  final Color color;
-  final VoidCallback onPressed;
-
-  const HexagonButton({
-    Key? key,
-    required this.color,
-    required this.onPressed,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: ClipPath(
-        clipper: _HexagonClipper(),
-        child: Container(
-          width: 70,
-          height: 70,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
-
-class RectangleButton extends StatelessWidget {
-  final Color color;
-  final VoidCallback onPressed;
-
-  const RectangleButton({
-    Key? key,
-    required this.color,
-    required this.onPressed,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: ClipPath(
-        clipper: _RectangleClipper(),
-        child: Container(
-          width: 70,
-          height: 70,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
-
-class EsquinaButton extends StatelessWidget {
-  final Color color;
-  final VoidCallback onPressed;
-
-  const EsquinaButton({
-    Key? key,
-    required this.color,
-    required this.onPressed,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: ClipPath(
-        clipper: _EsquinaClipper(),
-        child: Container(
-          width: 120,
-          height: 48,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
-
-class Esquina2Button extends StatelessWidget {
-  final Color color;
-  final VoidCallback onPressed;
-
-  const Esquina2Button({
-    Key? key,
-    required this.color,
-    required this.onPressed,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: ClipPath(
-        clipper: _Esquina2Clipper(),
-        child: Container(
-          width: 120,
-          height: 55,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
-
-class Esquina3Button extends StatelessWidget {
-  final Color color;
-  final VoidCallback onPressed;
-
-  const Esquina3Button({
-    Key? key,
-    required this.color,
-    required this.onPressed,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: ClipPath(
-        clipper: _Esquina3Clipper(),
-        child: Container(
-          width: 120,
-          height: 60,
-          color: color,
-        ),
-      ),
-    );
-  }
-
-
-}
-/////////////////////////////////////////////////////////
-
 class BotonDado extends StatelessWidget {
   final String textContrasenya;
   final VoidCallback onPressed;
   final int turno;
- const BotonDado(String t, {Key? key, required this.onPressed, required this.turno})
-      : textContrasenya = t,
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // ignore: dead_code
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: <Color>[Color(0xFFdee8eb), Color(0xFFb0c7d0)],
-                  stops: [0.4, 1.0],
-                ),
-              ),
-            ),
-          ),
-          TextButton(
-          style: TextButton.styleFrom(
-            foregroundColor: const Color(0xFF004461),
-            padding: const EdgeInsets.only(top: 4, bottom: 4, left: 15, right: 15),
-            textStyle: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              fontFamily: "Georgia"),
-          ),
-          onPressed: turno == 1 ? onPressed : null,
-          child: Text(textContrasenya),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-class TrianglePainter extends CustomPainter {
-  final Color color;
-
-  TrianglePainter({this.color = Colors.black});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    var paint = Paint()
-      ..color = color
-      ..strokeWidth = 2
-      ..style = PaintingStyle.fill;
-
-    final path = Path();
-    path.moveTo(0, size.height);
-    path.lineTo(size.width / 2, 0);
-    path.lineTo(size.width, size.height);
-    path.close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
-}
-
-class TriangleWidget extends StatelessWidget {
-  final Color color;
-
-  TriangleWidget({this.color = Colors.black});
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: CustomPaint(
-        painter: TrianglePainter(color: color),
-        size: Size(30, 30),
-      ),
-    );
-  }
-}
-
-class BotonHome extends StatelessWidget {
-  final String textContrasenya;
-  final VoidCallback onPressed;
-  const BotonHome(String t, {Key? key, required this.onPressed})
+  const BotonDado(String t,
+      {Key? key, required this.onPressed, required this.turno})
       : textContrasenya = t,
         super(key: key);
 
@@ -2695,197 +2091,18 @@ class BotonHome extends StatelessWidget {
           TextButton(
             style: TextButton.styleFrom(
               foregroundColor: const Color(0xFF004461),
-              // padding: const EdgeInsets.all(16.0),
               padding:
-                  const EdgeInsets.only(top: 4, bottom: 4, left: 10, right: 10),
+                  const EdgeInsets.only(top: 4, bottom: 4, left: 15, right: 15),
               textStyle: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                   fontFamily: "Georgia"),
             ),
-            onPressed: onPressed,
+            onPressed: turno == 1 ? onPressed : null,
             child: Text(textContrasenya),
           ),
         ],
       ),
     );
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import 'dart:io';
-// import 'dart:math';
-// import 'dart:async';
-// import 'dart:ui';
-// import 'dart:convert';
-
-// import 'package:flutter/material.dart';
-
-// import 'package:flutter_application_1/Interfaz/Menu/home.dart';
-// import 'package:flutter/services.dart';
-// import 'package:web_socket_channel/io.dart';
-
-// class JuegoCopia extends StatelessWidget {
-//   const JuegoCopia({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: _Juego(),
-//     );
-//   }
-// }
-
-// class _Juego extends StatefulWidget {
-//   @override
-//   __JuegoState createState() => __JuegoState();
-// }
-
-// class __JuegoState extends State<_Juego> {
-//    @override
-//   Widget build(BuildContext context) {
-//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-//     final Size screenSize = MediaQuery.of(context).size;
-//     return Scaffold(
-//       body: Container(
-//         width: screenSize.width, 
-//         height: screenSize.height,
-//         child: Stack(
-//           children: [
-//             Center(
-//               child: Stack(
-//                 children: [
-//                   //C1
-//                   Transform.translate(
-//                     offset: Offset(0, 0),
-//                     child: Transform.rotate(
-//                       angle: -90 * pi / 180,
-//                       child: GestureDetector(
-//                         onTap: () {
-//                           print('pulsado');
-//                         },
-//                         child: Container(
-//                           width: 200,
-//                           height: 100,
-//                           color: Colors.blue,
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-
-//                   Padding(
-//                     padding: EdgeInsets.only(top: 190, left: 300), // ajusta los valores según tus necesidades
-//                     child: Transform.rotate(
-//                       angle: -90 * pi / 180,
-//                       child: ElevatedButton(
-//                         onPressed: () {
-//                           print('1');
-//                         }, child: null,
-//                       ),
-//                     ),
-//                   ),
-
-//                   // CustomPaint(
-//                   //   size: Size(20, 10),
-//                   //   painter: TrapezoidPainter(),
-//                   //   child: Center(
-//                   //     child: Text(
-//                   //       'Botón',
-//                   //       style: TextStyle(color: Color.fromARGB(255, 252, 7, 7)),
-//                   //     ),
-//                   //   ),
-//                   // ),
-
-//                 ],
-//               ),
-
-//             ),
-
-            
-
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class TrapezoidPainter extends CustomPainter {
-//   @override
-//   void paint(Canvas canvas, Size size) {
-//     var paint = Paint()..color = Colors.blue;
-//     var path = Path();
-
-//     path.moveTo(size.width * 0.2, 0);
-//     path.lineTo(size.width * 0.8, 0);
-//     path.lineTo(size.width, size.height);
-//     path.lineTo(0, size.height);
-//     path.close();
-
-//     canvas.drawPath(path, paint);
-//   }
-
-//   @override
-//   bool shouldRepaint(TrapezoidPainter oldDelegate) => false;
-// }
-
-
-
-
-// class _RectangleClipper extends CustomClipper<Path> {
-//   @override
-//   Path getClip(Size size) {
-//     final path = Path();
-//     final double w = size.width;
-//     final double h = size.height;
-
-//     path.moveTo(0, 0);
-//     path.lineTo(w * 0.56, 0);
-//     path.lineTo(w * 0.56, h * 0.3);
-//     path.lineTo(0, h * 0.3);
-
-
-//     path.close();
-//     return path;
-//   }
-
-//   @override
-//   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-// }
-
-// class RectangleButton extends StatelessWidget {
-//   final Color color;
-//   final VoidCallback onPressed;
-
-//   const RectangleButton({
-//     Key? key,
-//     required this.color,
-//     required this.onPressed,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       onTap: onPressed,
-//       child: ClipPath(
-//         clipper: _RectangleClipper(),
-//         child: Container(
-//           width: 70,
-//           height: 70,
-//           color: color,
-//         ),
-//       ),
-//     );
-//   }
-// }
+}*/

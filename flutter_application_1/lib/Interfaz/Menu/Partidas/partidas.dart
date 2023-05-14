@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Interfaz/Juego/salaEspera.dart';
 import 'package:flutter_application_1/Interfaz/Menu/index.dart';
 import 'package:flutter_application_1/Interfaz/Menu/Estilo/index.dart';
 
@@ -12,6 +13,7 @@ import '../../../../Data_types/index.dart';
 
 import '../../../../API/index.dart';
 import '../../Juego/juego.dart';
+import '../../Juego/juego_copia.dart';
 
 //ignore: must_be_immutable
 class Partidas extends StatefulWidget {
@@ -78,11 +80,11 @@ class _PartidasState extends State<Partidas> {
   }
 
   _unirseSalaActiva() {
-    Navigator.pushAndRemoveUntil(
+    /*Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
             builder: (context) => Juego(_s, _webSocket, _tipoPartida)),
-        (Route<dynamic> route) => false);
+        (Route<dynamic> route) => false);*/
   }
 
   _aceptarPeticion(int index) {
@@ -90,9 +92,9 @@ class _PartidasState extends State<Partidas> {
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-            builder: (context) => Juego(
+            builder: (context) => SalaEspera(
                 _s,
-                i.getField(InvitacionPartidaFieldsCodes.webSocket),
+                '$wsDir${i.getField(InvitacionPartidaFieldsCodes.webSocket)}',
                 i.getField(InvitacionPartidaFieldsCodes.tipoPartida))),
         (Route<dynamic> route) => false);
   }

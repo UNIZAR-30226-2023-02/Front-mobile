@@ -11,8 +11,9 @@ import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 import 'package:flutter/services.dart';
 import 'package:web_socket_channel/io.dart';
 
+import '../../Data_types/index.dart';
 
-class Juego extends StatefulWidget {
+/*class Juego extends StatefulWidget {
   const Juego(this._s, this._wS, this._tP, {Key? key}) : super(key: key);
   final String _wS;
   final Sesion _s;
@@ -33,100 +34,269 @@ class _JuegoState extends State<Juego> {
   Color Gris = Colors.grey;
   bool ok = false;
 
-  List<Color> colorCasillas = [ const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 240, 143, 17),
-                                const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 219, 205, 0), 
-                                const Color.fromARGB(255, 230, 44, 19), const Color.fromARGB(255, 255, 255, 255), 
-                                Colors.blue, const Color.fromARGB(255, 255, 255, 255),
-                                Colors.blue, const Color.fromARGB(255, 255, 255, 255),
-                                const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 53, 224, 18),
-                                const Color.fromARGB(255, 255, 255, 255),const Color.fromARGB(255, 230, 44, 19), 
-                                const Color.fromARGB(255, 255, 255, 255),const Color.fromARGB(255, 230, 44, 19), 
-                                const Color.fromARGB(255, 255, 255, 255),Colors.blue,
-                                const Color.fromARGB(255, 230, 32, 187), const Color.fromARGB(255, 255, 255, 255), 
-                                const Color.fromARGB(255, 53, 224, 18), const Color.fromARGB(255, 255, 255, 255), 
-                                const Color.fromARGB(255, 53, 224, 18), const Color.fromARGB(255, 255, 255, 255), 
-                                const Color.fromARGB(255, 230, 44, 19), const Color.fromARGB(255, 219, 205, 0), 
-                                const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 230, 32, 187), 
-                                const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 230, 32, 187), 
-                                const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 53, 224, 18),
-                                const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 255, 255, 255), 
-                                const Color.fromARGB(255, 219, 205, 0), const Color.fromARGB(255, 255, 255, 255), 
-                                const Color.fromARGB(255, 219, 205, 0), const Color.fromARGB(255, 255, 255, 255), 
-                                const Color.fromARGB(255, 230, 32, 187), Colors.blue,
-                                const Color.fromARGB(255, 255, 255, 255), const Color.fromARGB(255, 240, 143, 17),
-                                const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 219, 205, 0), 
-                                Colors.blue, const Color.fromARGB(255, 230, 44, 19), 
-                                const Color.fromARGB(255, 230, 32, 187), Colors.blue,
-                                const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 230, 44, 19), 
-                                const Color.fromARGB(255, 53, 224, 18), const Color.fromARGB(255, 219, 205, 0),
-                                const Color.fromARGB(255, 230, 44, 19), Colors.blue,
-                                const Color.fromARGB(255, 53, 224, 18), const Color.fromARGB(255, 230, 32, 187),
-                                const Color.fromARGB(255, 240, 143, 17), const Color.fromARGB(255, 53, 224, 18),
-                                const Color.fromARGB(255, 230, 44, 19), const Color.fromARGB(255, 230, 32, 187),
-                                const Color.fromARGB(255, 219, 205, 0), Colors.blue,
-                                const Color.fromARGB(255, 230, 32, 187), const Color.fromARGB(255, 53, 224, 18),
-                                const Color.fromARGB(255, 219, 205, 0), const Color.fromARGB(255, 240, 143, 17),
-                                const Color.fromARGB(255, 230, 44, 19), const Color.fromARGB(255, 219, 205, 0),
-                                const Color.fromARGB(255, 230, 32, 187), const Color.fromARGB(255, 240, 143, 17),
-                                Colors.blue, const Color.fromARGB(255, 53, 224, 18),
-                                const Color.fromARGB(255, 255, 255, 255), 
-                              ];
-  
+  List<Color> colorCasillas = [
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 240, 143, 17),
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 219, 205, 0),
+    const Color.fromARGB(255, 230, 44, 19),
+    const Color.fromARGB(255, 255, 255, 255),
+    Colors.blue,
+    const Color.fromARGB(255, 255, 255, 255),
+    Colors.blue,
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 240, 143, 17),
+    const Color.fromARGB(255, 53, 224, 18),
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 230, 44, 19),
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 230, 44, 19),
+    const Color.fromARGB(255, 255, 255, 255),
+    Colors.blue,
+    const Color.fromARGB(255, 230, 32, 187),
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 53, 224, 18),
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 53, 224, 18),
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 230, 44, 19),
+    const Color.fromARGB(255, 219, 205, 0),
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 230, 32, 187),
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 230, 32, 187),
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 53, 224, 18),
+    const Color.fromARGB(255, 240, 143, 17),
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 219, 205, 0),
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 219, 205, 0),
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 230, 32, 187),
+    Colors.blue,
+    const Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 240, 143, 17),
+    const Color.fromARGB(255, 240, 143, 17),
+    const Color.fromARGB(255, 219, 205, 0),
+    Colors.blue,
+    const Color.fromARGB(255, 230, 44, 19),
+    const Color.fromARGB(255, 230, 32, 187),
+    Colors.blue,
+    const Color.fromARGB(255, 240, 143, 17),
+    const Color.fromARGB(255, 230, 44, 19),
+    const Color.fromARGB(255, 53, 224, 18),
+    const Color.fromARGB(255, 219, 205, 0),
+    const Color.fromARGB(255, 230, 44, 19),
+    Colors.blue,
+    const Color.fromARGB(255, 53, 224, 18),
+    const Color.fromARGB(255, 230, 32, 187),
+    const Color.fromARGB(255, 240, 143, 17),
+    const Color.fromARGB(255, 53, 224, 18),
+    const Color.fromARGB(255, 230, 44, 19),
+    const Color.fromARGB(255, 230, 32, 187),
+    const Color.fromARGB(255, 219, 205, 0),
+    Colors.blue,
+    const Color.fromARGB(255, 230, 32, 187),
+    const Color.fromARGB(255, 53, 224, 18),
+    const Color.fromARGB(255, 219, 205, 0),
+    const Color.fromARGB(255, 240, 143, 17),
+    const Color.fromARGB(255, 230, 44, 19),
+    const Color.fromARGB(255, 219, 205, 0),
+    const Color.fromARGB(255, 230, 32, 187),
+    const Color.fromARGB(255, 240, 143, 17),
+    Colors.blue,
+    const Color.fromARGB(255, 53, 224, 18),
+    const Color.fromARGB(255, 255, 255, 255),
+  ];
 
   void _cambiarColor2(String tema) {
-    if(tema == "historia"){
+    if (tema == "historia") {
       setState(() {
         colorPregunta = Amarillo;
       });
-    }else if(tema == "arte"){
+    } else if (tema == "arte") {
       setState(() {
         colorPregunta = Rojo;
       });
-    }else if(tema == "ciencia"){
+    } else if (tema == "ciencia") {
       setState(() {
         colorPregunta = Verde;
       });
-    }else if(tema == "geografia"){
+    } else if (tema == "geografia") {
       setState(() {
         colorPregunta = Azul;
       });
-    }else if(tema == "deporte"){
+    } else if (tema == "deporte") {
       setState(() {
         colorPregunta = Naranja;
       });
-    }else if(tema == "entretenimiento"){
+    } else if (tema == "entretenimiento") {
       setState(() {
         colorPregunta = Rosa;
       });
-    }    
+    }
   }
 
-  List<bool> casillaCambia = [false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                              false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                              false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                              false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                              false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                              false, false, false,];
+  List<bool> casillaCambia = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
 
-  List<Color> colorVariado = [Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, 
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey, Colors.grey,
-                              Colors.grey, Colors.grey, Colors.grey,];
-  
+  List<Color> colorVariado = [
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+    Colors.grey,
+  ];
 
   //Color colorVariado = Colors.grey;
   late Timer _t;
-  Color _getNextColor(int casilla) { //Si el color actual es gris se pone de su color y sino se pone gris
+  Color _getNextColor(int casilla) {
+    //Si el color actual es gris se pone de su color y sino se pone gris
     if (colorVariado[casilla] == Colors.grey) {
       return colorCasillas[casilla];
-    } else{
+    } else {
       return Colors.grey;
     }
   }
@@ -134,13 +304,14 @@ class _JuegoState extends State<Juego> {
   void initState() {
     super.initState();
     _t = Timer.periodic(Duration(milliseconds: 500), (t) {
-      setState(() { //Habilitar el "parpadeo de seleccion" en todas las casillas
-        for(int p = 0; p < 73; p++){
-          colorVariado[p] = _getNextColor(p); 
+      setState(() {
+        //Habilitar el "parpadeo de seleccion" en todas las casillas
+        for (int p = 0; p < 73; p++) {
+          colorVariado[p] = _getNextColor(p);
         }
-        // colorVariado[0] = _getNextColor(0); 
-        // colorVariado[1] = _getNextColor(1); 
-        // colorVariado[2] = _getNextColor(2); 
+        // colorVariado[0] = _getNextColor(0);
+        // colorVariado[1] = _getNextColor(1);
+        // colorVariado[2] = _getNextColor(2);
       });
     });
   }
@@ -150,20 +321,23 @@ class _JuegoState extends State<Juego> {
     super.dispose();
   }
 
-  void alternarCasilla(int casilla){  //esta para probar bien pero tendre que tener una funcion a al que le pasas nbumero de casillas y las alterna
-    if(casillaCambia[casilla]){
+  void alternarCasilla(int casilla) {
+    //esta para probar bien pero tendre que tener una funcion a al que le pasas nbumero de casillas y las alterna
+    if (casillaCambia[casilla]) {
       casillaCambia[casilla] = false;
-    }else{
+    } else {
       casillaCambia[casilla] = true;
     }
   }
 
-  void dalternarCasillas(bool alternar, List<String> casillasRec){
-    List<int> casillas = casillasRec.map((numero) => int.parse(numero)).toList(); //convertir la lista de string en int
+  void dalternarCasillas(bool alternar, List<String> casillasRec) {
+    List<int> casillas = casillasRec
+        .map((numero) => int.parse(numero))
+        .toList(); //convertir la lista de string en int
     //si alternar es true se alternan las casillas indicadas
     //si alternar es false se dejan de alternar todas las casillas
-    for(var c in casillas){
-      casillaCambia[c] = alternar;  
+    for (var c in casillas) {
+      casillaCambia[c] = alternar;
     }
   }
 
@@ -218,18 +392,25 @@ class _JuegoState extends State<Juego> {
   Color ColorRespuesta3 = const Color.fromARGB(255, 255, 255, 255);
   Color ColorRespuesta4 = const Color.fromARGB(255, 255, 255, 255);
 
-  void mostrarPregunta(){
+  void mostrarPregunta() {
     ColorRespuesta1 = const Color.fromARGB(255, 255, 255, 255);
     ColorRespuesta2 = const Color.fromARGB(255, 255, 255, 255);
     ColorRespuesta3 = const Color.fromARGB(255, 255, 255, 255);
     ColorRespuesta4 = const Color.fromARGB(255, 255, 255, 255);
     preguntaActiva = true;
   }
-  void ocultarPregunta(){
+
+  void ocultarPregunta() {
     preguntaActiva = false;
   }
 
-  void cambiarPregunta(String _preguntaTema, String _pregunta, String _respuesta1, String _respuesta2, String _respuesta3, String _respuesta4) {
+  void cambiarPregunta(
+      String _preguntaTema,
+      String _pregunta,
+      String _respuesta1,
+      String _respuesta2,
+      String _respuesta3,
+      String _respuesta4) {
     setState(() {
       preguntaTema = _preguntaTema;
       pregunta = _pregunta;
@@ -240,85 +421,152 @@ class _JuegoState extends State<Juego> {
     });
   }
 
-  void colorRespuesta(int numRespuesta, bool bien){
-    if(bien){
-      if(numRespuesta == 1){
+  void colorRespuesta(int numRespuesta, bool bien) {
+    if (bien) {
+      if (numRespuesta == 1) {
         ColorRespuesta1 = Color.fromARGB(255, 37, 163, 12);
-      }else if(numRespuesta == 2){
+      } else if (numRespuesta == 2) {
         ColorRespuesta2 = Color.fromARGB(255, 37, 163, 12);
-      }else if(numRespuesta == 3){
+      } else if (numRespuesta == 3) {
         ColorRespuesta3 = Color.fromARGB(255, 37, 163, 12);
-      }else if(numRespuesta == 4){
+      } else if (numRespuesta == 4) {
         ColorRespuesta4 = Color.fromARGB(255, 37, 163, 12);
       }
-    }else{
-      if(numRespuesta == 1){
+    } else {
+      if (numRespuesta == 1) {
         ColorRespuesta1 = Color.fromARGB(255, 148, 28, 13);
-      }else if(numRespuesta == 2){
+      } else if (numRespuesta == 2) {
         ColorRespuesta2 = Color.fromARGB(255, 148, 28, 13);
-      }else if(numRespuesta == 3){
+      } else if (numRespuesta == 3) {
         ColorRespuesta3 = Color.fromARGB(255, 148, 28, 13);
-      }else if(numRespuesta == 4){
+      } else if (numRespuesta == 4) {
         ColorRespuesta4 = Color.fromARGB(255, 148, 28, 13);
       }
     }
   }
 
   //ACTIVOS?------------------------------------
-  List<bool> jVisibles = [true,false,false,false,false,false];
+  List<bool> jVisibles = [true, false, false, false, false, false];
   //JUGADORES-------------------------------------
   int numJ = 6; //numero de jugadores en la partida
-  List<String> nombresJugadores = ['j1','j2','j3','j4','j5','j6'];
+  List<String> nombresJugadores = ['j1', 'j2', 'j3', 'j4', 'j5', 'j6'];
   //IMAGENES------------------------------
-  List<String> imagenesJugadores = ['assets/perfil.png','assets/perfil.png','assets/perfil.png','assets/perfil.png','assets/perfil.png','assets/perfil.png'];
+  List<String> imagenesJugadores = [
+    'assets/perfil.png',
+    'assets/perfil.png',
+    'assets/perfil.png',
+    'assets/perfil.png',
+    'assets/perfil.png',
+    'assets/perfil.png'
+  ];
   //FICHAS---------------------------
   List<String> fichasJugadores = [
     // 'assets/ficha_embudo_amarilla.png','assets/ficha_embudo_roja.png','assets/ficha_embudo_rosa.png','assets/ficha_embudo_verde.png',
     //                               'assets/ficha_embudo_azul.png','assets/ficha_embudo_naranja.png'];
-  'http://51.142.118.71:8000/static/images/objetos/1-amarillo.png','http://51.142.118.71:8000/static/images/objetos/1-rojo.png',
-                                  'http://51.142.118.71:8000/static/images/objetos/1-rosa.png','http://51.142.118.71:8000/static/images/objetos/1-verde.png',
-                                  'http://51.142.118.71:8000/static/images/objetos/1-azul.png','http://51.142.118.71:8000/static/images/objetos/1-naranja.png'];
+    'http://51.142.118.71:8000/static/images/objetos/1-amarillo.png',
+    'http://51.142.118.71:8000/static/images/objetos/1-rojo.png',
+    'http://51.142.118.71:8000/static/images/objetos/1-rosa.png',
+    'http://51.142.118.71:8000/static/images/objetos/1-verde.png',
+    'http://51.142.118.71:8000/static/images/objetos/1-azul.png',
+    'http://51.142.118.71:8000/static/images/objetos/1-naranja.png'
+  ];
 
-  List<Offset> coordenadasFichaJ1 = [const Offset(-47, 158),const Offset(-26, 185),const Offset(-6, 185),const Offset(14, 185),
-                                  const Offset(34, 185),const Offset(54, 185),const Offset(74, 185),const Offset(90, 170),
-                                  const Offset(123, 150),const Offset(133, 140),const Offset(143, 120),const Offset(153, 100),
-                                  const Offset(163, 80),const Offset(173, 67),const Offset(173, 47),const Offset(179, 0),
-                                  const Offset(169, -16),const Offset(159, -36),const Offset(149, -50),const Offset(140, -67),
-                                  const Offset(132, -83),const Offset(112, -88),const Offset(65, -110),const Offset(45, -110),
-                                  const Offset(25, -110),const Offset(5, -110),const Offset(-15, -110),const Offset(-35, -100),
-                                  const Offset(-70, -85),const Offset(-78, -73),const Offset(-87, -53),const Offset(-97, -37),
-                                  const Offset(-107, -21),const Offset(-117, -4),const Offset(-117, 20),const Offset(-123, 65),
-                                  const Offset(-113, 85),const Offset(-103,105),const Offset(-93,122),const Offset(-82,138),
-                                  const Offset(-70,155),const Offset(-43,138),const Offset(-33,118),const Offset(-25,100),
-                                  const Offset(-17,83),const Offset(-7,65),const Offset(78,152),const Offset(68,133),
-                                  const Offset(58,113),const Offset(48,97),const Offset(40,77),const Offset(150,50),
-                                  const Offset(130,50),const Offset(110,50),const Offset(90,50),const Offset(70,50),
-                                  const Offset(72,-79),const Offset(62,-59),const Offset(52,-42),const Offset(44,-25),
-                                  const Offset(34,-5),const Offset(-40,-65),const Offset(-30,-45),const Offset(-22,-28),
-                                  const Offset(-14,-10),const Offset(-4,8),const Offset(-104,20),const Offset(-80,20),
-                                  const Offset(-63,20),const Offset(-43,20),const Offset(-23,20),const Offset(10,20),];
+  List<Offset> coordenadasFichaJ1 = [
+    const Offset(-47, 158),
+    const Offset(-26, 185),
+    const Offset(-6, 185),
+    const Offset(14, 185),
+    const Offset(34, 185),
+    const Offset(54, 185),
+    const Offset(74, 185),
+    const Offset(90, 170),
+    const Offset(123, 150),
+    const Offset(133, 140),
+    const Offset(143, 120),
+    const Offset(153, 100),
+    const Offset(163, 80),
+    const Offset(173, 67),
+    const Offset(173, 47),
+    const Offset(179, 0),
+    const Offset(169, -16),
+    const Offset(159, -36),
+    const Offset(149, -50),
+    const Offset(140, -67),
+    const Offset(132, -83),
+    const Offset(112, -88),
+    const Offset(65, -110),
+    const Offset(45, -110),
+    const Offset(25, -110),
+    const Offset(5, -110),
+    const Offset(-15, -110),
+    const Offset(-35, -100),
+    const Offset(-70, -85),
+    const Offset(-78, -73),
+    const Offset(-87, -53),
+    const Offset(-97, -37),
+    const Offset(-107, -21),
+    const Offset(-117, -4),
+    const Offset(-117, 20),
+    const Offset(-123, 65),
+    const Offset(-113, 85),
+    const Offset(-103, 105),
+    const Offset(-93, 122),
+    const Offset(-82, 138),
+    const Offset(-70, 155),
+    const Offset(-43, 138),
+    const Offset(-33, 118),
+    const Offset(-25, 100),
+    const Offset(-17, 83),
+    const Offset(-7, 65),
+    const Offset(78, 152),
+    const Offset(68, 133),
+    const Offset(58, 113),
+    const Offset(48, 97),
+    const Offset(40, 77),
+    const Offset(150, 50),
+    const Offset(130, 50),
+    const Offset(110, 50),
+    const Offset(90, 50),
+    const Offset(70, 50),
+    const Offset(72, -79),
+    const Offset(62, -59),
+    const Offset(52, -42),
+    const Offset(44, -25),
+    const Offset(34, -5),
+    const Offset(-40, -65),
+    const Offset(-30, -45),
+    const Offset(-22, -28),
+    const Offset(-14, -10),
+    const Offset(-4, 8),
+    const Offset(-104, 20),
+    const Offset(-80, 20),
+    const Offset(-63, 20),
+    const Offset(-43, 20),
+    const Offset(-23, 20),
+    const Offset(10, 20),
+  ];
 
-  List<int> posicionesFichas = [72,72,72,72,72,72];
+  List<int> posicionesFichas = [72, 72, 72, 72, 72, 72];
 
   //QUESITOS JUGADOR----------------------------------------
-  List<String> quesitosJ1 = ['','','','','',''];
-  void addQuesito(int jugador,String tematica){
-    
-  }
+  List<String> quesitosJ1 = ['', '', '', '', '', ''];
+  void addQuesito(int jugador, String tematica) {}
   //--------------------------------------------------------
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> WEB SOCKET <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
-      //ANOTACIONES----------------------------------------------------------------------------------------//
-      //-Creo que al meter aqui las opciones de ejecución del socket se comprobaran y repecto a esos datos
-      //    hacemos el build del tablero
-      //
-      //
-      //FIN ANOTACIONES-----------------------------------------------------------------------------------//
+  //ANOTACIONES----------------------------------------------------------------------------------------//
+  //-Creo que al meter aqui las opciones de ejecución del socket se comprobaran y repecto a esos datos
+  //    hacemos el build del tablero
+  //
+  //
+  //FIN ANOTACIONES-----------------------------------------------------------------------------------//
   bool msgIni = true;
 
   String fondoTablero = "assets/desierto.png";
   bool tableroHabilitado = false;
-  void cargarEstado_tablerosJug(List<String> r_nombres,List<String> r_tableros){  //pone el tablero correspondiente al jugador
+  void cargarEstado_tablerosJug(
+      List<String> r_nombres, List<String> r_tableros) {
+    //pone el tablero correspondiente al jugador
     // int p = 0;
     // for(var n in r_nombres){
     //   if(S.nombre == n){
@@ -329,203 +577,195 @@ class _JuegoState extends State<Juego> {
     // p++;
   }
 
-  void cargarEstado_quesosJug(List<List<String>> r_quesitos){
-    for(int i=0; i < r_quesitos.length; i++){
-      for(int j=0; j < r_quesitos[i].length; j++){
-
-      }
+  void cargarEstado_quesosJug(List<List<String>> r_quesitos) {
+    for (int i = 0; i < r_quesitos.length; i++) {
+      for (int j = 0; j < r_quesitos[i].length; j++) {}
     }
   }
 
-  void cargarEstado_nombresImagenesJug(List<String> r_nombres){
+  void cargarEstado_nombresImagenesJug(List<String> r_nombres) {
     int j = 0;
-    for(var n in r_nombres){
+    for (var n in r_nombres) {
       nombresJugadores[j] = n;
       j++;
     }
   }
 
-  void cargarEstado_fichasJug(List<String> r_fichas){
+  void cargarEstado_fichasJug(List<String> r_fichas) {
     int j = 0;
-    for(var n in r_fichas){
+    for (var n in r_fichas) {
       fichasJugadores[j] = n;
       j++;
     }
   }
 
-  void cargarEstado_posicionesJug(List<String> r_posiciones){
-    List<int> posiciones = r_posiciones.map((numero) => int.parse(numero)).toList();
+  void cargarEstado_posicionesJug(List<String> r_posiciones) {
+    List<int> posiciones =
+        r_posiciones.map((numero) => int.parse(numero)).toList();
     int i = 0;
-    for(var p in posiciones){
+    for (var p in posiciones) {
       posicionesFichas[i] = p;
       i++;
     }
   }
 
   //hace visibles los nombres, imagenes y quesitos de los jugadores de la partida
-  void habilitarJugadores(){
-    for(int p=0;p < numJ;p++){
+  void habilitarJugadores() {
+    for (int p = 0; p < numJ; p++) {
       jVisibles[p] = true;
     }
   }
 
-  void ejecutarSocket(){
+  void ejecutarSocket() {
     final channel = IOWebSocketChannel.connect('');
 
-    if(msgIni){
+    if (msgIni) {
       msgIni = false;
-      channel.stream.listen((message){
-      Map<String, dynamic> decodedResponse = json.decode(message);
-      String r_ok = decodedResponse['OK'];
-      List<dynamic> r_jugadores = decodedResponse['jugadores'];
-      List<String> r_nombres = [];
-      List<String> r_posiciones = [];
-      List<List<String>> r_quesitos = [];
-      List<String> r_turnos = [];
-      List<String> r_fichas = [];
-      List<String> r_tableros = [];
-      List<bool> r_activos = [];
-      // String r_type = decodedResponse['type'];
-      // String r_subtype = decodedResponse['subtype'];
-      for(var jugador in r_jugadores){
-        //Esto lo puedo comprimir con lo de abajo
-        String nombre = jugador['jugador'];
-        String posicion = jugador['posicion'];
-        List<String> quesitos = jugador['quesitos'];
-        String turno = jugador['turno'];
-        String ficha = jugador['ficha'];
-        String tablero = jugador['tablero'];
-        bool activo = jugador['activo'];
-        
-        r_nombres.add(nombre);
-        r_posiciones.add(posicion);
-        r_quesitos.add(quesitos);
-        r_turnos.add(turno);
-        r_fichas.add(ficha);
-        r_tableros.add(tablero);
-        r_activos.add(activo);
-      }
-      String r_tiempo_pregunta = decodedResponse['tiempo_pregunta'];
-      String r_tiempo_elegir_casilla = decodedResponse['tiempo_elegir_casilla'];
-      String r_error = decodedResponse['error'];
+      channel.stream.listen((message) {
+        Map<String, dynamic> decodedResponse = json.decode(message);
+        String r_ok = decodedResponse['OK'];
+        List<dynamic> r_jugadores = decodedResponse['jugadores'];
+        List<String> r_nombres = [];
+        List<String> r_posiciones = [];
+        List<List<String>> r_quesitos = [];
+        List<String> r_turnos = [];
+        List<String> r_fichas = [];
+        List<String> r_tableros = [];
+        List<bool> r_activos = [];
+        // String r_type = decodedResponse['type'];
+        // String r_subtype = decodedResponse['subtype'];
+        for (var jugador in r_jugadores) {
+          //Esto lo puedo comprimir con lo de abajo
+          String nombre = jugador['jugador'];
+          String posicion = jugador['posicion'];
+          List<String> quesitos = jugador['quesitos'];
+          String turno = jugador['turno'];
+          String ficha = jugador['ficha'];
+          String tablero = jugador['tablero'];
+          bool activo = jugador['activo'];
 
-      //CARGAR JUGADORES
-      if(r_ok == "true"){
-        numJ = r_jugadores.length;
-        cargarEstado_nombresImagenesJug(r_nombres);
-        
-        //cargarEstado_posicionesJug(r_posiciones);
-        //cargarEstado_quesosJug(r_quesitos);
+          r_nombres.add(nombre);
+          r_posiciones.add(posicion);
+          r_quesitos.add(quesitos);
+          r_turnos.add(turno);
+          r_fichas.add(ficha);
+          r_tableros.add(tablero);
+          r_activos.add(activo);
+        }
+        String r_tiempo_pregunta = decodedResponse['tiempo_pregunta'];
+        String r_tiempo_elegir_casilla =
+            decodedResponse['tiempo_elegir_casilla'];
+        String r_error = decodedResponse['error'];
 
-        cargarEstado_fichasJug(r_fichas);
-        
-        //cargarEstado_tablerosJug(r_nombres,r_tableros);Tengo que cargar un tablero para cada usuario
-      }
+        //CARGAR JUGADORES
+        if (r_ok == "true") {
+          numJ = r_jugadores.length;
+          cargarEstado_nombresImagenesJug(r_nombres);
 
+          //cargarEstado_posicionesJug(r_posiciones);
+          //cargarEstado_quesosJug(r_quesitos);
+
+          cargarEstado_fichasJug(r_fichas);
+
+          //cargarEstado_tablerosJug(r_nombres,r_tableros);Tengo que cargar un tablero para cada usuario
+        }
       });
-    
-    }else{
+    } else {}
 
-    }
-    
-      // switch(r_type){
-      //   case "Respuesta":
-      //     print("tipo: Respuesta");
+    // switch(r_type){
+    //   case "Respuesta":
+    //     print("tipo: Respuesta");
 
-      //     switch (r_subtype){
-      //       case "Dado_casillas":
-      //         print("subtipo: Dado_casillas");
-      //       break;
+    //     switch (r_subtype){
+    //       case "Dado_casillas":
+    //         print("subtipo: Dado_casillas");
+    //       break;
 
-      //       case "Pregunta":
-      //         print("subtipo: Pregunta");
-      //       break;
-      //     }
-      //   break;
+    //       case "Pregunta":
+    //         print("subtipo: Pregunta");
+    //       break;
+    //     }
+    //   break;
 
-      //   case "Accion":
-      //     print("tipo: Accion");
+    //   case "Accion":
+    //     print("tipo: Accion");
 
-      //     switch (r_subtype){
-      //       case "Dados":
-      //         print("subtipo: Dados");
-      //       break;
-      //     }
-      //   break;
+    //     switch (r_subtype){
+    //       case "Dados":
+    //         print("subtipo: Dados");
+    //       break;
+    //     }
+    //   break;
 
-      //   case "Fin":
-      //     print("tipo: Fin");
-      //   break;
+    //   case "Fin":
+    //     print("tipo: Fin");
+    //   break;
 
-      //   case "Chat":
-      //     print("tipo: Chat");
-      //   break;
+    //   case "Chat":
+    //     print("tipo: Chat");
+    //   break;
 
-      //   case "Peticion":
-      //     print("tipo: Peticion");
+    //   case "Peticion":
+    //     print("tipo: Peticion");
 
-      //     switch (r_subtype){
-      //       case "Tirar_dado":
-      //         print("subtipo: Tirar_dado");
-      //       break;
+    //     switch (r_subtype){
+    //       case "Tirar_dado":
+    //         print("subtipo: Tirar_dado");
+    //       break;
 
-      //       case "Movimiento_casilla":
-      //         print("subtipo: Movimiento_casilla");
-      //       break;
-      //     }
-      //   break;
+    //       case "Movimiento_casilla":
+    //         print("subtipo: Movimiento_casilla");
+    //       break;
+    //     }
+    //   break;
 
-      //   case "Actualizacion":
-      //     print("tipo: Actualizacion");
+    //   case "Actualizacion":
+    //     print("tipo: Actualizacion");
 
-      //     switch (r_subtype){
-      //       case "Pausar_partida":
-      //         print("subtipo: Pausar_partida");
-      //       break;
+    //     switch (r_subtype){
+    //       case "Pausar_partida":
+    //         print("subtipo: Pausar_partida");
+    //       break;
 
-      //       case "Continuar_partida":
-      //         print("subtipo: Continuar_partida");
-      //       break;
+    //       case "Continuar_partida":
+    //         print("subtipo: Continuar_partida");
+    //       break;
 
-      //       case "Contestar_pregunta":
-      //         print("subtipo: Contestar_pregunta");
+    //       case "Contestar_pregunta":
+    //         print("subtipo: Contestar_pregunta");
 
-      //         if(enunciado == "noContestada"){
+    //         if(enunciado == "noContestada"){
 
-      //         }else{
-      //           switch (r_subtype){
-      //             case "Ciencia":
-      //             break;
+    //         }else{
+    //           switch (r_subtype){
+    //             case "Ciencia":
+    //             break;
 
-      //             case "Arte":
-      //             break;
+    //             case "Arte":
+    //             break;
 
-      //             case "Deportes":
-      //             break;
+    //             case "Deportes":
+    //             break;
 
-      //             case "Entretenimiento":
-      //             break;
+    //             case "Entretenimiento":
+    //             break;
 
-      //             case "Geografia":
-      //             break;
+    //             case "Geografia":
+    //             break;
 
-      //             case "Historia":
-      //             break;
-      //           }
-      //         }
-      //       break;
+    //             case "Historia":
+    //             break;
+    //           }
+    //         }
+    //       break;
 
-      //       case "Fin_partida":
-      //       break;
-      //     }
-      //   break;
-      //}
-
-    
+    //       case "Fin_partida":
+    //       break;
+    //     }
+    //   break;
+    //}
   }
-  
-  
-  
+
 // bool parpadeoOON = true;
 // Future<void> prueba() async {
 //   while (true) {
@@ -533,22 +773,19 @@ class _JuegoState extends State<Juego> {
 //     setState(() {
 //       parpadeoOON = true;
 //     });
-    
+
 //     // esperar 500 milisegundos
 //     await Future.delayed(Duration(milliseconds: 500));
-    
+
 //     // cambiar el valor de parpadeoOON a false para que el botón sea invisible
 //     setState(() {
 //       parpadeoOON = false;
 //     });
-    
+
 //     // esperar 500 milisegundos
 //     await Future.delayed(Duration(milliseconds: 500));
 //   }
 // }
-
-
-
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FIN WEB SOCKET <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
 
@@ -576,7 +813,6 @@ class _JuegoState extends State<Juego> {
               child: Stack(
                 children: [
                   Transform.translate(
-
                     offset: const Offset(-145, -129),
                     child: Container(
                       width: 360,
@@ -586,13 +822,17 @@ class _JuegoState extends State<Juego> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       // child: Container(
-                        child: Image(image: AssetImage(fondoTablero),fit: BoxFit.fill,),
+                      child: Image(
+                        image: AssetImage(fondoTablero),
+                        fit: BoxFit.fill,
+                      ),
                       // ),
                     ),
                   ),
 
                   //Contador
-                  Transform.translate(offset: const Offset(-170, -120),
+                  Transform.translate(
+                    offset: const Offset(-170, -120),
                     child: Container(
                       width: 55,
                       height: 55,
@@ -609,29 +849,27 @@ class _JuegoState extends State<Juego> {
                     ),
                   ),
 
-                  
-                  
                   Visibility(
                     visible: jVisibles[0],
-                    child: Transform.translate(  //Texto J0
+                    child: Transform.translate(
+                      //Texto J0
                       offset: const Offset(-262, -128),
                       child: Text(
                         nombresJugadores[0],
                         style: const TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 12.0,
-                          //color: Color(0xFFc9c154),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none
-
-                        ),
+                            fontFamily: "Baskerville",
+                            fontSize: 12.0,
+                            //color: Color(0xFFc9c154),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[0],
-                    child: Transform.translate(  //Imagen J0
+                    child: Transform.translate(
+                      //Imagen J0
                       offset: const Offset(-265, -110),
                       child: Container(
                         width: 70,
@@ -643,14 +881,17 @@ class _JuegoState extends State<Juego> {
                         //   ),
                         // ),
 
-
-                        child: Image(image: AssetImage(imagenesJugadores[0]),fit: BoxFit.fill,),
+                        child: Image(
+                          image: AssetImage(imagenesJugadores[0]),
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[0],
-                    child: Transform.translate(  //Putos J0
+                    child: Transform.translate(
+                      //Putos J0
                       offset: const Offset(-205, -60),
                       child: Container(
                         width: 40,
@@ -660,45 +901,47 @@ class _JuegoState extends State<Juego> {
                             image: AssetImage('assets/trivial_blanco.png'),
                             fit: BoxFit.fill,
                           ),
-
                         ),
                       ),
                     ),
                   ),
-                  
 
                   Visibility(
                     visible: jVisibles[1],
-                    child: Transform.translate(  //Texto J1
+                    child: Transform.translate(
+                      //Texto J1
                       offset: const Offset(-262, -8),
                       child: Text(
                         nombresJugadores[1],
                         style: const TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 12.0,
-                          //color: Color(0xFFc9c154),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none
-
+                            fontFamily: "Baskerville",
+                            fontSize: 12.0,
+                            //color: Color(0xFFc9c154),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: jVisibles[1],
+                    child: Transform.translate(
+                      //Imagen J1
+                      offset: const Offset(-265, 10),
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        child: Image(
+                          image: AssetImage(imagenesJugadores[1]),
+                          fit: BoxFit.fill,
                         ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[1],
-                    child: Transform.translate(  //Imagen J1
-                      offset: const Offset(-265, 10),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(image: AssetImage(imagenesJugadores[1]),fit: BoxFit.fill,),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[1],
-                    child: Transform.translate(  //Putos J1
+                    child: Transform.translate(
+                      //Putos J1
                       offset: const Offset(-205, 60),
                       child: Container(
                         width: 40,
@@ -713,40 +956,43 @@ class _JuegoState extends State<Juego> {
                     ),
                   ),
 
-
                   Visibility(
                     visible: jVisibles[2],
-                    child: Transform.translate(  //Texto J2
+                    child: Transform.translate(
+                      //Texto J2
                       offset: const Offset(-262, 112),
                       child: Text(
                         nombresJugadores[2],
                         style: const TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 12.0,
-                          //color: Color(0xFFc9c154),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none
-
-                        ),
+                            fontFamily: "Baskerville",
+                            fontSize: 12.0,
+                            //color: Color(0xFFc9c154),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none),
                       ),
                     ),
                   ),
 
                   Visibility(
                     visible: jVisibles[2],
-                    child:Transform.translate(  //Imagen J2
+                    child: Transform.translate(
+                      //Imagen J2
                       offset: const Offset(-265, 130),
                       child: Container(
                         width: 70,
                         height: 70,
-                        child: Image(image: AssetImage(imagenesJugadores[2]),fit: BoxFit.fill,),
+                        child: Image(
+                          image: AssetImage(imagenesJugadores[2]),
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[2],
-                    child: Transform.translate(  //Putos J2
+                    child: Transform.translate(
+                      //Putos J2
                       offset: const Offset(-205, 180),
                       child: Container(
                         width: 40,
@@ -756,45 +1002,47 @@ class _JuegoState extends State<Juego> {
                             image: AssetImage('assets/trivial_blanco.png'),
                             fit: BoxFit.fill,
                           ),
-
                         ),
                       ),
                     ),
                   ),
 
-
                   Visibility(
                     visible: jVisibles[3],
-                    child: Transform.translate(  //Texto J3
+                    child: Transform.translate(
+                      //Texto J3
                       offset: const Offset(293, -128),
                       child: Text(
                         nombresJugadores[3],
                         style: const TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 12.0,
-                          //color: Color(0xFFc9c154),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none
-
+                            fontFamily: "Baskerville",
+                            fontSize: 12.0,
+                            //color: Color(0xFFc9c154),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: jVisibles[3],
+                    child: Transform.translate(
+                      //Imagen J3
+                      offset: const Offset(290, -110),
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        child: Image(
+                          image: AssetImage(imagenesJugadores[3]),
+                          fit: BoxFit.fill,
                         ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[3],
-                    child: Transform.translate(  //Imagen J3
-                      offset: const Offset(290, -110),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(image: AssetImage(imagenesJugadores[3]),fit: BoxFit.fill,),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[3],
-                    child: Transform.translate(  //Putos J3
+                    child: Transform.translate(
+                      //Putos J3
                       offset: const Offset(260, -60),
                       child: Container(
                         width: 40,
@@ -804,46 +1052,48 @@ class _JuegoState extends State<Juego> {
                             image: AssetImage('assets/trivial_blanco.png'),
                             fit: BoxFit.fill,
                           ),
-
                         ),
                       ),
                     ),
                   ),
 
-
                   Visibility(
                     visible: jVisibles[4],
-                    child: Transform.translate(  //Texto J4
+                    child: Transform.translate(
+                      //Texto J4
                       offset: const Offset(293, -8),
                       child: Text(
                         nombresJugadores[4],
                         style: const TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 12.0,
-                          //color: Color(0xFFc9c154),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none
-
-                        ),
+                            fontFamily: "Baskerville",
+                            fontSize: 12.0,
+                            //color: Color(0xFFc9c154),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none),
                       ),
                     ),
                   ),
 
                   Visibility(
                     visible: jVisibles[4],
-                    child: Transform.translate(  //Imagen J4
+                    child: Transform.translate(
+                      //Imagen J4
                       offset: const Offset(290, 10),
                       child: Container(
                         width: 70,
                         height: 70,
-                        child: Image(image: AssetImage(imagenesJugadores[4]),fit: BoxFit.fill,),
+                        child: Image(
+                          image: AssetImage(imagenesJugadores[4]),
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[4],
-                    child: Transform.translate(  //Putos J4
+                    child: Transform.translate(
+                      //Putos J4
                       offset: const Offset(260, 60),
                       child: Container(
                         width: 40,
@@ -860,35 +1110,40 @@ class _JuegoState extends State<Juego> {
 
                   Visibility(
                     visible: jVisibles[5],
-                    child: Transform.translate(  //Texto J5
+                    child: Transform.translate(
+                      //Texto J5
                       offset: const Offset(293, 112),
                       child: Text(
                         nombresJugadores[5],
                         style: const TextStyle(
-                          fontFamily: "Baskerville",
-                          fontSize: 12.0,
-                          //color: Color(0xFFc9c154),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none
+                            fontFamily: "Baskerville",
+                            fontSize: 12.0,
+                            //color: Color(0xFFc9c154),
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: jVisibles[5],
+                    child: Transform.translate(
+                      //Imagen J5
+                      offset: const Offset(290, 130),
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        child: Image(
+                          image: AssetImage(imagenesJugadores[5]),
+                          fit: BoxFit.fill,
                         ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[5],
-                    child: Transform.translate(  //Imagen J5
-                      offset: const Offset(290, 130),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(image: AssetImage(imagenesJugadores[5]),fit: BoxFit.fill,),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[5],
-                    child: Transform.translate(  //Putos J5
+                    child: Transform.translate(
+                      //Putos J5
                       offset: const Offset(260, 180),
                       child: Container(
                         width: 40,
@@ -907,7 +1162,9 @@ class _JuegoState extends State<Juego> {
                   Transform.translate(
                     offset: const Offset(0, 0),
                     child: HexagonButton(
-                      color: casillaCambia[72] == true ? colorVariado[72] : colorCasillas[72],
+                      color: casillaCambia[72] == true
+                          ? colorVariado[72]
+                          : colorCasillas[72],
                       onPressed: () {
                         //_cambiardecolor2();
                         setState(() {
@@ -925,7 +1182,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(19, 66),
                       child: RectangleButton(
-                        color: casillaCambia[51] == true ? colorVariado[51] : colorCasillas[51],
+                        color: casillaCambia[51] == true
+                            ? colorVariado[51]
+                            : colorCasillas[51],
                         onPressed: () {
                           //_cambiarColor2();
                           // print("pulsado51");
@@ -940,7 +1199,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(19, 87),
                       child: RectangleButton(
-                        color: casillaCambia[50] == true ? colorVariado[50] : colorCasillas[50],
+                        color: casillaCambia[50] == true
+                            ? colorVariado[50]
+                            : colorCasillas[50],
                         onPressed: () {
                           //_cambiarColor2();
                           // print("pulsado52");
@@ -954,7 +1215,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(19, 108),
                       child: RectangleButton(
-                        color: casillaCambia[49] == true ? colorVariado[49] : colorCasillas[49],
+                        color: casillaCambia[49] == true
+                            ? colorVariado[49]
+                            : colorCasillas[49],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -967,7 +1230,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(19, 129),
                       child: RectangleButton(
-                        color: casillaCambia[48] == true ? colorVariado[48] : colorCasillas[48],
+                        color: casillaCambia[48] == true
+                            ? colorVariado[48]
+                            : colorCasillas[48],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -980,7 +1245,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(19, 150),
                       child: RectangleButton(
-                        color: casillaCambia[47] == true ? colorVariado[47] : colorCasillas[47],
+                        color: casillaCambia[47] == true
+                            ? colorVariado[47]
+                            : colorCasillas[47],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -993,7 +1260,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(18, -17),
                       child: RectangleButton(
-                        color: casillaCambia[46] == true ? colorVariado[46] : colorCasillas[46],
+                        color: casillaCambia[46] == true
+                            ? colorVariado[46]
+                            : colorCasillas[46],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1006,7 +1275,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(18, -37),
                       child: RectangleButton(
-                        color: casillaCambia[45] == true ? colorVariado[45] : colorCasillas[45],
+                        color: casillaCambia[45] == true
+                            ? colorVariado[45]
+                            : colorCasillas[45],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1019,7 +1290,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(18, -57),
                       child: RectangleButton(
-                        color: casillaCambia[44] == true ? colorVariado[44] : colorCasillas[44],
+                        color: casillaCambia[44] == true
+                            ? colorVariado[44]
+                            : colorCasillas[44],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1032,7 +1305,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(18, -77),
                       child: RectangleButton(
-                        color: casillaCambia[43] == true ? colorVariado[43] : colorCasillas[43],
+                        color: casillaCambia[43] == true
+                            ? colorVariado[43]
+                            : colorCasillas[43],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1045,7 +1320,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(18, -98),
                       child: RectangleButton(
-                        color: casillaCambia[42] == true ? colorVariado[42] : colorCasillas[42],
+                        color: casillaCambia[42] == true
+                            ? colorVariado[42]
+                            : colorCasillas[42],
                         onPressed: () {
                           //_cambiarColor2();
                           // print("pulsado42");
@@ -1060,7 +1337,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-150, 75),
                       child: RectangleButton(
-                        color: casillaCambia[6] == true ? colorVariado[6] : colorCasillas[6],
+                        color: casillaCambia[6] == true
+                            ? colorVariado[6]
+                            : colorCasillas[6],
                         onPressed: () {
                           //_cambiarColor2();
                           // alternarCasilla(6);
@@ -1075,7 +1354,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-150, 55),
                       child: RectangleButton(
-                        color: casillaCambia[5] == true ? colorVariado[5] : colorCasillas[5],
+                        color: casillaCambia[5] == true
+                            ? colorVariado[5]
+                            : colorCasillas[5],
                         onPressed: () {
                           //_cambiarColor2();
                           // alternarCasilla(5);
@@ -1090,7 +1371,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-150, 35),
                       child: RectangleButton(
-                        color: casillaCambia[4] == true ? colorVariado[4] : colorCasillas[4],
+                        color: casillaCambia[4] == true
+                            ? colorVariado[4]
+                            : colorCasillas[4],
                         onPressed: () {
                           //_cambiarColor2();
                           // alternarCasilla(4);
@@ -1105,7 +1388,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-150, 15),
                       child: RectangleButton(
-                        color: casillaCambia[3] == true ? colorVariado[3] : colorCasillas[3],
+                        color: casillaCambia[3] == true
+                            ? colorVariado[3]
+                            : colorCasillas[3],
                         onPressed: () {
                           //_cambiarColor2();
                           // alternarCasilla(3);
@@ -1120,7 +1405,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-150, -5),
                       child: RectangleButton(
-                        color: casillaCambia[2] == true ? colorVariado[2] : colorCasillas[2],
+                        color: casillaCambia[2] == true
+                            ? colorVariado[2]
+                            : colorCasillas[2],
                         onPressed: () {
                           //_cambiarColor2();
                           // alternarCasilla(2);
@@ -1135,7 +1422,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-150, -25),
                       child: RectangleButton(
-                        color: casillaCambia[1] == true ? colorVariado[1] : colorCasillas[1],
+                        color: casillaCambia[1] == true
+                            ? colorVariado[1]
+                            : colorCasillas[1],
                         onPressed: () {
                           //_cambiarColor2();
                           // alternarCasilla(1);
@@ -1144,14 +1433,16 @@ class _JuegoState extends State<Juego> {
                       ),
                     ),
                   ),
-                  
+
                   //C8
                   Transform.rotate(
                     angle: -148 * pi / 180,
                     child: Transform.translate(
                       offset: const Offset(-142, -23),
                       child: RectangleButton(
-                        color: casillaCambia[8] == true ? colorVariado[8] : colorCasillas[8],
+                        color: casillaCambia[8] == true
+                            ? colorVariado[8]
+                            : colorCasillas[8],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1164,7 +1455,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-142, -5),
                       child: RectangleButton(
-                        color: casillaCambia[9] == true ? colorVariado[9] : colorCasillas[9],
+                        color: casillaCambia[9] == true
+                            ? colorVariado[9]
+                            : colorCasillas[9],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1177,7 +1470,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-142, 15),
                       child: RectangleButton(
-                        color: casillaCambia[10] == true ? colorVariado[10] : colorCasillas[10],
+                        color: casillaCambia[10] == true
+                            ? colorVariado[10]
+                            : colorCasillas[10],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1190,7 +1485,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-142, 35),
                       child: RectangleButton(
-                        color: casillaCambia[11] == true ? colorVariado[11] : colorCasillas[11],
+                        color: casillaCambia[11] == true
+                            ? colorVariado[11]
+                            : colorCasillas[11],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1203,7 +1500,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-142, 55),
                       child: RectangleButton(
-                        color: casillaCambia[12] == true ? colorVariado[12] : colorCasillas[12],
+                        color: casillaCambia[12] == true
+                            ? colorVariado[12]
+                            : colorCasillas[12],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1216,7 +1515,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-142, 75),
                       child: RectangleButton(
-                        color: casillaCambia[13] == true ? colorVariado[13] : colorCasillas[13],
+                        color: casillaCambia[13] == true
+                            ? colorVariado[13]
+                            : colorCasillas[13],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1230,7 +1531,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(37, -158),
                       child: Esquina2Button(
-                        color: casillaCambia[7] == true ? colorVariado[7] : colorCasillas[7],
+                        color: casillaCambia[7] == true
+                            ? colorVariado[7]
+                            : colorCasillas[7],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1243,7 +1546,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(13, 70),
                       child: RectangleButton(
-                        color: casillaCambia[56] == true ? colorVariado[56] : colorCasillas[56],
+                        color: casillaCambia[56] == true
+                            ? colorVariado[56]
+                            : colorCasillas[56],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1256,7 +1561,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(13, 91),
                       child: RectangleButton(
-                        color: casillaCambia[55] == true ? colorVariado[55] : colorCasillas[55],
+                        color: casillaCambia[55] == true
+                            ? colorVariado[55]
+                            : colorCasillas[55],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1269,7 +1576,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(13, 111),
                       child: RectangleButton(
-                        color: casillaCambia[54] == true ? colorVariado[54] : colorCasillas[54],
+                        color: casillaCambia[54] == true
+                            ? colorVariado[54]
+                            : colorCasillas[54],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1282,7 +1591,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(13, 131),
                       child: RectangleButton(
-                        color: casillaCambia[53] == true ? colorVariado[53] : colorCasillas[53],
+                        color: casillaCambia[53] == true
+                            ? colorVariado[53]
+                            : colorCasillas[53],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1295,7 +1606,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(13, 151),
                       child: RectangleButton(
-                        color: casillaCambia[52] == true ? colorVariado[52] : colorCasillas[52],
+                        color: casillaCambia[52] == true
+                            ? colorVariado[52]
+                            : colorCasillas[52],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1308,7 +1621,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(13, -20),
                       child: RectangleButton(
-                        color: casillaCambia[71] == true ? colorVariado[71] : colorCasillas[71],
+                        color: casillaCambia[71] == true
+                            ? colorVariado[71]
+                            : colorCasillas[71],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1321,7 +1636,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(13, -40),
                       child: RectangleButton(
-                        color: casillaCambia[70] == true ? colorVariado[70] : colorCasillas[70],
+                        color: casillaCambia[70] == true
+                            ? colorVariado[70]
+                            : colorCasillas[70],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1334,7 +1651,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(13, -60),
                       child: RectangleButton(
-                        color: casillaCambia[69] == true ? colorVariado[69] : colorCasillas[69],
+                        color: casillaCambia[69] == true
+                            ? colorVariado[69]
+                            : colorCasillas[69],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1347,7 +1666,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(13, -80),
                       child: RectangleButton(
-                        color: casillaCambia[68] == true ? colorVariado[68] : colorCasillas[68],
+                        color: casillaCambia[68] == true
+                            ? colorVariado[68]
+                            : colorCasillas[68],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1360,7 +1681,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(13, -100),
                       child: RectangleButton(
-                        color: casillaCambia[67] == true ? colorVariado[67] : colorCasillas[67],
+                        color: casillaCambia[67] == true
+                            ? colorVariado[67]
+                            : colorCasillas[67],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1374,7 +1697,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-148, 88),
                       child: RectangleButton(
-                        color: casillaCambia[41] == true ? colorVariado[41] : colorCasillas[41],
+                        color: casillaCambia[41] == true
+                            ? colorVariado[41]
+                            : colorCasillas[41],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1387,7 +1712,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-148, 68),
                       child: RectangleButton(
-                        color: casillaCambia[40] == true ? colorVariado[40] : colorCasillas[40],
+                        color: casillaCambia[40] == true
+                            ? colorVariado[40]
+                            : colorCasillas[40],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1400,7 +1727,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-148, 48),
                       child: RectangleButton(
-                        color: casillaCambia[39] == true ? colorVariado[39] : colorCasillas[39],
+                        color: casillaCambia[39] == true
+                            ? colorVariado[39]
+                            : colorCasillas[39],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1413,7 +1742,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-148, 28),
                       child: RectangleButton(
-                        color: casillaCambia[38] == true ? colorVariado[38] : colorCasillas[38],
+                        color: casillaCambia[38] == true
+                            ? colorVariado[38]
+                            : colorCasillas[38],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1426,7 +1757,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-148, 8),
                       child: RectangleButton(
-                        color: casillaCambia[37] == true ? colorVariado[37] : colorCasillas[37],
+                        color: casillaCambia[37] == true
+                            ? colorVariado[37]
+                            : colorCasillas[37],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1439,7 +1772,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-148, -13),
                       child: RectangleButton(
-                        color: casillaCambia[36] == true ? colorVariado[36] : colorCasillas[36],
+                        color: casillaCambia[36] == true
+                            ? colorVariado[36]
+                            : colorCasillas[36],
                         onPressed: () {
                           //_cambiarColor2();
                           // print("pulsado36");
@@ -1453,7 +1788,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(30, -178),
                       child: Esquina3Button(
-                        color: casillaCambia[0] == true ? colorVariado[0] : colorCasillas[0],
+                        color: casillaCambia[0] == true
+                            ? colorVariado[0]
+                            : colorCasillas[0],
                         onPressed: () {
                           //_cambiarColor2();
                           alternarCasilla(0);
@@ -1468,7 +1805,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(19, 66),
                       child: RectangleButton(
-                        color: casillaCambia[66] == true ? colorVariado[66] : colorCasillas[66],
+                        color: casillaCambia[66] == true
+                            ? colorVariado[66]
+                            : colorCasillas[66],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1481,7 +1820,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(19, 86),
                       child: RectangleButton(
-                        color: casillaCambia[65] == true ? colorVariado[65] : colorCasillas[65],
+                        color: casillaCambia[65] == true
+                            ? colorVariado[65]
+                            : colorCasillas[65],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1494,7 +1835,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(19, 106),
                       child: RectangleButton(
-                        color: casillaCambia[64] == true ? colorVariado[64] : colorCasillas[64],
+                        color: casillaCambia[64] == true
+                            ? colorVariado[64]
+                            : colorCasillas[64],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1507,7 +1850,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(19, 126),
                       child: RectangleButton(
-                        color: casillaCambia[63] == true ? colorVariado[63] : colorCasillas[63],
+                        color: casillaCambia[63] == true
+                            ? colorVariado[63]
+                            : colorCasillas[63],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1520,7 +1865,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(19, 146),
                       child: RectangleButton(
-                        color: casillaCambia[62] == true ? colorVariado[62] : colorCasillas[62],
+                        color: casillaCambia[62] == true
+                            ? colorVariado[62]
+                            : colorCasillas[62],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1528,14 +1875,15 @@ class _JuegoState extends State<Juego> {
                     ),
                   ),
 
-
                   //C29
                   Transform.rotate(
                     angle: -329 * pi / 180,
                     child: Transform.translate(
                       offset: const Offset(-142, -23),
                       child: RectangleButton(
-                        color: casillaCambia[29] == true ? colorVariado[29] : colorCasillas[29],
+                        color: casillaCambia[29] == true
+                            ? colorVariado[29]
+                            : colorCasillas[29],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1548,7 +1896,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-142, -5),
                       child: RectangleButton(
-                        color: casillaCambia[30] == true ? colorVariado[30] : colorCasillas[30],
+                        color: casillaCambia[30] == true
+                            ? colorVariado[30]
+                            : colorCasillas[30],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1561,7 +1911,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-142, 15),
                       child: RectangleButton(
-                        color: casillaCambia[31] == true ? colorVariado[31] : colorCasillas[31],
+                        color: casillaCambia[31] == true
+                            ? colorVariado[31]
+                            : colorCasillas[31],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1574,7 +1926,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-142, 35),
                       child: RectangleButton(
-                        color: casillaCambia[32] == true ? colorVariado[32] : colorCasillas[32],
+                        color: casillaCambia[32] == true
+                            ? colorVariado[32]
+                            : colorCasillas[32],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1587,7 +1941,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-142, 55),
                       child: RectangleButton(
-                        color: casillaCambia[33] == true ? colorVariado[33] : colorCasillas[33],
+                        color: casillaCambia[33] == true
+                            ? colorVariado[33]
+                            : colorCasillas[33],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1600,7 +1956,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-142, 75),
                       child: RectangleButton(
-                        color: casillaCambia[34] == true ? colorVariado[34] : colorCasillas[34],
+                        color: casillaCambia[34] == true
+                            ? colorVariado[34]
+                            : colorCasillas[34],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1614,7 +1972,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(18, -17),
                       child: RectangleButton(
-                        color: casillaCambia[61] == true ? colorVariado[61] : colorCasillas[61],
+                        color: casillaCambia[61] == true
+                            ? colorVariado[61]
+                            : colorCasillas[61],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1627,7 +1987,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(18, -37),
                       child: RectangleButton(
-                        color: casillaCambia[60] == true ? colorVariado[60] : colorCasillas[60],
+                        color: casillaCambia[60] == true
+                            ? colorVariado[60]
+                            : colorCasillas[60],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1640,7 +2002,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(18, -57),
                       child: RectangleButton(
-                        color: casillaCambia[59] == true ? colorVariado[59] : colorCasillas[59],
+                        color: casillaCambia[59] == true
+                            ? colorVariado[59]
+                            : colorCasillas[59],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1653,7 +2017,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(18, -77),
                       child: RectangleButton(
-                        color: casillaCambia[58] == true ? colorVariado[58] : colorCasillas[58],
+                        color: casillaCambia[58] == true
+                            ? colorVariado[58]
+                            : colorCasillas[58],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1666,7 +2032,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(18, -98),
                       child: RectangleButton(
-                        color: casillaCambia[57] == true ? colorVariado[57] : colorCasillas[57],
+                        color: casillaCambia[57] == true
+                            ? colorVariado[57]
+                            : colorCasillas[57],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1680,7 +2048,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-140, 73),
                       child: RectangleButton(
-                        color: casillaCambia[27] == true ? colorVariado[27] : colorCasillas[27],
+                        color: casillaCambia[27] == true
+                            ? colorVariado[27]
+                            : colorCasillas[27],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1693,7 +2063,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-140, 53),
                       child: RectangleButton(
-                        color: casillaCambia[26] == true ? colorVariado[26] : colorCasillas[26],
+                        color: casillaCambia[26] == true
+                            ? colorVariado[26]
+                            : colorCasillas[26],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1706,7 +2078,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-140, 33),
                       child: RectangleButton(
-                        color: casillaCambia[25] == true ? colorVariado[25] : colorCasillas[25],
+                        color: casillaCambia[25] == true
+                            ? colorVariado[25]
+                            : colorCasillas[25],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1719,7 +2093,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-140, 13),
                       child: RectangleButton(
-                        color: casillaCambia[24] == true ? colorVariado[24] : colorCasillas[24],
+                        color: casillaCambia[24] == true
+                            ? colorVariado[24]
+                            : colorCasillas[24],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1732,7 +2108,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-140, -8),
                       child: RectangleButton(
-                        color: casillaCambia[23] == true ? colorVariado[23] : colorCasillas[23],
+                        color: casillaCambia[23] == true
+                            ? colorVariado[23]
+                            : colorCasillas[23],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1745,7 +2123,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-140, -29),
                       child: RectangleButton(
-                        color: casillaCambia[22] == true ? colorVariado[22] : colorCasillas[22],
+                        color: casillaCambia[22] == true
+                            ? colorVariado[22]
+                            : colorCasillas[22],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1759,7 +2139,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-145, 75),
                       child: RectangleButton(
-                        color: casillaCambia[20] == true ? colorVariado[20] : colorCasillas[20],
+                        color: casillaCambia[20] == true
+                            ? colorVariado[20]
+                            : colorCasillas[20],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1772,7 +2154,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-145, 57),
                       child: RectangleButton(
-                        color: casillaCambia[19] == true ? colorVariado[19] : colorCasillas[19],
+                        color: casillaCambia[19] == true
+                            ? colorVariado[19]
+                            : colorCasillas[19],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1785,7 +2169,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-145, 38),
                       child: RectangleButton(
-                        color: casillaCambia[18] == true ? colorVariado[18] : colorCasillas[18],
+                        color: casillaCambia[18] == true
+                            ? colorVariado[18]
+                            : colorCasillas[18],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1798,7 +2184,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-145, 18),
                       child: RectangleButton(
-                        color: casillaCambia[17] == true ? colorVariado[17] : colorCasillas[17],
+                        color: casillaCambia[17] == true
+                            ? colorVariado[17]
+                            : colorCasillas[17],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1811,7 +2199,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-145, -2),
                       child: RectangleButton(
-                        color: casillaCambia[16] == true ? colorVariado[16] : colorCasillas[16],
+                        color: casillaCambia[16] == true
+                            ? colorVariado[16]
+                            : colorCasillas[16],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1824,7 +2214,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-145, -21),
                       child: RectangleButton(
-                        color: casillaCambia[15] == true ? colorVariado[15] : colorCasillas[15],
+                        color: casillaCambia[15] == true
+                            ? colorVariado[15]
+                            : colorCasillas[15],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1838,7 +2230,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(0, -184),
                       child: EsquinaButton(
-                        color: casillaCambia[35] == true ? colorVariado[35] : colorCasillas[35],
+                        color: casillaCambia[35] == true
+                            ? colorVariado[35]
+                            : colorCasillas[35],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1851,7 +2245,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-16, -164),
                       child: Esquina2Button(
-                        color: casillaCambia[28] == true ? colorVariado[28] : colorCasillas[28],
+                        color: casillaCambia[28] == true
+                            ? colorVariado[28]
+                            : colorCasillas[28],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1864,7 +2260,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(-8, -146),
                       child: Esquina3Button(
-                        color: casillaCambia[21] == true ? colorVariado[21] : colorCasillas[21],
+                        color: casillaCambia[21] == true
+                            ? colorVariado[21]
+                            : colorCasillas[21],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1877,7 +2275,9 @@ class _JuegoState extends State<Juego> {
                     child: Transform.translate(
                       offset: const Offset(26, -135),
                       child: EsquinaButton(
-                        color: casillaCambia[14] == true ? colorVariado[14] : colorCasillas[14],
+                        color: casillaCambia[14] == true
+                            ? colorVariado[14]
+                            : colorCasillas[14],
                         onPressed: () {
                           //_cambiarColor2();
                         },
@@ -1940,7 +2340,7 @@ class _JuegoState extends State<Juego> {
                   ),
 
                   //ImagenDado
-                  Transform.translate(  
+                  Transform.translate(
                     offset: const Offset(190, -120),
                     child: Image.asset(
                       'assets/cara$_diceNumber.png',
@@ -1949,7 +2349,9 @@ class _JuegoState extends State<Juego> {
                   ),
                   //BotonDado
                   Padding(
-                    padding: EdgeInsets.only(top: 180, left: 168), // ajusta los valores según tus necesidades
+                    padding: EdgeInsets.only(
+                        top: 180,
+                        left: 168), // ajusta los valores según tus necesidades
                     child: BotonDado(
                       'Tirar',
                       onPressed: _rollDice,
@@ -1960,7 +2362,9 @@ class _JuegoState extends State<Juego> {
                   Transform.translate(
                     offset: const Offset(-240, 0),
                     child: Padding(
-                      padding: EdgeInsets.only(top: 180, left: 80), // ajusta los valores según tus necesidades
+                      padding: EdgeInsets.only(
+                          top: 180,
+                          left: 80), // ajusta los valores según tus necesidades
                       child: BotonHome(
                         "Salir",
                         onPressed: () {
@@ -1975,7 +2379,9 @@ class _JuegoState extends State<Juego> {
 
                   //BOTON TEMPORAL REINICIO TURNO
                   Padding(
-                    padding: EdgeInsets.only(top: 190, left: 300), // ajusta los valores según tus necesidades
+                    padding: EdgeInsets.only(
+                        top: 190,
+                        left: 300), // ajusta los valores según tus necesidades
                     child: ElevatedButton(
                       onPressed: _resetTurno,
                       child: Text('Reiniciar turno'),
@@ -1989,85 +2395,106 @@ class _JuegoState extends State<Juego> {
                       width: 80,
                       height: 50,
                       decoration: const BoxDecoration(
-                        // image: DecorationImage(
-                        //   image: AssetImage('assets/Chat.png'),
-                        //   fit: BoxFit.fill,
-                        // ),
-                      ),
+                          // image: DecorationImage(
+                          //   image: AssetImage('assets/Chat.png'),
+                          //   fit: BoxFit.fill,
+                          // ),
+                          ),
                     ),
-                  ),            
+                  ),
 
-                  
-                   
                   //FICHAS---------------------------------------------------------------------------------------------
                   Visibility(
                     visible: jVisibles[0],
-                    child: Transform.translate(  //Ficha J0
-                      offset: coordenadasFichaJ1[posicionesFichas[0]-1], //pongo -1 para guardar el numero de la casilla en el vector (pero como son 72 y con el 0 pues 71)
+                    child: Transform.translate(
+                      //Ficha J0
+                      offset: coordenadasFichaJ1[posicionesFichas[0] -
+                          1], //pongo -1 para guardar el numero de la casilla en el vector (pero como son 72 y con el 0 pues 71)
                       child: Container(
                         width: 15,
                         height: 15,
-                        child: Image.network(fichasJugadores[0],fit: BoxFit.fill,),
+                        child: Image.network(
+                          fichasJugadores[0],
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[1],
-                    child: Transform.translate(  //Ficha J1
+                    child: Transform.translate(
+                      //Ficha J1
                       offset: const Offset(10, 10),
                       child: Container(
                         width: 15,
                         height: 15,
-                        child: Image.network(fichasJugadores[1],fit: BoxFit.fill,),
+                        child: Image.network(
+                          fichasJugadores[1],
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[2],
-                    child: Transform.translate(  //Ficha J2
+                    child: Transform.translate(
+                      //Ficha J2
                       offset: const Offset(20, 20),
                       child: Container(
                         width: 15,
                         height: 15,
-                        child: Image.network(fichasJugadores[2],fit: BoxFit.fill,),
+                        child: Image.network(
+                          fichasJugadores[2],
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[3],
-                    child: Transform.translate(  //Ficha J3
+                    child: Transform.translate(
+                      //Ficha J3
                       offset: const Offset(30, 30),
                       child: Container(
                         width: 15,
                         height: 15,
-                        child: Image.network(fichasJugadores[3],fit: BoxFit.fill,),
+                        child: Image.network(
+                          fichasJugadores[3],
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[4],
-                    child: Transform.translate(  //Ficha J4
+                    child: Transform.translate(
+                      //Ficha J4
                       offset: const Offset(40, 40),
                       child: Container(
                         width: 15,
                         height: 15,
-                        child: Image.network(fichasJugadores[4],fit: BoxFit.fill,),
+                        child: Image.network(
+                          fichasJugadores[4],
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
                   Visibility(
                     visible: jVisibles[5],
-                    child: Transform.translate(  //Ficha J5
+                    child: Transform.translate(
+                      //Ficha J5
                       offset: const Offset(50, 50),
                       child: Container(
                         width: 15,
                         height: 15,
-                        child: Image.network(fichasJugadores[5],fit: BoxFit.fill,),
+                        child: Image.network(
+                          fichasJugadores[5],
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
-                
-
                 ],
               ),
             ),
@@ -2077,7 +2504,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 116 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(138,-379), 
+                offset: const Offset(138, -379),
                 child: Ink(
                   width: 61,
                   height: 40,
@@ -2088,8 +2515,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2101,7 +2529,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-320, 316), 
+                offset: const Offset(-320, 316),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2112,8 +2540,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2125,7 +2554,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-320, 336), 
+                offset: const Offset(-320, 336),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2136,8 +2565,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2149,7 +2579,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-320, 356), 
+                offset: const Offset(-320, 356),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2160,8 +2590,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2173,7 +2604,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-320, 376), 
+                offset: const Offset(-320, 376),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2184,8 +2615,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2197,7 +2629,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-320, 396), 
+                offset: const Offset(-320, 396),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2208,8 +2640,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2221,7 +2654,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-320, 416), 
+                offset: const Offset(-320, 416),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2232,8 +2665,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2245,7 +2679,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -115 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-446, 273), 
+                offset: const Offset(-446, 273),
                 child: Ink(
                   width: 57,
                   height: 40,
@@ -2256,8 +2690,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2269,7 +2704,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 33 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(549, -22), 
+                offset: const Offset(549, -22),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2280,8 +2715,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2293,7 +2729,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 33 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(549, -42), 
+                offset: const Offset(549, -42),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2304,8 +2740,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2317,7 +2754,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 33 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(549, -62), 
+                offset: const Offset(549, -62),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2328,8 +2765,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2341,7 +2779,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 33 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(549, -82), 
+                offset: const Offset(549, -82),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2352,8 +2790,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2365,7 +2804,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 33 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(549, -102), 
+                offset: const Offset(549, -102),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2376,8 +2815,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2389,7 +2829,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 33 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(549, -122), 
+                offset: const Offset(549, -122),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2400,8 +2840,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2413,7 +2854,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 0 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(521,145), 
+                offset: const Offset(521, 145),
                 child: Ink(
                   width: 48,
                   height: 44,
@@ -2424,8 +2865,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2437,7 +2879,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -33 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(380, 383), 
+                offset: const Offset(380, 383),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2448,8 +2890,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2461,7 +2904,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -33 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(381, 363), 
+                offset: const Offset(381, 363),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2472,8 +2915,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2485,7 +2929,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -33 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(382, 343), 
+                offset: const Offset(382, 343),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2496,8 +2940,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2509,7 +2954,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -33 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(383, 323), 
+                offset: const Offset(383, 323),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2520,8 +2965,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2533,7 +2979,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -33 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(384, 303), 
+                offset: const Offset(384, 303),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2544,8 +2990,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2557,7 +3004,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -33 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(384, 283), 
+                offset: const Offset(384, 283),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2568,8 +3015,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2581,7 +3029,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -62 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(202,390), 
+                offset: const Offset(202, 390),
                 child: Ink(
                   width: 57,
                   height: 40,
@@ -2592,8 +3040,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2605,7 +3054,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(0, -418), 
+                offset: const Offset(0, -418),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2616,8 +3065,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2629,7 +3079,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(0, -398), 
+                offset: const Offset(0, -398),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2640,8 +3090,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2653,7 +3104,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(0, -378), 
+                offset: const Offset(0, -378),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2664,8 +3115,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2677,7 +3129,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(0, -358), 
+                offset: const Offset(0, -358),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2688,8 +3140,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2701,7 +3154,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(0, -338), 
+                offset: const Offset(0, -338),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2712,8 +3165,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2725,7 +3179,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(0, -318), 
+                offset: const Offset(0, -318),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2736,8 +3190,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2749,7 +3204,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 62 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(135,-245), 
+                offset: const Offset(135, -245),
                 child: Ink(
                   width: 57,
                   height: 40,
@@ -2760,8 +3215,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2773,7 +3229,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -150 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-237, 102), 
+                offset: const Offset(-237, 102),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2784,8 +3240,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2797,7 +3254,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -150 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-237, 82), 
+                offset: const Offset(-237, 82),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2808,8 +3265,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2821,7 +3279,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -150 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-237, 62), 
+                offset: const Offset(-237, 62),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2832,8 +3290,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2845,7 +3304,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -150 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-237, 42), 
+                offset: const Offset(-237, 42),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2856,8 +3315,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2869,7 +3329,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -150 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-236, 22), 
+                offset: const Offset(-236, 22),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2880,8 +3340,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2893,7 +3354,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -150 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-236, 2), 
+                offset: const Offset(-236, 2),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2904,8 +3365,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2917,7 +3379,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 0 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(201,146), 
+                offset: const Offset(201, 146),
                 child: Ink(
                   width: 48,
                   height: 44,
@@ -2928,8 +3390,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2941,7 +3404,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 149 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-71, -280), 
+                offset: const Offset(-71, -280),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2952,8 +3415,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2965,7 +3429,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 149 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-71, -301), 
+                offset: const Offset(-71, -301),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -2976,8 +3440,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -2989,7 +3454,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 149 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-71, -322), 
+                offset: const Offset(-71, -322),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3000,8 +3465,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3013,7 +3479,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 149 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-70, -342), 
+                offset: const Offset(-70, -342),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3024,8 +3490,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3037,7 +3504,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 149 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-70, -362), 
+                offset: const Offset(-70, -362),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3048,8 +3515,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3061,7 +3529,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 149 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-70, -382), 
+                offset: const Offset(-70, -382),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3072,8 +3540,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3085,7 +3554,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 25 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(392, 109), 
+                offset: const Offset(392, 109),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3096,8 +3565,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3109,7 +3579,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 25 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(392, 88), 
+                offset: const Offset(392, 88),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3120,8 +3590,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3133,7 +3604,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 25 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(392, 68), 
+                offset: const Offset(392, 68),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3144,8 +3615,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3157,7 +3629,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 25 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(392, 48), 
+                offset: const Offset(392, 48),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3168,8 +3640,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3181,7 +3654,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 25 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(392, 28), 
+                offset: const Offset(392, 28),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3192,8 +3665,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3205,7 +3679,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -28 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(251, 435), 
+                offset: const Offset(251, 435),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3216,8 +3690,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3229,7 +3704,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -28 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(251, 414), 
+                offset: const Offset(251, 414),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3240,8 +3715,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3253,7 +3729,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -28 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(251, 393), 
+                offset: const Offset(251, 393),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3264,8 +3740,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3277,7 +3754,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -28 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(252, 372), 
+                offset: const Offset(252, 372),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3288,8 +3765,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3301,7 +3779,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: -28 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(252, 351), 
+                offset: const Offset(252, 351),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3312,8 +3790,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3325,7 +3804,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(157, -492), 
+                offset: const Offset(157, -492),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3336,8 +3815,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3349,7 +3829,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(157, -472), 
+                offset: const Offset(157, -472),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3360,8 +3840,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3373,7 +3854,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(157, -452), 
+                offset: const Offset(157, -452),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3384,8 +3865,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3397,7 +3879,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(157, -432), 
+                offset: const Offset(157, -432),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3408,8 +3890,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3421,7 +3904,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(157, -412), 
+                offset: const Offset(157, -412),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3432,8 +3915,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3445,7 +3929,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 210 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-395, 171), 
+                offset: const Offset(-395, 171),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3456,8 +3940,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3469,7 +3954,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 210 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-395, 151), 
+                offset: const Offset(-395, 151),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3480,8 +3965,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3493,7 +3979,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 210 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-395, 131), 
+                offset: const Offset(-395, 131),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3504,8 +3990,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3517,7 +4004,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 210 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-395, 110), 
+                offset: const Offset(-395, 110),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3528,8 +4015,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3541,7 +4029,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 210 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-395, 90), 
+                offset: const Offset(-395, 90),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3552,8 +4040,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3565,7 +4054,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 150 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-242, -195), 
+                offset: const Offset(-242, -195),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3576,8 +4065,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3589,7 +4079,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 150 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-240, -215), 
+                offset: const Offset(-240, -215),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3600,8 +4090,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3613,7 +4104,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 150 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-240, -235), 
+                offset: const Offset(-240, -235),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3624,8 +4115,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3637,7 +4129,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 150 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-239, -255), 
+                offset: const Offset(-239, -255),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3648,8 +4140,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3661,7 +4154,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 150 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(-238, -275), 
+                offset: const Offset(-238, -275),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3672,8 +4165,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3685,7 +4179,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(157, -241), 
+                offset: const Offset(157, -241),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3696,8 +4190,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3709,7 +4204,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(157, -261), 
+                offset: const Offset(157, -261),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3720,8 +4215,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3733,7 +4229,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(157, -281), 
+                offset: const Offset(157, -281),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3744,8 +4240,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3757,7 +4254,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(157, -301), 
+                offset: const Offset(157, -301),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3768,8 +4265,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3781,7 +4279,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(157, -321), 
+                offset: const Offset(157, -321),
                 child: Ink(
                   width: 39,
                   height: 20,
@@ -3792,8 +4290,9 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                   ),
@@ -3805,7 +4304,7 @@ class _JuegoState extends State<Juego> {
             Transform.rotate(
               angle: 90 * pi / 180,
               child: Transform.translate(
-                offset: const Offset(130, -364), 
+                offset: const Offset(130, -364),
                 child: Ink(
                   width: 44,
                   height: 70,
@@ -3816,10 +4315,12 @@ class _JuegoState extends State<Juego> {
                     },
                     child: null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent, backgroundColor: Color.fromARGB(0, 0, 0, 0), 
-                      padding: EdgeInsets.zero, 
+                      foregroundColor: Colors.transparent,
+                      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                      padding: EdgeInsets.zero,
                       elevation: 0, //elimina la sombra del boton
-                      splashFactory: NoSplash.splashFactory, //elimina la onda que aparece al pulsar el boton
+                      splashFactory: NoSplash
+                          .splashFactory, //elimina la onda que aparece al pulsar el boton
                       //no consigo quitar la sombra que genera al pulsarse pero si la onda
                     ),
                   ),
@@ -3840,7 +4341,7 @@ class _JuegoState extends State<Juego> {
                       color: Color.fromARGB(68, 0, 0, 0),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Center( 
+                    child: Center(
                       child: Container(
                         width: 400,
                         height: 250,
@@ -3852,7 +4353,8 @@ class _JuegoState extends State<Juego> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             const Padding(
-                              padding: EdgeInsets.only(top: 20.0, left: 160, bottom: 210),
+                              padding: EdgeInsets.only(
+                                  top: 20.0, left: 160, bottom: 210),
                               child: Text(
                                 'HISTORIA',
                                 style: TextStyle(
@@ -3863,8 +4365,6 @@ class _JuegoState extends State<Juego> {
                                 ),
                               ),
                             ),
-
-
                             Expanded(
                               child: Align(
                                 alignment: Alignment.topRight,
@@ -3888,9 +4388,6 @@ class _JuegoState extends State<Juego> {
                                 ),
                               ),
                             ),
-
-                            
-                            
                           ],
                         ),
                       ),
@@ -3900,10 +4397,9 @@ class _JuegoState extends State<Juego> {
               ),
             ),
 
-
             Visibility(
               visible: preguntaActiva,
-              child:Container(
+              child: Container(
                 alignment: Alignment.centerLeft,
                 child: const Padding(
                   padding: EdgeInsets.only(left: 205, bottom: 140),
@@ -3919,7 +4415,7 @@ class _JuegoState extends State<Juego> {
                 ),
               ),
             ),
-            
+
             Visibility(
               visible: preguntaActiva,
               child: Padding(
@@ -3951,7 +4447,7 @@ class _JuegoState extends State<Juego> {
                 ),
               ),
             ),
-            
+
             Visibility(
               visible: preguntaActiva,
               child: Padding(
@@ -4047,9 +4543,6 @@ class _JuegoState extends State<Juego> {
                 ),
               ),
             ),
-
-            
-
           ],
         ),
       ),
@@ -4445,4 +4938,4 @@ class BotonHome extends StatelessWidget {
       ),
     );
   }
-}
+}*/
