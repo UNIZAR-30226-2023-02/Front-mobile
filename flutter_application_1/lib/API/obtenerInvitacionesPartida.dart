@@ -39,7 +39,7 @@ class ObtenerInvitacionesResponse {
               nombreSala: item[NS_KEY],
               nombreAmigo: item[NA_KEY],
               tipoPartida: item[TP_KEY],
-              numeroJugadores: item[NJ_KEY],
+              numeroJugadores: item[NJ_KEY].toString(),
               webSocket: item[WS_KEY]));
         }
       } else {
