@@ -21,7 +21,7 @@ import 'Data_types/sesion.dart';
 
 void main() {
   runApp(
-    MaterialApp(title: 'Login', home: Estadisticas()),
+    MaterialApp(title: 'Login', home: Juego()),
     //MaterialApp(title: 'Login', home: Home()), //Registrarse1(reg: r,),
   );
 }
