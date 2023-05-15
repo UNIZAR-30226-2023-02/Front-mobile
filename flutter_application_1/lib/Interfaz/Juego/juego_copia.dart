@@ -1,4 +1,4 @@
-/*import 'dart:io';
+import 'dart:io';
 import 'dart:math';
 import 'dart:async';
 import 'dart:ui';
@@ -29,12 +29,90 @@ class _JuegoState extends State<Juego> {
 
   static const String MensajeDado = '';
 
+  static const String DATOS_KEY = 'datos',
+      OK_KEY = 'OK',
+      JUGADORES_KEY = 'jugadores',
+      JUGADOR_KEY = 'jugador',
+      FICHA_KEY = 'ficha',
+      TABLERO_KEY = 'tablero',
+      POSICION_KEY = 'posicion',
+      TURNO_KEY = "0",
+      TIEMPOP_KEY = 'tiempo_pregunta',
+      TIEMPOC_KEY = 'tiempo_elegir_casilla',
+      TYPE_KEY = 'type',
+      SUBTYPE_KEY = 'subtype',
+      DADO_KEY = 'valor_dado',
+      CASILLAE_KEY = 'casilla_elegida',
+      CASILLASN_KEY = 'casillas_nuevas',
+      PREGUNTA_KEY = 'pregunta',
+      R1_KEY = 'r1',
+      R2_KEY = 'r2',
+      R3_KEY = 'r3',
+      R4_KEY = 'r4',
+      RC_KEY = 'rc',
+      CORRECTA_KEY = 'esCorrecta',
+      QUESITO_KEY = 'quesito',
+      ERROR_KEY = 'error';
+
+  static const String TYPE_PETICION = 'Peticion',
+      TYPE_RESPUESTA = 'Respuesta',
+      TYPE_ACCION = 'Accion',
+      TYPE_FIN = 'Fin',
+      TYPE_ACTUALIZACION = 'Actualizacion',
+      TYPE_CHAT = 'Chat';
+
+  static const String SUBTYPE_PAUSARPARTIDA = 'Pausar_partida',
+  SUBTYPE_FINPARTIDA = 'Fin_partida',
+      SUBTYPE_CONTINUARPARTIDA = 'Continuar_partida',
+      SUBTYPE_CONTESTARPREGUNTA = 'Contestar_pregunta',
+      SUBTYPE_TIRARDADO = 'Tirar_dado',
+      SUBTYPE_DADOCASILLAS = 'Dado_casillas',
+      SUBTYPE_MOVIMIENTOCASILLA = 'Movimiento_casilla',
+      SUBTYPE_PREGUNTA = 'Pregunta',
+      SUBTYPE_DADOS = 'Dados';
+
+  static const 
+
+  bool _preguntaActiva = false;
+  String _preguntaTema = "";
+  String _pregunta = "";
+  String _respuesta1 = "";
+  String _respuesta2 = "";
+  String _respuesta3 = "";
+  String _respuesta4 = "";
+
+  int _jugadores = 0;
+  List<String> _nombresJugadores = <String>[];
+  List<String> _posiciones = <String>[];
+  List<List<bool>> _quesitos = <List<bool>>[];
+  List<String> _fichas = <String>[];
+  String _tiempoPregunta = "";
+  String _tiempoElegirCasilla = "";
+
+  String _fondoTablero = "";
+  String _turno = "";
+  String _error = "";
+
+  List<String> _chatMensajes = <String>[];
+  List<String> _chatJugadores = <String>[];
+
+  bool _mensajeInicial = true;
+
   @override
   void initState() {
     super.initState();
-    _socket = IOWebSocketChannel.connect('$wsDir$_wS');
-    _socket.stream.listen((event) {
-      _listenSocket();
+    try {
+      _socket = IOWebSocketChannel.connect(_wS);
+    } catch (error) {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => Menu(_s)),
+          (Route<dynamic> route) => false);
+      return;
+    }
+
+    _socket.stream.listen((mensaje) {
+      _leerMensaje(mensaje);
     });
   }
 
@@ -43,6 +121,8 @@ class _JuegoState extends State<Juego> {
     _socket.sink.close();
     super.dispose();
   }
+
+  void _ejecutarAccion(String accion) {}
 
   void _enviarMensaje(String m) {
     final String mensaje = jsonEncode({'message': '', 'adad': 'akdjk'});
@@ -53,155 +133,91 @@ class _JuegoState extends State<Juego> {
     _socket.sink.add(mensaje);
   }
 
-  void _listenSocket() {
-    if (msgIni) {
-      msgIni = false;
-      channel.stream.listen((message) {
-        Map<String, dynamic> decodedResponse = json.decode(message);
-        String r_ok = decodedResponse['OK'];
-        List<dynamic> r_jugadores = decodedResponse['jugadores'];
-        List<String> r_nombres = [];
-        List<String> r_posiciones = [];
-        List<List<dynamic>> r_quesitos = [];
-        List<String> r_turnos = [];
-        List<String> r_fichas = [];
-        List<String> r_tableros = [];
-        List<bool> r_activos = [];
-        // String r_type = decodedResponse['type'];
-        // String r_subtype = decodedResponse['subtype'];
-        for (var jugador in r_jugadores) {
-          //Esto lo puedo comprimir con lo de abajo
-          String nombre = jugador['jugador'];
-          String posicion = jugador['posicion'];
-          List<dynamic> quesitos = jugador['quesitos'];
-          String turno = jugador['turno'];
-          String ficha = jugador['ficha'];
-          String tablero = jugador['tablero'];
-          bool activo = jugador['activo'];
-
-          r_nombres.add(nombre);
-          r_posiciones.add(posicion);
-          r_quesitos.add(quesitos);
-          r_turnos.add(turno);
-          r_fichas.add(ficha);
-          r_tableros.add(tablero);
-          r_activos.add(activo);
+  void _leerMensaje(String mensaje) {
+    Map<String, dynamic> mensajeDecodificado = json.decode(mensaje);
+    if (_mensajeInicial) {
+      _mensajeInicial = false;
+      Map<String, dynamic> datos = mensajeDecodificado[DATOS_KEY];
+      _tiempoPregunta = datos[TIEMPOP_KEY];
+      _tiempoElegirCasilla = datos[TIEMPOC_KEY];
+      _error = datos[ERROR_KEY];
+      for (var datosJugador in datos[JUGADOR_KEY]) {
+        _jugadores++;
+        if (datosJugador[JUGADOR_KEY] ==
+            _s.getField(SesionFieldsCodes.usuario)) {
+          _fondoTablero = datosJugador[TABLERO_KEY];
         }
-        String r_tiempo_pregunta = decodedResponse['tiempo_pregunta'];
-        String r_tiempo_elegir_casilla =
-            decodedResponse['tiempo_elegir_casilla'];
-        String r_error = decodedResponse['error'];
-
-        //CARGAR JUGADORES
-        if (r_ok == "true") {
-          numJ = r_jugadores.length;
-          cargarEstado_nombresImagenesJug(r_nombres);
-
-          //cargarEstado_posicionesJug(Njugadores, r_posiciones);
-          //cargarEstado_quesosJug(Njugadores, r_quesitos);
-
-          cargarEstado_fichasJug(r_fichas);
-
-          //¿como cargo un tablero para cada usuario?
-          //cargarEstado_tablerosJug();Tengo que cargar un tablero para cada usuario
+        if (datosJugador[TURNO_KEY] == "1") {
+          _turno = datosJugador[JUGADOR_KEY];
         }
-      });
+        _nombresJugadores.add(datosJugador[JUGADOR_KEY]);
+        _posiciones.add(datosJugador[POSICION_KEY]);
+        _quesitos.add(List.generate(6, (_) => false));
+        _fichas.add(datosJugador[FICHA_KEY]);
+      }
+
+      
+
+      setState(() {});
+      if(_turno == _s.getField(
+        SesionFieldsCodes.usuario
+      )){
+        _ejecutarAccion();
+      }
+    } else {
+      String type = mensajeDecodificado[TYPE_KEY];
+      String subtype = mensajeDecodificado[SUBTYPE_KEY];
+      switch (type) {
+        case TYPE_RESPUESTA:
+          switch (subtype) {
+            case SUBTYPE_DADOCASILLAS:
+              break;
+
+            case SUBTYPE_PREGUNTA:
+              break;
+          }
+          break;
+
+        case TYPE_ACCION:
+          switch (subtype) {
+            case SUBTYPE_DADOS:
+              break;
+          }
+          break;
+
+        case TYPE_CHAT:
+          
+          _chatMensajes.add(mensajeDecodificado[]);
+          _chatJugadores.add(mensajeDecodificado[JUGADOR_KEY]);
+          break;
+
+        case TYPE_FIN:
+          
+
+          break;
+
+          case TYPE_ACTUALIZACION:
+
+          switch(subtype){
+            case SUBTYPE_PAUSARPARTIDA:
+
+            break;
+
+            case SUBTYPE_CONTINUARPARTIDA:
+
+            break;
+
+            case SUBTYPE_CONTESTARPREGUNTA:
+
+            break;
+
+            case SUBTYPE_FINPARTIDA:
+
+            break;
+          }
+      }
     }
-
-    // switch(r_type){
-    //   case "Respuesta":
-    //     print("tipo: Respuesta");
-
-    //     switch (r_subtype){
-    //       case "Dado_casillas":
-    //         print("subtipo: Dado_casillas");
-    //       break;
-
-    //       case "Pregunta":
-    //         print("subtipo: Pregunta");
-    //       break;
-    //     }
-    //   break;
-
-    //   case "Accion":
-    //     print("tipo: Accion");
-
-    //     switch (r_subtype){
-    //       case "Dados":
-    //         print("subtipo: Dados");
-    //       break;
-    //     }
-    //   break;
-
-    //   case "Fin":
-    //     print("tipo: Fin");
-    //   break;
-
-    //   case "Chat":
-    //     print("tipo: Chat");
-    //   break;
-
-    //   case "Peticion":
-    //     print("tipo: Peticion");
-
-    //     switch (r_subtype){
-    //       case "Tirar_dado":
-    //         print("subtipo: Tirar_dado");
-    //       break;
-
-    //       case "Movimiento_casilla":
-    //         print("subtipo: Movimiento_casilla");
-    //       break;
-    //     }
-    //   break;
-
-    //   case "Actualizacion":
-    //     print("tipo: Actualizacion");
-
-    //     switch (r_subtype){
-    //       case "Pausar_partida":
-    //         print("subtipo: Pausar_partida");
-    //       break;
-
-    //       case "Continuar_partida":
-    //         print("subtipo: Continuar_partida");
-    //       break;
-
-    //       case "Contestar_pregunta":
-    //         print("subtipo: Contestar_pregunta");
-
-    //         if(enunciado == "noContestada"){
-
-    //         }else{
-    //           switch (r_subtype){
-    //             case "Ciencia":
-    //             break;
-
-    //             case "Arte":
-    //             break;
-
-    //             case "Deportes":
-    //             break;
-
-    //             case "Entretenimiento":
-    //             break;
-
-    //             case "Geografia":
-    //             break;
-
-    //             case "Historia":
-    //             break;
-    //           }
-    //         }
-    //       break;
-
-    //       case "Fin_partida":
-    //       break;
-    //     }
-    //   break;
-    //}
   }
-
 // bool parpadeoOON = true;
 // Future<void> prueba() async {
 //   while (true) {
@@ -2105,4 +2121,4 @@ class BotonDado extends StatelessWidget {
       ),
     );
   }
-}*/
+}

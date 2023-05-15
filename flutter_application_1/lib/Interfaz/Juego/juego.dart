@@ -13,7 +13,7 @@ import 'package:web_socket_channel/io.dart';
 
 import '../../Data_types/index.dart';
 
-/*class Juego extends StatefulWidget {
+class Juego extends StatefulWidget {
   const Juego(this._s, this._wS, this._tP, {Key? key}) : super(key: key);
   final String _wS;
   final Sesion _s;

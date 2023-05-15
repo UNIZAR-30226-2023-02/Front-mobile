@@ -34,6 +34,7 @@ class ValidarSalaResponse {
       final responseJson = json.decode(utf8.decode(r.bodyBytes));
       String parameterValue = responseJson[OK_key];
 
+        print(responseJson);
       if (parameterValue == 'True') {
         OK = true;
         ws = responseJson[WS_KEY];
