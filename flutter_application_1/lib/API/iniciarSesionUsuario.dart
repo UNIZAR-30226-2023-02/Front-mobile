@@ -33,6 +33,7 @@ class LoginUserResponse {
       if (parameterValue == 'True') {
         OK = true;
         token = responseJson[t_key];
+        print("$token");
       } else {
         OK = false;
         error_username = responseJson[eU_key];

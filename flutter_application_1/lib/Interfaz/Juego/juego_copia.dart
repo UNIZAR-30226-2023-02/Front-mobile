@@ -5,9 +5,11 @@ import 'dart:ui';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Data_types/mensaje.dart';
 
 import 'package:flutter_application_1/Interfaz/Menu/home.dart';
 import 'package:flutter/services.dart';
+import 'package:grouped_list/grouped_list.dart';
 import 'package:web_socket_channel/io.dart';
 
 import '../../API/index.dart';
@@ -22,12 +24,31 @@ class Juego extends StatefulWidget {
 }
 
 class _JuegoState extends State<Juego> {
+  Color Azul = Colors.blue;
+  Color Naranja = const Color.fromARGB(255, 240, 143, 17);
+  Color Rojo = const Color.fromARGB(255, 230, 44, 19);
+  Color Rosa = const Color.fromARGB(255, 230, 32, 187);
+  Color Verde = const Color.fromARGB(255, 53, 224, 18);
+  Color Amarillo = const Color.fromARGB(255, 219, 205, 0);
+  Color Blanco = const Color.fromARGB(255, 255, 255, 255);
+
+  Color Fallo = const Color.fromARGB(160, 240, 44, 19);
+  Color Acierto = const Color.fromARGB(160, 53, 224, 18);
+
+  late Color colorPregunta;
+  Color Gris = Colors.grey;
   _JuegoState(this._s, this._wS, this._tP);
   final String _wS, _tP;
   final Sesion _s;
   late IOWebSocketChannel _socket;
 
-  static const String MensajeDado = '';
+  static const String Mensaje_Dado = 'Mensaje_Dado',
+      Mensaje_MovimientoCasilla = 'Mensaje_MovimientoCasilla',
+      Mensaje_ContestarPregunta = 'Mensaje_ContestarPregunta',
+      Mensaje_FinPregunta = 'Mensaje_FinPregunta',
+      Mensaje_Chat = 'Mensaje_Chat',
+      Mensaje_PausarPartida = 'Mensaje_PausarPartida',
+      Mensaje_ContinuarPartida = 'Mensaje_ContinuarPartida';
 
   static const String DATOS_KEY = 'datos',
       OK_KEY = 'OK',
@@ -36,7 +57,7 @@ class _JuegoState extends State<Juego> {
       FICHA_KEY = 'ficha',
       TABLERO_KEY = 'tablero',
       POSICION_KEY = 'posicion',
-      TURNO_KEY = "0",
+      TURNO_KEY = "turno",
       TIEMPOP_KEY = 'tiempo_pregunta',
       TIEMPOC_KEY = 'tiempo_elegir_casilla',
       TYPE_KEY = 'type',
@@ -44,7 +65,7 @@ class _JuegoState extends State<Juego> {
       DADO_KEY = 'valor_dado',
       CASILLAE_KEY = 'casilla_elegida',
       CASILLASN_KEY = 'casillas_nuevas',
-      PREGUNTA_KEY = 'pregunta',
+      ENUNCIADO_KEY = 'enunciado',
       R1_KEY = 'r1',
       R2_KEY = 'r2',
       R3_KEY = 'r3',
@@ -52,7 +73,9 @@ class _JuegoState extends State<Juego> {
       RC_KEY = 'rc',
       CORRECTA_KEY = 'esCorrecta',
       QUESITO_KEY = 'quesito',
-      ERROR_KEY = 'error';
+      TEMATICA_KEY = 'tematica',
+      ERROR_KEY = 'error',
+      CHATMENSAJE_KEY = 'mensage_chat';
 
   static const String TYPE_PETICION = 'Peticion',
       TYPE_RESPUESTA = 'Respuesta',
@@ -62,7 +85,7 @@ class _JuegoState extends State<Juego> {
       TYPE_CHAT = 'Chat';
 
   static const String SUBTYPE_PAUSARPARTIDA = 'Pausar_partida',
-  SUBTYPE_FINPARTIDA = 'Fin_partida',
+      SUBTYPE_FINPREGUNTA = 'Fin_pregunta',
       SUBTYPE_CONTINUARPARTIDA = 'Continuar_partida',
       SUBTYPE_CONTESTARPREGUNTA = 'Contestar_pregunta',
       SUBTYPE_TIRARDADO = 'Tirar_dado',
@@ -70,21 +93,70 @@ class _JuegoState extends State<Juego> {
       SUBTYPE_MOVIMIENTOCASILLA = 'Movimiento_casilla',
       SUBTYPE_PREGUNTA = 'Pregunta',
       SUBTYPE_DADOS = 'Dados';
+  static const String
+      /* Acciones turno */
+      //--------------------------------
+      ACCION_CAMBIOTURNO = 'Cambio_de_turno',
+      //--------------------------------
+      /* Acciones dado */
+      //--------------------------------
+      ACCION_PULSARDADO = 'Pulsar_dado',
+      ACCION_TIRARDADO = 'Tirar_dado',
+      //--------------------------------
+      /* Acciones casillas */
+      //--------------------------------
+      ACCION_MOVERFICHA = 'Mover_casilla',
+      ACCION_MOSTRARCASILLAS = 'Mostrar_casillas',
+      //--------------------------------
+      /* Acciones pregunta */
+      //--------------------------------
+      ACCION_MOSTRARPREGUNTA = 'Mostrar_pregunta',
+      ACCION_MOSTRARRESPUESTA = 'Mostrar_respuesta',
+      ACCION_CONTESTARPREGUNTA = 'Contestar_pregunta',
+      ACCION_NOCONTESTAR = 'No_contestar',
+      ACCION_OCULTARPREGUNTA = 'Ocultar_pregunta',
+      //--------------------------------
+      /* Acciones chat */
+      //--------------------------------
+      ACCION_ABRIRCHAT = 'Abrir_chat',
+      ACCION_CERRARCHAT = 'Cerrar_chat',
+      ACCION_RECARGARCHAT = 'Recargar_chat',
+      ACCION_ENVIARCHAT = 'Enviar_chat',
+      //--------------------------------
+      /* Acciones partida */
+      //--------------------------------
+      ACCION_ABANDONARPARTIDA = 'Abandonar_partida',
+      ACCION_PAUSARPARTIDA = 'Pausar_partida',
+      ACCION_CONTINUARPARTIDA = 'Continuar_partida',
+      ACCION_FINPARTIDA = 'Fin_partida';
+  //--------------------------------
 
-  static const 
+  static const String TRUE = 'true', FALSE = 'false';
 
-  bool _preguntaActiva = false;
-  String _preguntaTema = "";
-  String _pregunta = "";
-  String _respuesta1 = "";
-  String _respuesta2 = "";
-  String _respuesta3 = "";
-  String _respuesta4 = "";
-
+  String _yo = "";
   int _jugadores = 0;
   List<String> _nombresJugadores = <String>[];
   List<String> _posiciones = <String>[];
   List<List<bool>> _quesitos = <List<bool>>[];
+
+  static const String GEOGRAFIA = 'Geografia',
+      ARTE = 'Arte',
+      HISTORIA = 'Historia',
+      ENTRETENIMIENTO = 'Entretenimiento',
+      CIENCIA = 'Ciencia',
+      DEPORTES = 'Deportes';
+
+  static const List<String> _tematicasQuesitos = [
+    GEOGRAFIA,
+    ARTE,
+    HISTORIA,
+    ENTRETENIMIENTO,
+    CIENCIA,
+    DEPORTES
+  ];
+
+  bool _mostrarChat = false;
+
   List<String> _fichas = <String>[];
   String _tiempoPregunta = "";
   String _tiempoElegirCasilla = "";
@@ -92,56 +164,542 @@ class _JuegoState extends State<Juego> {
   String _fondoTablero = "";
   String _turno = "";
   String _error = "";
+  bool _esperandoDado = false;
 
-  List<String> _chatMensajes = <String>[];
-  List<String> _chatJugadores = <String>[];
+  List<Mensaje> _chat = <Mensaje>[];
+  String _enviarChat = "";
+
+  List<String> _nuevasCasillas = [];
+  int _valorDado = 1;
+  String _casillaElegida = "";
+
+  static const String NOCONTESTADA = "noContestada";
+  bool _preguntaActiva = false;
+  String _preguntaTema = "adada";
+  bool _preguntaQuesito = false;
+  String _pregunta = "adadddaadadad";
+  String _respuesta1 = "ada";
+  String _respuesta2 = "adaa";
+  String _respuesta3 = "adada";
+  String _respuesta4 = "a";
+  String _respuestaContestada = "";
+  String _respuestaCorrecta = "";
+  String _respuestaNoContestada = "";
+  bool _esCorrecta = false, _contestada = false;
+  int _contadorPregunta = 99, _contadorPausa = 0, _contadorDado = 0;
+
+  late Color _colorR1, _colorR2, _colorR3, _colorR4;
+  Timer? _timerPregunta = null, _timerRespuesta = null, _timerPausar = null, _timerDado = null;
+
+  bool _partidaPausada = false,
+      _timerDadoDesactivado = false,
+      _mostrandoCasillas = false;
 
   bool _mensajeInicial = true;
+  bool _socketActivo = false;
+
+  final FocusNode f = FocusNode();
+  final TextEditingController c = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    print(_wS);
+    
+
     try {
       _socket = IOWebSocketChannel.connect(_wS);
+      _socketActivo = true;
     } catch (error) {
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => Menu(_s)),
-          (Route<dynamic> route) => false);
+      print(error);
+      Timer t = Timer(Duration(seconds: 1), () {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Menu(_s)),
+            (Route<dynamic> route) => false);
+      });
       return;
     }
+    if (_socketActivo) {
+      _socket.stream.listen((mensaje) {
+        _leerMensaje(mensaje);
+      }, onDone: () {
+        print("sokcet hasta luego");
+        _socket.sink.close();
 
-    _socket.stream.listen((mensaje) {
-      _leerMensaje(mensaje);
-    });
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Menu(_s)),
+            (Route<dynamic> route) => false);
+      });
+      _yo = _s.getField(SesionFieldsCodes.usuario);
+      print(_yo);
+    }
   }
 
   @override
   void dispose() {
-    _socket.sink.close();
+    print("dipose");
+    if (_socketActivo) {
+      _socket.sink.close();
+    }
+
+    f.dispose();
+    c.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
-  void _ejecutarAccion(String accion) {}
+  void _ejecutarAccion(String accion) {
+    print("Accion $accion");
+    switch (accion) {
+      /* Acciones turno */
+      //--------------------------------
+      case ACCION_CAMBIOTURNO:
+        _contadorDado = 10;
+        if (_turno == _yo) {
+          _esperandoDado = true;
+        }
+        _timerDado = Timer.periodic(const Duration(seconds: 1), (timer) {
+          if (_contadorDado > 0) {
+            _contadorDado--;
+            setState(() {});
+          } else {
+            if (_esperandoDado) {
+              _ejecutarAccion(ACCION_PULSARDADO);
+            }
+            _timerDado.cancel();
+          }
+        });
+        setState(() {});
+        break;
+
+      //--------------------------------
+
+      /* Acciones dado */
+      //--------------------------------
+      case ACCION_PULSARDADO:
+        _esperandoDado = false;
+        if (_timerDado.isActive) {
+          _timerDado.cancel();
+        }
+        _enviarMensaje(Mensaje_Dado);
+        break;
+      case ACCION_TIRARDADO:
+        setState(() {});
+        break;
+      //--------------------------------
+
+      /* Acciones casilla */
+      //--------------------------------
+      case ACCION_MOSTRARCASILLAS:
+        _mostrandoCasillas = true;
+        setState(() {});
+        break;
+
+      case ACCION_MOVERFICHA:
+        _mostrandoCasillas = false;
+
+        _posiciones[_nombresJugadores.indexOf(_turno)] = _casillaElegida;
+        setState(() {});
+        if (_turno == _yo) {
+          _enviarMensaje(Mensaje_MovimientoCasilla);
+        }
+        break;
+
+      //--------------------------------
+
+      /* Acciones chat */
+      //--------------------------------
+      case ACCION_ABRIRCHAT:
+        _mostrarChat = true;
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        });
+        setState(() {});
+        break;
+      case ACCION_CERRARCHAT:
+        _mostrarChat = false;
+        c.clear();
+        setState(() {});
+        break;
+      case ACCION_ENVIARCHAT:
+        _chat.add(Mensaje(_enviarChat, true, _yo));
+        _ejecutarAccion(ACCION_RECARGARCHAT);
+        _enviarMensaje(Mensaje_Chat);
+
+        break;
+      case ACCION_RECARGARCHAT:
+        if (_mostrarChat) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _scrollController
+                .jumpTo(_scrollController.position.maxScrollExtent);
+          });
+        }
+        setState(() {});
+
+        break;
+      //--------------------------------
+
+      /* Acciones pregunta */
+      //--------------------------------
+      case ACCION_MOSTRARPREGUNTA:
+        switch (_preguntaTema) {
+          case GEOGRAFIA:
+            colorPregunta = Azul;
+            break;
+          case HISTORIA:
+            colorPregunta = Amarillo;
+            break;
+          case CIENCIA:
+            colorPregunta = Verde;
+            break;
+          case ENTRETENIMIENTO:
+            colorPregunta = Rosa;
+            break;
+          case ARTE:
+            colorPregunta = Rojo;
+            break;
+          case DEPORTES:
+            colorPregunta = Naranja;
+            break;
+        }
+        _colorR1 = Blanco;
+        _colorR2 = Blanco;
+        _colorR3 = Blanco;
+        _colorR4 = Blanco;
+        _preguntaActiva = true;
+        _contestada = false;
+        _contadorPregunta = int.parse(_tiempoPregunta);
+        _respuestaNoContestada = "";
+        setState(() {});
+        _timerPregunta = Timer.periodic(const Duration(seconds: 1), (timer) {
+          if (_contadorPregunta > 0) {
+            _contadorPregunta--;
+            setState(() {});
+          } else {
+            _timerPregunta.cancel();
+            if (_turno == _yo && !_contestada) {
+              _ejecutarAccion(ACCION_NOCONTESTAR);
+            }
+          }
+        });
+
+        break;
+      case ACCION_MOSTRARRESPUESTA:
+        if (_timerPregunta.isActive) {
+          _timerPregunta.cancel();
+        }
+        if (_respuestaNoContestada == NOCONTESTADA) {
+          switch (_respuestaCorrecta) {
+            case '1':
+              _colorR1 = Acierto;
+              _colorR2 = Fallo;
+              _colorR3 = Fallo;
+              _colorR4 = Fallo;
+              break;
+
+            case '2':
+              _colorR1 = Fallo;
+              _colorR2 = Acierto;
+              _colorR3 = Fallo;
+              _colorR4 = Fallo;
+              break;
+
+            case '3':
+              _colorR1 = Fallo;
+              _colorR2 = Fallo;
+              _colorR3 = Acierto;
+              _colorR4 = Fallo;
+              break;
+            case '4':
+              _colorR1 = Fallo;
+              _colorR2 = Fallo;
+              _colorR3 = Fallo;
+              _colorR4 = Acierto;
+              break;
+          }
+        } else if (_esCorrecta) {
+          switch (_respuestaCorrecta) {
+            case '1':
+              _colorR1 = Acierto;
+              break;
+
+            case '2':
+              _colorR2 = Acierto;
+              break;
+
+            case '3':
+              _colorR3 = Acierto;
+              break;
+            case '4':
+              _colorR4 = Acierto;
+              break;
+          }
+
+          int index1 = _tematicasQuesitos.indexOf(_preguntaTema);
+          int index2 = _nombresJugadores.indexOf(_turno);
+          if (!_quesitos[index2][index1]) {
+            _quesitos[index2][index1] = true;
+          }
+        } else {
+          switch (_respuestaCorrecta) {
+            case '1':
+              _colorR1 = Acierto;
+              break;
+
+            case '2':
+              _colorR2 = Acierto;
+              break;
+
+            case '3':
+              _colorR3 = Acierto;
+              break;
+            case '4':
+              _colorR4 = Acierto;
+              break;
+          }
+
+          switch (_respuestaContestada) {
+            case '1':
+              _colorR1 = Fallo;
+              break;
+
+            case '2':
+              _colorR2 = Fallo;
+              break;
+
+            case '3':
+              _colorR3 = Fallo;
+              break;
+            case '4':
+              _colorR4 = Fallo;
+              break;
+          }
+        }
+
+        _contadorPregunta = 3;
+
+        _timerRespuesta = Timer.periodic(const Duration(seconds: 1), (timer) {
+          if (_contadorPregunta > 0) {
+            _contadorPregunta--;
+            setState(() {});
+          } else {
+            _timerRespuesta.cancel();
+            print("ocultarpregunta");
+            if (_yo == _turno) {
+              _enviarMensaje((Mensaje_FinPregunta));
+            }
+            _ejecutarAccion(ACCION_OCULTARPREGUNTA);
+          }
+        });
+
+        setState(() {});
+
+        break;
+
+      case ACCION_CONTESTARPREGUNTA:
+        _contestada = true;
+        _timerPregunta.cancel();
+        _esCorrecta = _respuestaContestada == _respuestaCorrecta;
+        _ejecutarAccion(ACCION_MOSTRARRESPUESTA);
+        _enviarMensaje(Mensaje_ContestarPregunta);
+        break;
+      case ACCION_NOCONTESTAR:
+        _contestada = true;
+        _esCorrecta = false;
+        _respuestaNoContestada = NOCONTESTADA;
+        _ejecutarAccion(ACCION_MOSTRARRESPUESTA);
+        _enviarMensaje(Mensaje_ContestarPregunta);
+
+        break;
+
+      case ACCION_OCULTARPREGUNTA:
+        _preguntaActiva = false;
+        setState(() {});
+        break;
+
+      //--------------------------------
+
+      /* Acciones pausar,reanudar,fin y abandonar_partida */
+      //--------------------------------
+      case ACCION_PAUSARPARTIDA:
+        _partidaPausada = true;
+        if (_timerDado.isActive) {
+          _timerDado.cancel();
+          _timerDadoDesactivado = true;
+        }
+
+        _contadorPausa = 30;
+        _timerPausar = Timer.periodic(const Duration(seconds: 1), (timer) {
+          if (_contadorPausa > 0) {
+            _contadorPausa--;
+            setState(() {});
+          } else {
+            _timerPausar.cancel();
+            if (_turno == _yo) {
+              _ejecutarAccion(ACCION_CONTINUARPARTIDA);
+            }
+          }
+        });
+        if(_turno == _yo){
+          _enviarMensaje(Mensaje_PausarPartida);
+        }
+
+        setState(() {});
+        break;
+
+      case ACCION_CONTINUARPARTIDA:
+        _partidaPausada = false;
+        if (_turno == _yo) {
+          _enviarMensaje(Mensaje_ContinuarPartida);
+        }
+        if (_timerPausar.isActive) {
+          _timerPausar.cancel();
+        }
+        if (_timerDadoDesactivado) {
+          _timerDadoDesactivado = false;
+          _timerDado = Timer.periodic(const Duration(seconds: 1), (timer) {
+            if (_contadorDado > 0) {
+              _contadorDado--;
+              setState(() {});
+            } else {
+              _timerDado.cancel();
+              _ejecutarAccion(ACCION_PULSARDADO);
+            }
+          });
+        }
+        setState(() {});
+        break;
+
+      case ACCION_FINPARTIDA:
+        print("fin");
+        _socket.sink.close();
+
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Menu(_s)),
+            (Route<dynamic> route) => false);
+        break;
+
+      case ACCION_ABANDONARPARTIDA:
+        if(_timerPausar != null){
+          _timerPausar.cancel();
+        }
+        if(_timerPregunta.isActive){
+          _timerPregunta.cancel();
+        }
+        if(_timerRespuesta.isActive){
+          _timerRespuesta.cancel();
+        }
+        if(_timerDado.isActive){
+          _timerDado.cancel();
+        }
+        _timerDado.cancel();
+        _socket.sink.close();
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Menu(_s)),
+            (Route<dynamic> route) => false);
+
+        break;
+
+      //--------------------------------
+    }
+  }
 
   void _enviarMensaje(String m) {
-    final String mensaje = jsonEncode({'message': '', 'adad': 'akdjk'});
+    print('Enviar mensaje : $m');
+    String mensaje = "";
     switch (m) {
-      case MensajeDado:
+      case Mensaje_Dado:
+        mensaje = jsonEncode({
+          OK_KEY: TRUE,
+          JUGADOR_KEY: _yo,
+          TYPE_KEY: TYPE_PETICION,
+          SUBTYPE_KEY: SUBTYPE_TIRARDADO
+        });
+        break;
+      case Mensaje_MovimientoCasilla:
+        mensaje = jsonEncode({
+          OK_KEY: TRUE,
+          JUGADOR_KEY: _yo,
+          TYPE_KEY: TYPE_PETICION,
+          SUBTYPE_KEY: SUBTYPE_MOVIMIENTOCASILLA,
+          CASILLAE_KEY: _casillaElegida
+        });
+        break;
+
+      case Mensaje_ContestarPregunta:
+        mensaje = jsonEncode({
+          OK_KEY: TRUE,
+          JUGADOR_KEY: _yo,
+          TYPE_KEY: TYPE_ACTUALIZACION,
+          SUBTYPE_KEY: SUBTYPE_CONTESTARPREGUNTA,
+          R1_KEY: _respuestaContestada,
+          RC_KEY: _respuestaCorrecta,
+          ENUNCIADO_KEY: _respuestaNoContestada,
+          QUESITO_KEY: _preguntaQuesito ? TRUE : FALSE,
+          CORRECTA_KEY: _esCorrecta ? TRUE : FALSE,
+          TEMATICA_KEY: _preguntaTema
+        });
+
+        break;
+
+      case Mensaje_FinPregunta:
+        mensaje = jsonEncode({
+          OK_KEY: TRUE,
+          JUGADOR_KEY: _yo,
+          TYPE_KEY: TYPE_ACTUALIZACION,
+          SUBTYPE_KEY: SUBTYPE_FINPREGUNTA,
+          QUESITO_KEY: _preguntaQuesito ? TRUE : FALSE,
+          CORRECTA_KEY: _esCorrecta ? TRUE : FALSE,
+          TEMATICA_KEY: _preguntaTema
+        });
+        break;
+
+      case Mensaje_Chat:
+        mensaje = jsonEncode({
+          OK_KEY: TRUE,
+          JUGADOR_KEY: _yo,
+          TYPE_KEY: TYPE_CHAT,
+          CHATMENSAJE_KEY: _enviarChat,
+        });
+        break;
+
+      case Mensaje_PausarPartida:
+        mensaje = jsonEncode({
+          OK_KEY: TRUE,
+          JUGADOR_KEY: _yo,
+          TYPE_KEY: TYPE_ACTUALIZACION,
+          SUBTYPE_KEY: SUBTYPE_PAUSARPARTIDA,
+        });
+        break;
+
+      case Mensaje_ContinuarPartida:
+        mensaje = jsonEncode({
+          OK_KEY: TRUE,
+          JUGADOR_KEY: _yo,
+          TYPE_KEY: TYPE_ACTUALIZACION,
+          SUBTYPE_KEY: SUBTYPE_CONTINUARPARTIDA,
+        });
         break;
     }
+    print("Mensaje enviado $mensaje");
     _socket.sink.add(mensaje);
   }
 
   void _leerMensaje(String mensaje) {
     Map<String, dynamic> mensajeDecodificado = json.decode(mensaje);
+    print(mensajeDecodificado);
     if (_mensajeInicial) {
       _mensajeInicial = false;
-      Map<String, dynamic> datos = mensajeDecodificado[DATOS_KEY];
-      _tiempoPregunta = datos[TIEMPOP_KEY];
-      _tiempoElegirCasilla = datos[TIEMPOC_KEY];
-      _error = datos[ERROR_KEY];
-      for (var datosJugador in datos[JUGADOR_KEY]) {
+      _tiempoPregunta = mensajeDecodificado[TIEMPOP_KEY];
+      _tiempoElegirCasilla = mensajeDecodificado[TIEMPOC_KEY];
+      _error = mensajeDecodificado[ERROR_KEY];
+      for (var datosJugador in mensajeDecodificado[JUGADORES_KEY]) {
         _jugadores++;
         if (datosJugador[JUGADOR_KEY] ==
             _s.getField(SesionFieldsCodes.usuario)) {
@@ -156,24 +714,51 @@ class _JuegoState extends State<Juego> {
         _fichas.add(datosJugador[FICHA_KEY]);
       }
 
-      
-
+      _ejecutarAccion(ACCION_CAMBIOTURNO);
       setState(() {});
-      if(_turno == _s.getField(
-        SesionFieldsCodes.usuario
-      )){
-        _ejecutarAccion();
-      }
     } else {
       String type = mensajeDecodificado[TYPE_KEY];
-      String subtype = mensajeDecodificado[SUBTYPE_KEY];
+      String subtype = "";
+      if (type != TYPE_CHAT) {
+        subtype = mensajeDecodificado[SUBTYPE_KEY];
+      }
       switch (type) {
+        case TYPE_PETICION:
+          switch (subtype) {
+            case SUBTYPE_MOVIMIENTOCASILLA:
+              _casillaElegida = mensajeDecodificado[CASILLAE_KEY].toString();
+              _ejecutarAccion(ACCION_MOVERFICHA);
+              break;
+            case SUBTYPE_TIRARDADO:
+              if (_timerDado!= null && _timerDado!.isActive) {
+                _timerDado!.cancel();
+              }
+
+              break;
+          }
+          break;
         case TYPE_RESPUESTA:
           switch (subtype) {
             case SUBTYPE_DADOCASILLAS:
+              _valorDado = int.parse(mensajeDecodificado[DADO_KEY]);
+              String l = mensajeDecodificado[CASILLASN_KEY];
+              _nuevasCasillas = l.split(",");
+              _ejecutarAccion(ACCION_MOSTRARCASILLAS);
               break;
 
             case SUBTYPE_PREGUNTA:
+              if (_turno != _yo) {
+                _casillaElegida = mensajeDecodificado[CASILLAE_KEY];
+              }
+              _pregunta = mensajeDecodificado[ENUNCIADO_KEY];
+              _respuesta1 = mensajeDecodificado[R1_KEY];
+              _respuesta2 = mensajeDecodificado[R2_KEY];
+              _respuesta3 = mensajeDecodificado[R3_KEY];
+              _respuesta4 = mensajeDecodificado[R4_KEY];
+              _respuestaCorrecta = mensajeDecodificado[RC_KEY].toString();
+              _preguntaTema = mensajeDecodificado[TEMATICA_KEY];
+              _preguntaQuesito = mensajeDecodificado[QUESITO_KEY] == TRUE;
+              _ejecutarAccion(ACCION_MOSTRARPREGUNTA);
               break;
           }
           break;
@@ -181,71 +766,63 @@ class _JuegoState extends State<Juego> {
         case TYPE_ACCION:
           switch (subtype) {
             case SUBTYPE_DADOS:
+              _turno = mensajeDecodificado[JUGADOR_KEY];
+              _ejecutarAccion(ACCION_CAMBIOTURNO);
               break;
           }
           break;
 
         case TYPE_CHAT:
-          
-          _chatMensajes.add(mensajeDecodificado[]);
-          _chatJugadores.add(mensajeDecodificado[JUGADOR_KEY]);
+          print("chat");
+          _chat.add(Mensaje(mensajeDecodificado[CHATMENSAJE_KEY], false,
+              mensajeDecodificado[JUGADOR_KEY]));
+          print("chat_leido");
+          _ejecutarAccion(ACCION_RECARGARCHAT);
           break;
 
         case TYPE_FIN:
-          
-
+          _ejecutarAccion(ACCION_FINPARTIDA);
           break;
 
-          case TYPE_ACTUALIZACION:
-
-          switch(subtype){
+        case TYPE_ACTUALIZACION:
+          switch (subtype) {
             case SUBTYPE_PAUSARPARTIDA:
-
-            break;
+              _ejecutarAccion(ACCION_PAUSARPARTIDA);
+              break;
 
             case SUBTYPE_CONTINUARPARTIDA:
-
-            break;
+              _ejecutarAccion(ACCION_CONTINUARPARTIDA);
+              break;
 
             case SUBTYPE_CONTESTARPREGUNTA:
+              if (_turno != _yo) {
+                _respuestaContestada = mensajeDecodificado[R1_KEY].toString();
+                _respuestaNoContestada =
+                    mensajeDecodificado[ENUNCIADO_KEY].toString();
+                _esCorrecta = mensajeDecodificado[CORRECTA_KEY] == TRUE;
+                _ejecutarAccion(ACCION_MOSTRARRESPUESTA);
+              }
+              break;
 
-            break;
-
-            case SUBTYPE_FINPARTIDA:
-
-            break;
+            case SUBTYPE_FINPREGUNTA:
+              if (_timerRespuesta != null && _timerRespuesta!.isActive) {
+                _timerRespuesta!.cancel();
+                print("ocultarpregunta");
+                _ejecutarAccion(ACCION_OCULTARPREGUNTA);
+              }
+              break;
           }
       }
     }
   }
-// bool parpadeoOON = true;
-// Future<void> prueba() async {
-//   while (true) {
-//     // cambiar el valor de parpadeoOON a true para que el botón sea visible
-//     setState(() {
-//       parpadeoOON = true;
-//     });
-
-//     // esperar 500 milisegundos
-//     await Future.delayed(Duration(milliseconds: 500));
-
-//     // cambiar el valor de parpadeoOON a false para que el botón sea invisible
-//     setState(() {
-//       parpadeoOON = false;
-//     });
-
-//     // esperar 500 milisegundos
-//     await Future.delayed(Duration(milliseconds: 500));
-//   }
-// }
-
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FIN WEB SOCKET <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
 
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     final Size screenSize = MediaQuery.of(context).size;
+    print("Turno de : $_turno");
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         width: screenSize.width,
         height: screenSize.height,
@@ -255,1820 +832,603 @@ class _JuegoState extends State<Juego> {
             fit: BoxFit.fill,
           ),
         ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: screenSize.height / 2 -
-                  50, // ajustar la posición vertical del hexágono
-              left: screenSize.width / 2 -
-                  50, // ajustar la posición horizontal del hexágono
-              child: Stack(
-                children: [
-                  Transform.translate(
-                    //Contador
-                    offset: const Offset(-150, -128),
-                    child: Text(
-                      '$_countdownTime',
-                      style: TextStyle(fontSize: 48),
-                    ),
-                  ),
-
-                  Visibility(
-                    visible: jVisibles[0],
-                    child: Transform.translate(
-                      //Texto J0
-                      offset: const Offset(-262, -128),
-                      child: Text(
-                        nombresJugadores[0],
-                        style: const TextStyle(
-                            fontFamily: "Baskerville",
-                            fontSize: 12.0,
-                            //color: Color(0xFFc9c154),
-                            color: Color.fromARGB(255, 255, 255, 255),
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.none),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[0],
-                    child: Transform.translate(
-                      //Imagen J0
-                      offset: const Offset(-265, -110),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        // decoration: const BoxDecoration(
-                        //   image: DecorationImage(
-                        //     image: AssetImage(img),
-                        //     fit: BoxFit.fill,
-                        //   ),
-                        // ),
-                        child: Image(
-                          image: AssetImage(imagenesJugadores[0]),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[0],
-                    child: Transform.translate(
-                      //Putos J0
-                      offset: const Offset(-205, -60),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/trivial_blanco.png'),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  Visibility(
-                    visible: jVisibles[1],
-                    child: Transform.translate(
-                      //Texto J1
-                      offset: const Offset(-262, -8),
-                      child: Text(
-                        nombresJugadores[1],
-                        style: const TextStyle(
-                            fontFamily: "Baskerville",
-                            fontSize: 12.0,
-                            //color: Color(0xFFc9c154),
-                            color: Color.fromARGB(255, 255, 255, 255),
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.none),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[1],
-                    child: Transform.translate(
-                      //Imagen J1
-                      offset: const Offset(-265, 10),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(
-                          image: AssetImage(imagenesJugadores[1]),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[1],
-                    child: Transform.translate(
-                      //Putos J1
-                      offset: const Offset(-205, 60),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/trivial_blanco.png'),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  Visibility(
-                    visible: jVisibles[2],
-                    child: Transform.translate(
-                      //Texto J2
-                      offset: const Offset(-262, 112),
-                      child: Text(
-                        nombresJugadores[2],
-                        style: const TextStyle(
-                            fontFamily: "Baskerville",
-                            fontSize: 12.0,
-                            //color: Color(0xFFc9c154),
-                            color: Color.fromARGB(255, 255, 255, 255),
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.none),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[2],
-                    child: Transform.translate(
-                      //Imagen J2
-                      offset: const Offset(-265, 130),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(
-                          image: AssetImage(imagenesJugadores[2]),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[2],
-                    child: Transform.translate(
-                      //Putos J2
-                      offset: const Offset(-205, 180),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/trivial_blanco.png'),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  Visibility(
-                    visible: jVisibles[3],
-                    child: Transform.translate(
-                      //Texto J3
-                      offset: const Offset(293, -128),
-                      child: Text(
-                        nombresJugadores[3],
-                        style: const TextStyle(
-                            fontFamily: "Baskerville",
-                            fontSize: 12.0,
-                            //color: Color(0xFFc9c154),
-                            color: Color.fromARGB(255, 255, 255, 255),
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.none),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[3],
-                    child: Transform.translate(
-                      //Imagen J3
-                      offset: const Offset(290, -110),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(
-                          image: AssetImage(imagenesJugadores[3]),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[3],
-                    child: Transform.translate(
-                      //Putos J3
-                      offset: const Offset(260, -60),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/trivial_blanco.png'),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  Visibility(
-                    visible: jVisibles[4],
-                    child: Transform.translate(
-                      //Texto J4
-                      offset: const Offset(293, -8),
-                      child: Text(
-                        nombresJugadores[4],
-                        style: const TextStyle(
-                            fontFamily: "Baskerville",
-                            fontSize: 12.0,
-                            //color: Color(0xFFc9c154),
-                            color: Color.fromARGB(255, 255, 255, 255),
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.none),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[4],
-                    child: Transform.translate(
-                      //Imagen J4
-                      offset: const Offset(290, 10),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(
-                          image: AssetImage(imagenesJugadores[4]),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[4],
-                    child: Transform.translate(
-                      //Putos J4
-                      offset: const Offset(260, 60),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/trivial_blanco.png'),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  Visibility(
-                    visible: jVisibles[5],
-                    child: Transform.translate(
-                      //Texto J5
-                      offset: const Offset(293, 112),
-                      child: Text(
-                        nombresJugadores[5],
-                        style: const TextStyle(
-                            fontFamily: "Baskerville",
-                            fontSize: 12.0,
-                            //color: Color(0xFFc9c154),
-                            color: Color.fromARGB(255, 255, 255, 255),
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.none),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[5],
-                    child: Transform.translate(
-                      //Imagen J5
-                      offset: const Offset(290, 130),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        child: Image(
-                          image: AssetImage(imagenesJugadores[5]),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[5],
-                    child: Transform.translate(
-                      //Putos J5
-                      offset: const Offset(260, 180),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/trivial_blanco.png'),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  //c1 boton
-
-                  //C72
-                  Transform.translate(
-                    offset: const Offset(0, 0),
-                    child: HexagonButton(
-                      color: casillaCambia[72] == true
-                          ? colorVariado[72]
-                          : colorCasillas[72],
-                      onPressed: () {
-                        //_cambiardecolor2();
-                        setState(() {
-                          _countdownTime = 10;
-                        });
-                        startTimer();
-                        pulsar(72);
-                        print("pulsado72");
-                      },
-                    ),
-                  ),
-                  //C51
-                  Transform.rotate(
-                    angle: -27 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(19, 66),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[51],
-                        onPressed: () {
-                          //_cambiarColor2();
-                          print("pulsado51");
-                        },
-                      ),
-                    ),
-                  ),
-
-                  //C50
-                  Transform.rotate(
-                    angle: -27 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(19, 87),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[50],
-                        onPressed: () {
-                          //_cambiarColor2();
-                          print("pulsado52");
-                        },
-                      ),
-                    ),
-                  ),
-                  //C49
-                  Transform.rotate(
-                    angle: -27 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(19, 108),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[49],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C48
-                  Transform.rotate(
-                    angle: -27 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(19, 129),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[48],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C47
-                  Transform.rotate(
-                    angle: -27 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(19, 150),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[47],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C46
-                  Transform.rotate(
-                    angle: -154 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(18, -17),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[46],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C45
-                  Transform.rotate(
-                    angle: -154 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(18, -37),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[45],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C44
-                  Transform.rotate(
-                    angle: -154 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(18, -57),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[44],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C43
-                  Transform.rotate(
-                    angle: -154 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(18, -77),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[43],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C42
-                  Transform.rotate(
-                    angle: -154 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(18, -98),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[42],
-                        onPressed: () {
-                          //_cambiarColor2();
-                          print("pulsado42");
-                        },
-                      ),
-                    ),
-                  ),
-
-                  //C6
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-150, 75),
-                      child: RectangleButton(
-                        color: casillaCambia[6] == true
-                            ? colorVariado[6]
-                            : colorCasillas[6],
-                        onPressed: () {
-                          //_cambiarColor2();
-                          pulsar(6);
-                          print("pulsado6");
-                        },
-                      ),
-                    ),
-                  ),
-                  //C5
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-150, 55),
-                      child: RectangleButton(
-                        color: casillaCambia[5] == true
-                            ? colorVariado[5]
-                            : colorCasillas[5],
-                        onPressed: () {
-                          //_cambiarColor2();
-                          pulsar(5);
-                          print("pulsado5");
-                        },
-                      ),
-                    ),
-                  ),
-                  //C4
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-150, 35),
-                      child: RectangleButton(
-                        color: casillaCambia[4] == true
-                            ? colorVariado[4]
-                            : colorCasillas[4],
-                        onPressed: () {
-                          //_cambiarColor2();
-                          pulsar(4);
-                          print("pulsado4");
-                        },
-                      ),
-                    ),
-                  ),
-                  //C3
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-150, 15),
-                      child: RectangleButton(
-                        color: casillaCambia[3] == true
-                            ? colorVariado[3]
-                            : colorCasillas[3],
-                        onPressed: () {
-                          //_cambiarColor2();
-                          pulsar(3);
-                          print("pulsado3");
-                        },
-                      ),
-                    ),
-                  ),
-                  //C2
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-150, -5),
-                      child: RectangleButton(
-                        color: casillaCambia[2] == true
-                            ? colorVariado[2]
-                            : colorCasillas[2],
-                        onPressed: () {
-                          //_cambiarColor2();
-                          pulsar(2);
-                          print("pulsado2");
-                        },
-                      ),
-                    ),
-                  ),
-                  //C1
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-150, -25), //-150,-25
-                      child: IgnorePointer(
-                        child: RectangleButton(
-                          color: casillaCambia[1] == true
-                              ? colorVariado[1]
-                              : colorCasillas[1],
-                          onPressed: () {
-                            //_cambiarColor2();
-                            pulsar(1);
-                            print("pulsado1");
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  //     child: ElevatedButton(
-                  //       onPressed: () {
-                  //         print('1');
-                  //       },
-                  //       child: null,
-                  //       style: ButtonStyle(
-                  //         minimumSize: MaterialStateProperty.all<Size>(Size(40, 20)),
-                  //         backgroundColor: MaterialStateProperty.all<Color>(casillaCambia[1] == true ? colorVariado[1] : colorCasillas[1]),
-                  //       ),
-                  //                 ),
-                  //   ),
-                  // ),
-
-                  //C8
-                  Transform.rotate(
-                    angle: -148 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-142, -23),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[8],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C9
-                  Transform.rotate(
-                    angle: -148 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-142, -5),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[9],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C10
-                  Transform.rotate(
-                    angle: -148 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-142, 15),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[10],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C11
-                  Transform.rotate(
-                    angle: -148 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-142, 35),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[11],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C12
-                  Transform.rotate(
-                    angle: -148 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-142, 55),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[12],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C13
-                  Transform.rotate(
-                    angle: -148 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-142, 75),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[13],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-
-                  //C7
-                  Transform.rotate(
-                    angle: -207 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(37, -158),
-                      child: Esquina2Button(
-                        color: ok == true ? Colors.grey : colorCasillas[7],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C56
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(13, 70),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[56],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C55
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(13, 91),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[55],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C54
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(13, 111),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[54],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C53
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(13, 131),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[53],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C52
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(13, 151),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[52],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C71
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(13, -20),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[71],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C70
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(13, -40),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[70],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C69
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(13, -60),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[69],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C68
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(13, -80),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[68],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C67
-                  Transform.rotate(
-                    angle: -90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(13, -100),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[67],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-
-                  //C41
-                  Transform.rotate(
-                    angle: 330 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-148, 88),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[41],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C40
-                  Transform.rotate(
-                    angle: 330 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-148, 68),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[40],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C39
-                  Transform.rotate(
-                    angle: 330 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-148, 48),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[39],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C38
-                  Transform.rotate(
-                    angle: 330 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-148, 28),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[38],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C37
-                  Transform.rotate(
-                    angle: 330 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-148, 8),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[37],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C36
-                  Transform.rotate(
-                    angle: 330 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-148, -13),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[36],
-                        onPressed: () {
-                          //_cambiarColor2();
-                          print("pulsado36");
-                        },
-                      ),
-                    ),
-                  ),
-                  //C0
-                  // Transform.rotate(
-                  //   angle: 207 * pi / 180,
-                  //   child: Transform.translate(
-                  //     offset: const Offset(30, -178),
-                  //     child: Esquina3Button(
-                  //       color: casillaCambia[0] == true ? colorVariado[0] : colorCasillas[0],
-                  //       onPressed: () {
-                  //         //_cambiarColor2();
-                  //         pulsar(0);
-                  //       },
-                  //     ),
-                  //   ),
-                  // ),
-
-                  //C66
-                  Transform.rotate(
-                    angle: -207 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(19, 66),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[66],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C65
-                  Transform.rotate(
-                    angle: -207 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(19, 86),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[65],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C64
-                  Transform.rotate(
-                    angle: -207 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(19, 106),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[64],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C63
-                  Transform.rotate(
-                    angle: -207 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(19, 126),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[63],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C62
-                  Transform.rotate(
-                    angle: -207 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(19, 146),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[62],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-
-                  //C29
-                  Transform.rotate(
-                    angle: -329 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-142, -23),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[29],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C30
-                  Transform.rotate(
-                    angle: -329 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-142, -5),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[30],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C31
-                  Transform.rotate(
-                    angle: -329 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-142, 15),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[31],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C32
-                  Transform.rotate(
-                    angle: -329 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-142, 35),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[32],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C33
-                  Transform.rotate(
-                    angle: -329 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-142, 55),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[33],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C34
-                  Transform.rotate(
-                    angle: -329 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-142, 75),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[34],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-
-                  //C61
-                  Transform.rotate(
-                    angle: -331 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(18, -17),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[61],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C60
-                  Transform.rotate(
-                    angle: -331 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(18, -37),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[60],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C59
-                  Transform.rotate(
-                    angle: -331 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(18, -57),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[59],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C58
-                  Transform.rotate(
-                    angle: -331 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(18, -77),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[58],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C57
-                  Transform.rotate(
-                    angle: -331 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(18, -98),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[57],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-
-                  //C27
-                  Transform.rotate(
-                    angle: 90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-140, 73),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[27],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C26
-                  Transform.rotate(
-                    angle: 90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-140, 53),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[26],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C25
-                  Transform.rotate(
-                    angle: 90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-140, 33),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[25],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C24
-                  Transform.rotate(
-                    angle: 90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-140, 13),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[24],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C23
-                  Transform.rotate(
-                    angle: 90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-140, -8),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[23],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C22
-                  Transform.rotate(
-                    angle: 90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-140, -29),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[22],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-
-                  //C20
-                  Transform.rotate(
-                    angle: 150 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-145, 75),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[20],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C19
-                  Transform.rotate(
-                    angle: 150 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-145, 57),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[19],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C18
-                  Transform.rotate(
-                    angle: 150 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-145, 38),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[18],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C17
-                  Transform.rotate(
-                    angle: 150 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-145, 18),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[17],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C16
-                  Transform.rotate(
-                    angle: 150 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-145, -2),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[16],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C15
-                  Transform.rotate(
-                    angle: 150 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-145, -21),
-                      child: RectangleButton(
-                        color: ok == true ? Colors.grey : colorCasillas[15],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-
-                  //C35
-                  Transform.rotate(
-                    angle: 270 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(0, -184),
-                      child: EsquinaButton(
-                        color: ok == true ? Colors.grey : colorCasillas[35],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C28
-                  Transform.rotate(
-                    angle: -27 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-16, -164),
-                      child: Esquina2Button(
-                        color: ok == true ? Colors.grey : colorCasillas[28],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C21
-                  Transform.rotate(
-                    angle: 30 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-8, -146),
-                      child: Esquina3Button(
-                        color: ok == true ? Colors.grey : colorCasillas[21],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-                  //C14
-                  Transform.rotate(
-                    angle: -270 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(26, -135),
-                      child: EsquinaButton(
-                        color: ok == true ? Colors.grey : colorCasillas[14],
-                        onPressed: () {
-                          //_cambiarColor2();
-                        },
-                      ),
-                    ),
-                  ),
-
-                  //TrianguloRojo
-                  Transform.rotate(
-                    angle: 90 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(20, 137),
-                      child: TriangleWidget(color: Rojo),
-                    ),
-                  ),
-
-                  //TrianguloAzul
-                  Transform.rotate(
-                    angle: 152 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-5, 132),
-                      child: TriangleWidget(color: Azul),
-                    ),
-                  ),
-
-                  //TrianguloNaranja
-                  Transform.rotate(
-                    angle: 207 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-37, 150),
-                      child: TriangleWidget(color: Naranja),
-                    ),
-                  ),
-
-                  //TrianguloAmarillo
-                  Transform.rotate(
-                    angle: 270 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(-22, 177),
-                      child: TriangleWidget(color: Amarillo),
-                    ),
-                  ),
-
-                  //TrianguloRosa
-                  Transform.rotate(
-                    angle: 332 * pi / 180,
-                    child: Transform.translate(
-                      offset: const Offset(10, 185),
-                      child: TriangleWidget(color: Rosa),
-                    ),
-                  ),
-
-                  //TrianguloVerde
-                  // Transform.rotate(
-                  //   angle: -330 * pi / 180,
-                  //   child: Transform.translate(
-                  //     offset: const Offset(33, 170),
-                  //     child: TriangleWidget(color: Verde),
-                  //   ),
-                  // ),
-
-                  //ImagenDado
-                  Transform.translate(
-                    offset: const Offset(190, -120),
-                    child: Image.asset(
-                      'assets/cara$_diceNumber.png',
-                      height: 50,
-                    ),
-                  ),
-                  //BotonDado
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: 180,
-                        left: 168), // ajusta los valores según tus necesidades
-                    child: BotonDado(
-                      'Tirar',
-                      onPressed: _rollDice,
-                      turno: turno,
-                    ),
-                  ),
-                  //BotonSalir
-                  // Transform.translate(
-                  //   offset: const Offset(-240, 0),
-                  //   child: Padding(
-                  //     padding: EdgeInsets.only(top: 180, left: 80), // ajusta los valores según tus necesidades
-                  //     child: BotonHome(
-                  //       "Salir",
-                  //       onPressed: () {
-                  //         Navigator.push(
-                  //           context,
-                  //           MaterialPageRoute(builder: (context) => const Menu()),
-                  //         );
-                  //       },
-                  //     ),
-                  //   ),
-                  // ),
-
-                  //BOTON TEMPORAL REINICIO TURNO
-                  // Padding(
-                  //   padding: EdgeInsets.only(top: 190, left: 300), // ajusta los valores según tus necesidades
-                  //   child: ElevatedButton(
-                  //     onPressed: _resetTurno,
-                  //     child: Text('Reiniciar turno'),
-                  //   ),
-                  // ),
-
-                  //BOTON CHAT
-                  Transform.translate(
-                    offset: const Offset(375, -125),
-                    child: Container(
-                      width: 80,
-                      height: 50,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/Chat.png'),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  //FICHAS---------------------------------------------------------------------------------------------
-                  Visibility(
-                    visible: jVisibles[0],
-                    child: Transform.translate(
-                      //Ficha J0
-                      offset: const Offset(0, 0),
-                      child: Container(
-                        width: 15,
-                        height: 15,
-                        child: Image.network(
-                          fichasJugadores[0],
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[1],
-                    child: Transform.translate(
-                      //Ficha J1
-                      offset: const Offset(10, 10),
-                      child: Container(
-                        width: 15,
-                        height: 15,
-                        child: Image.network(
-                          fichasJugadores[1],
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[2],
-                    child: Transform.translate(
-                      //Ficha J2
-                      offset: const Offset(20, 20),
-                      child: Container(
-                        width: 15,
-                        height: 15,
-                        child: Image.network(
-                          fichasJugadores[2],
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[3],
-                    child: Transform.translate(
-                      //Ficha J3
-                      offset: const Offset(30, 30),
-                      child: Container(
-                        width: 15,
-                        height: 15,
-                        child: Image.network(
-                          fichasJugadores[3],
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[4],
-                    child: Transform.translate(
-                      //Ficha J4
-                      offset: const Offset(40, 40),
-                      child: Container(
-                        width: 15,
-                        height: 15,
-                        child: Image.network(
-                          fichasJugadores[4],
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: jVisibles[5],
-                    child: Transform.translate(
-                      //Ficha J5
-                      offset: const Offset(50, 50),
-                      child: Container(
-                        width: 15,
-                        height: 15,
-                        child: Image.network(
-                          fichasJugadores[5],
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            //c1 boton
-            // Transform.rotate(
-
-            //   angle: -90 * pi / 180,
-            //   child: Transform.translate(
-            //     offset: const Offset(-307, 312), //-150,-25
-            //     child: ElevatedButton(
-            //       onPressed: () {
-            //         print('1');
-            //       },
-            //       child: null,
-            //       style: ButtonStyle(
-            //         minimumSize: MaterialStateProperty.all<Size>(Size(38, 20)),
-            //         backgroundColor: MaterialStateProperty.all<Color>(casillaCambia[1] == true ? colorVariado[1] : colorCasillas[1]),
-            //       ),
-            //                 ),
-            //   ),
-            // ),
-            Transform.rotate(
-              angle: -90 * pi / 180,
-              child: Transform.translate(
-                offset: const Offset(-318, 316), //-150,-25
-                child: Ink(
-                  width: 39,
-                  height: 22,
-                  decoration: ShapeDecoration(
-                    color: casillaCambia[1] == true
-                        ? colorVariado[1]
-                        : colorCasillas[1],
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(5),
-                        bottomLeft: Radius.circular(5),
-                      ),
-                      side: BorderSide(color: Colors.black, width: 1),
-                    ),
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      print('1');
-                    },
-                    child: null,
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent,
-                      backgroundColor: Colors.transparent,
-                      padding: EdgeInsets.zero,
-                      elevation: 0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            //PREGUNTAS-----------------------------------------------------------------------------------------
-            Visibility(
-              visible: preguntaActiva,
-              child: Center(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                  child: Container(
-                    width: screenSize.width,
-                    height: screenSize.height,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(68, 0, 0, 0),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: Container(
-                        width: 400,
-                        height: 250,
-                        decoration: BoxDecoration(
-                          color: colorPregunta,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(
-                                  top: 20.0, left: 160, bottom: 210),
-                              child: Text(
-                                'HISTORIA',
-                                style: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                  fontFamily: "Baskerville",
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.topRight,
-                                child: Container(
-                                  width: 70,
-                                  height: 70,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      width: 4,
-                                      color: colorPregunta,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return _mensajeInicial
+                ? const SizedBox.shrink()
+                : Stack(
+                    children: [
+                      _preguntaActiva
+                          ? Stack(
+                              children: [
+                                Center(
+                                  child: Container(
+                                    width: screenSize.width,
+                                    height: screenSize.height,
+                                    decoration: BoxDecoration(
+                                      color: Color.fromARGB(68, 0, 0, 0),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Center(
+                                      child: Container(
+                                        width: 400,
+                                        height: 280,
+                                        decoration: BoxDecoration(
+                                          color: colorPregunta,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 20.0,
+                                                  left: 160,
+                                                  bottom: 240),
+                                              child: Text(
+                                                _preguntaTema,
+                                                style: const TextStyle(
+                                                  fontSize: 15.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color.fromARGB(
+                                                      255, 255, 255, 255),
+                                                  fontFamily: "Baskerville",
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Align(
+                                                alignment: Alignment.topRight,
+                                                child: Container(
+                                                  width: 60,
+                                                  height: 50,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    border: Border.all(
+                                                      width: 4,
+                                                      color: colorPregunta,
+                                                    ),
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                      '$_contadorPregunta',
+                                                      style: const TextStyle(
+                                                          fontSize: 24),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                  child: Center(
+                                ),
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 205, bottom: 140),
                                     child: Text(
-                                      '$_countdownTime',
-                                      style: const TextStyle(fontSize: 48),
+                                      _pregunta,
+                                      style: const TextStyle(
+                                        fontSize: 10.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                        fontFamily: "Baskerville",
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 150, left: 205),
+                                  child: Container(
+                                    width: 390,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color: _colorR1,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (!_contestada) {
+                                          _respuestaContestada = '1';
+                                          _ejecutarAccion(
+                                              ACCION_CONTESTARPREGUNTA);
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 10, left: 10),
+                                        child: Text(
+                                          _respuesta1,
+                                          style: const TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontFamily: "Baskerville",
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 190, left: 205),
+                                  child: Container(
+                                    width: 390,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color: _colorR2,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (!_contestada) {
+                                          _respuestaContestada = '2';
+                                          _ejecutarAccion(
+                                              ACCION_CONTESTARPREGUNTA);
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 10, left: 10),
+                                        child: Text(
+                                          _respuesta2,
+                                          style: const TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontFamily: "Baskerville",
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 230, left: 205),
+                                  child: Container(
+                                    width: 390,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color: _colorR3,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (!_contestada) {
+                                          _respuestaContestada = '3';
+                                          _ejecutarAccion(
+                                              ACCION_CONTESTARPREGUNTA);
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 10, left: 10),
+                                        child: Text(
+                                          _respuesta3,
+                                          style: const TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontFamily: "Baskerville",
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 270, left: 205),
+                                  child: Container(
+                                    width: 390,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color: _colorR4,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (!_contestada) {
+                                          _respuestaContestada = '4';
+                                          _ejecutarAccion(
+                                              ACCION_CONTESTARPREGUNTA);
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 10, left: 10),
+                                        child: Text(
+                                          _respuesta4,
+                                          style: const TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontFamily: "Baskerville",
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox.shrink(),
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 60, bottom: 40),
+                          child: Container(
+                            child: Text(
+                              'Turno de $_turno',
+                              style: const TextStyle(fontSize: 24),
+                            ),
+                          ),
+                        ),
+                      ),
+                      _mostrandoCasillas
+                          ? Container(
+                              width: constraints.maxWidth,
+                              height: constraints.maxHeight,
+                              decoration:
+                                  const BoxDecoration(color: Color(0x60444444)),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 0),
+                                  child: Container(
+                                    width: constraints.maxWidth / 2.0,
+                                    height: constraints.maxHeight / 1.2,
+                                    decoration: BoxDecoration(
+                                        color: Colors.black12,
+                                        border:
+                                            Border.all(color: Colors.black)),
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          child: ListView.builder(
+                                            itemCount: _nuevasCasillas.length,
+                                            itemBuilder: (context, index) =>
+                                                Align(
+                                              child: Card(
+                                                elevation: 8,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(12),
+                                                  child: TextButton(
+                                                      onPressed: () {
+                                                        if (_turno == _yo) {
+                                                          _casillaElegida =
+                                                              _nuevasCasillas[
+                                                                  index];
+                                                          _ejecutarAccion(
+                                                              ACCION_MOVERFICHA);
+                                                        }
+                                                      },
+                                                      child: Text(
+                                                        _nuevasCasillas[index],
+                                                      )),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                               ),
+                            )
+                          : const SizedBox.shrink(),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Transform.translate(
+                          offset: const Offset(375, -125),
+                          child: GestureDetector(
+                              child: Container(
+                                width: 80,
+                                height: 50,
+                                decoration: const BoxDecoration(
+                                    color:
+                                        Colors.black // image: DecorationImage(
+                                    //   image: AssetImage('assets/Chat.png'),
+                                    //   fit: BoxFit.fill,
+                                    // ),
+                                    ),
+                              ),
+                              onTap: () {
+                                _ejecutarAccion(ACCION_ABRIRCHAT);
+                              }),
+                        ),
+                      ),
+                      _partidaPausada && _turno == _yo ? Align(
+                        alignment: Alignment.center,
+                        child: Transform.translate(
+                          offset: const Offset(375, 125),
+                          child: GestureDetector(
+                              child: Container(
+                                width: 80,
+                                height: 50,
+                                decoration: const BoxDecoration(
+                                    color:
+                                        Colors.black // image: DecorationImage(
+                                    //   image: AssetImage('assets/Chat.png'),
+                                    //   fit: BoxFit.fill,
+                                    // ),
+                                    ),
+                              ),
+                              onTap: () {
+                               _ejecutarAccion(ACCION_PAUSARPARTIDA);
+                              }),
+                        ),
+                      ) : const SizedBox.shrink(),
+                      _mostrarChat
+                          ? Container(
+                              width: constraints.maxWidth,
+                              height: constraints.maxHeight,
+                              decoration:
+                                  const BoxDecoration(color: Color(0x60444444)),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 0),
+                                  child: Container(
+                                    width: constraints.maxWidth / 2.0,
+                                    height: constraints.maxHeight / 1.2,
+                                    decoration: BoxDecoration(
+                                        color: Colors.black12,
+                                        border:
+                                            Border.all(color: Colors.black)),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.black12,
+                                              border: Border.all(
+                                                  color: Colors.black)),
+                                          child: Stack(
+                                            children: [
+                                              TextFormField(
+                                                focusNode: f,
+                                                controller: c,
+                                                decoration: InputDecoration(
+                                                  suffixIcon: IconButton(
+                                                    icon: const Icon(
+                                                      // Based on passwordVisible state choose the icon
+                                                      Icons.send,
+                                                      color: Colors.white,
+                                                    ),
+                                                    onPressed: () {
+                                                      if (c.text != "") {
+                                                        _enviarChat = c.text;
+                                                        c.clear();
+                                                        f.unfocus();
+                                                        _ejecutarAccion(
+                                                            ACCION_ENVIARCHAT);
+                                                      }
+                                                    },
+                                                  ),
+                                                  contentPadding:
+                                                      const EdgeInsets.all(12),
+                                                  hintStyle: const TextStyle(
+                                                    fontSize: 16.0,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color: Color(0xFFf7f6f6),
+                                                    fontFamily: "Bona Nova",
+                                                  ),
+                                                  hintText: "Mensaje",
+                                                ),
+                                                style: const TextStyle(
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color(0xFFf7f6f6),
+                                                  fontFamily: "Bona Nova",
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: ListView.builder(
+                                            controller: _scrollController,
+                                            itemCount: _chat.length,
+                                            itemBuilder: (context, index) =>
+                                                Align(
+                                              alignment:
+                                                  _chat[index].enviadoPorMi
+                                                      ? Alignment.centerRight
+                                                      : Alignment.centerLeft,
+                                              child: Card(
+                                                elevation: 8,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(12),
+                                                  child:
+                                                      Text(_chat[index].text),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      _mostrarChat
+                          ? Align(
+                              alignment: Alignment.center,
+                              child: Transform.translate(
+                                offset: const Offset(375, -125),
+                                child: GestureDetector(
+                                    child: Container(
+                                      width: 80,
+                                      height: 50,
+                                      decoration: const BoxDecoration(
+                                          color: Colors
+                                              .black // image: DecorationImage(
+                                          //   image: AssetImage('assets/Chat.png'),
+                                          //   fit: BoxFit.fill,
+                                          // ),
+                                          ),
+                                    ),
+                                    onTap: () {
+                                      _ejecutarAccion(ACCION_CERRARCHAT);
+                                    }),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 100, top: 20),
+                              child: Container(
+                                width: 60,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '$_contadorDado',
+                                    style: const TextStyle(fontSize: 24),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              print("pulsarDado boton");
+                              if (_esperandoDado) {
+                                print("pulsarDado boton");
+                                _ejecutarAccion(ACCION_PULSARDADO);
+                              }
+                            },
+                            child: Align(
+                              alignment: Alignment.topLeft,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 40, top: 20),
+                                child: Container(
+                                  //ImagenDadoS
+                                  child: Image.asset(
+                                    'assets/cara$_valorDado.png',
+                                    height: 50,
+                                  ),
+                                  //BotonDado
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      _partidaPausada
+                          ? Stack(
+                              children: [
+                                Center(
+                                  child: Container(
+                                    width: screenSize.width,
+                                    height: screenSize.height,
+                                    decoration: BoxDecoration(
+                                      color: Color.fromARGB(68, 0, 0, 0),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Center(
+                                          child: Container(
+                                            width: 400,
+                                            height: 280,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: Expanded(
+                                              child: Align(
+                                                alignment: Alignment.topRight,
+                                                child: Container(
+                                                  width: 60,
+                                                  height: 50,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                      '$_contadorPausa',
+                                                      style: const TextStyle(
+                                                          fontSize: 24),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        (_turno == _yo)
+                                            ? Center(
+                                                child: TextButton(
+                                                    onPressed: () {
+                                                      _ejecutarAccion(
+                                                          ACCION_CONTINUARPARTIDA);
+                                                    },
+                                                    child: Text("Continuar")),
+                                              )
+                                            : const SizedBox.shrink()
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox.shrink(),
+
+                          _turno == _yo ? const SizedBox.shrink() : Align(
+                        alignment: Alignment.center,
+                        child: Transform.translate(
+                          offset: const Offset(375, 0),
+                          child: GestureDetector(
+                              child: Container(
+                                width: 80,
+                                height: 50,
+                                decoration: const BoxDecoration(
+                                    color:
+                                        Colors.black // image: DecorationImage(
+                                    //   image: AssetImage('assets/Chat.png'),
+                                    //   fit: BoxFit.fill,
+                                    // ),
+                                    ),
+                              ),
+                              onTap: () {
+                                _ejecutarAccion(ACCION_ABANDONARPARTIDA);
+                              }),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            Visibility(
-              visible: preguntaActiva,
-              child: Container(
-                alignment: Alignment.centerLeft,
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 205, bottom: 140),
-                  child: Text(
-                    '¿De qué color es el caballo blanco de Santiago?',
-                    style: TextStyle(
-                      fontSize: 10.0,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      fontFamily: "Baskerville",
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            Visibility(
-              visible: preguntaActiva,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 130, left: 205),
-                child: Container(
-                  width: 390,
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: Blanco,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      print("respuesta 1");
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.only(top: 10, left: 10),
-                      child: Text(
-                        'Blanco nieve',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                          fontFamily: "Baskerville",
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            Visibility(
-              visible: preguntaActiva,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 170, left: 205),
-                child: Container(
-                  width: 390,
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: Blanco,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      print("respuesta 2");
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.only(top: 10, left: 10),
-                      child: Text(
-                        'Blanco titanio',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                          fontFamily: "Baskerville",
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            Visibility(
-              visible: preguntaActiva,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 210, left: 205),
-                child: Container(
-                  width: 390,
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: Blanco,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      print("respuesta 3");
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.only(top: 10, left: 10),
-                      child: Text(
-                        'Blanco farlopa',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                          fontFamily: "Baskerville",
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            Visibility(
-              visible: preguntaActiva,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 250, left: 205),
-                child: Container(
-                  width: 390,
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: Blanco,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      print("respuesta 4");
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.only(top: 10, left: 10),
-                      child: Text(
-                        'Los colores solo son luz reflejada por el material (es Verde)',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                          fontFamily: "Baskerville",
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+                          
+                    ],
+                  );
+          },
         ),
       ),
     );

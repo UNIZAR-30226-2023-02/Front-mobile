@@ -7,3 +7,4 @@ export 'invitacionPartida.dart';
 export 'estadisticas.dart';
 export 'ficha.dart';
 export 'tablero.dart';
+export 'mensaje.dart';

@@ -91,11 +91,13 @@ class _SalaEsperaState extends State<SalaEspera> {
 
   void _leerMensaje(String mensaje) {
     Map<String, dynamic> mensajeDecodificado = json.decode(mensaje);
+    print(mensajeDecodificado);
     String accion = mensajeDecodificado[ACCION_KEY];
     if (accion == ACCION_AL) {
-      String l = mensajeDecodificado[USERNAMES_KEY];
+     if(_esperandoJugadores){ String l = mensajeDecodificado[USERNAMES_KEY];
       _jugadores = l.split(",");
       setState(() {});
+     }
     } else if (accion == ACCION_EP) {
       _esperandoJugadores = false;
       _invitarAmigos = false;
@@ -105,8 +107,9 @@ class _SalaEsperaState extends State<SalaEspera> {
       setState(() {});
 
       String url = mensajeDecodificado[URL_KEY];
-      _socket.sink.close();
-      Timer timer = Timer(const Duration(seconds: 2), () {
+      
+      Timer timer = Timer(const Duration(seconds: 1), () {
+        _socket.sink.close();
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(

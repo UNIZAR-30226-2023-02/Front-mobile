@@ -40,7 +40,7 @@ class _CrearPartidaState extends State<CrearPartida> {
   String _errorCambioDatos = "",
       _contrasena = "",
       _opcionJugador = _opcionesJugadores[0],
-      _opcionTiempo = _opcionesTiempo[0];
+      _opcionTiempo = _opcionesTiempo[2];
   bool _errorCampos = false;
 
   bool _passwordVisible = false;
@@ -77,8 +77,7 @@ class _CrearPartidaState extends State<CrearPartida> {
     CrearSalaResponse r = await f;
     if (r.OK) {
       // ignore: use_build_context_synchronously
-      Navigator.pushAndRemoveUntil(
-          context,
+      Navigator.of(context,rootNavigator: true).pushAndRemoveUntil(
           MaterialPageRoute(
               builder: (context) => SalaEspera(
                   _s,

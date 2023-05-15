@@ -74,17 +74,18 @@ class _PartidasState extends State<Partidas> {
       _partidaActiva = true;
       _webSocket = r.ws;
       _tipoPartida = r.tipo;
+
     } else {
       _partidaActiva = false;
     }
   }
 
   _unirseSalaActiva() {
-    /*Navigator.pushAndRemoveUntil(
+    Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-            builder: (context) => Juego(_s, _webSocket, _tipoPartida)),
-        (Route<dynamic> route) => false);*/
+            builder: (context) => Juego(_s, '$wsDir$_webSocket?username=${_s.getField(SesionFieldsCodes.usuario)}', _tipoPartida)),
+        (Route<dynamic> route) => false);
   }
 
   _aceptarPeticion(int index) {
@@ -110,6 +111,7 @@ class _PartidasState extends State<Partidas> {
 
   @override
   void dispose() {
+    print("dipose");
     _timer.cancel();
     super.dispose();
   }
