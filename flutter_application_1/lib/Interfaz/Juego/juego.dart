@@ -943,9 +943,6 @@ const Offset(40, 40)
         for(int p = 0; p < 73; p++){
           colorVariado[p] = _getNextColor(p); 
         }
-        // colorVariado[0] = _getNextColor(0); 
-        // colorVariado[1] = _getNextColor(1); 
-        // colorVariado[2] = _getNextColor(2); 
       });
     });
 

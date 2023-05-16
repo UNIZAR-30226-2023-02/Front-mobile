@@ -587,6 +587,16 @@ class _JuegoState extends State<Juego> {
     }
   }
 
+  late Timer _t;
+  Color _getNextColor(int casilla) {
+    //Si el color actual es gris se pone de su color y sino se pone gris
+    if (colorVariado[casilla] == Colors.grey) {
+      return colorCasillas[casilla];
+    } else {
+      return Colors.grey;
+    }
+  }
+
   _JuegoState(this._s, this._wS, this._tP);
   final String _wS, _tP;
   final Sesion _s;
@@ -685,9 +695,8 @@ class _JuegoState extends State<Juego> {
   static const String TRUE = 'true', FALSE = 'false';
 
   String _yo = "";
-  int _jugadores = 6;
-  List<String> _nombresJugadores = <String>[
-  ];
+  int _jugadores = 0;
+  List<String> _nombresJugadores = <String>[];
   List<String> _posiciones = <String>[];
   List<List<bool>> _quesitos = <List<bool>>[];
 
@@ -718,8 +727,7 @@ class _JuegoState extends State<Juego> {
   String _error = "";
   bool _esperandoDado = false;
 
-  List<Mensaje> _chat = <Mensaje>[
-  ];
+  List<Mensaje> _chat = <Mensaje>[];
   String _enviarChat = "";
 
   List<String> _nuevasCasillas = [];
@@ -730,8 +738,7 @@ class _JuegoState extends State<Juego> {
   bool _preguntaActiva = false;
   String _preguntaTema = "";
   bool _preguntaQuesito = false;
-  String _pregunta =
-      "";
+  String _pregunta = "";
   String _respuesta1 = "";
   String _respuesta2 = "";
   String _respuesta3 = "";
@@ -740,7 +747,7 @@ class _JuegoState extends State<Juego> {
   String _respuestaCorrecta = "";
   String _respuestaNoContestada = "";
   bool _esCorrecta = false, _contestada = false;
-  int _contadorPregunta = 99, _contadorPausa = 0, _contadorDado = 0;
+  int _contadorPregunta = 0, _contadorPausa = 0, _contadorDado = 0;
 
   late Color _colorR1 = Acierto,
       _colorR2 = Fallo,
@@ -757,7 +764,7 @@ class _JuegoState extends State<Juego> {
 
   bool _mensajeInicial = true;
   bool _socketActivo = false;
-  bool _finPartida = true;
+  bool _finPartida = false;
 
   final FocusNode f = FocusNode();
   final TextEditingController c = TextEditingController();
@@ -821,13 +828,15 @@ class _JuegoState extends State<Juego> {
       /* Acciones casilla */
       //--------------------------------
       case ACCION_MOSTRARCASILLAS:
+        alternarCasillas();
         _mostrandoCasillas = true;
         setState(() {});
         break;
 
       case ACCION_MOVERFICHA:
         _mostrandoCasillas = false;
-
+        _nuevasCasillas = <String>[];
+        alternarCasillas();
         _posiciones[_nombresJugadores.indexOf(_turno)] = _casillaElegida;
         setState(() {});
         if (_turno == _yo) {
@@ -1247,6 +1256,7 @@ class _JuegoState extends State<Juego> {
       _tiempoPregunta = mensajeDecodificado[TIEMPOP_KEY];
       _tiempoElegirCasilla = mensajeDecodificado[TIEMPOC_KEY];
       _error = mensajeDecodificado[ERROR_KEY];
+      _jugadores = 0;
       for (var datosJugador in mensajeDecodificado[JUGADORES_KEY]) {
         _jugadores++;
         if (datosJugador[JUGADOR_KEY] == _yo) {
@@ -1261,8 +1271,8 @@ class _JuegoState extends State<Juego> {
         _fichas.add(datosJugador[FICHA_KEY]);
       }
 
-      _ejecutarAccion(ACCION_CAMBIOTURNO);
       setState(() {});
+      _ejecutarAccion(ACCION_CAMBIOTURNO);
     } else {
       String type = mensajeDecodificado[TYPE_KEY];
       String subtype = "";
@@ -1364,7 +1374,6 @@ class _JuegoState extends State<Juego> {
   @override
   void initState() {
     super.initState();
-    /*
     try {
       _socket = IOWebSocketChannel.connect(_wS);
       _socketActivo = true;
@@ -1381,12 +1390,21 @@ class _JuegoState extends State<Juego> {
       _socket.stream.listen((mensaje) {
         _leerMensaje(mensaje);
       });
+      _t = Timer.periodic(Duration(milliseconds: 500), (t) {
+        setState(() {
+          //Habilitar el "parpadeo de seleccion" en todas las casillas
+          for (int p = 0; p < 73; p++) {
+            colorVariado[p] = _getNextColor(p);
+          }
+        });
+      });
       _yo = _s.getField(SesionFieldsCodes.usuario);
-    }*/
+    }
   }
 
   @override
   void dispose() {
+    _t.cancel();
     if (_socketActivo) {
       _socket.sink.close();
     }
@@ -1425,4892 +1443,4626 @@ class _JuegoState extends State<Juego> {
             fit: BoxFit.fill,
           ),
         ),
-        child: Stack(
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) {
-                return _mensajeInicial
-                    ? const SizedBox.shrink()
-                    : Stack(
-                        children: [
-                          Positioned(
-                            top: screenSize.height / 2 -
-                                50, // ajustar la posición vertical del hexágono
-                            left: screenSize.width / 2 -
-                                50, // ajustar la posición horizontal del hexágono
-                            child: Stack(
+        child: _mensajeInicial
+                ? const SizedBox.shrink()
+                : Stack(
+                    children: [
+                      Positioned(
+                        top: screenSize.height / 2 -
+                            50, // ajustar la posición vertical del hexágono
+                        left: screenSize.width / 2 -
+                            50, // ajustar la posición horizontal del hexágono
+                        child: Stack(
+                          children: [
+                            Transform.translate(
+                              offset: const Offset(-145, -129),
+                              child: Container(
+                                width: 360,
+                                height: 360,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image:
+                                          NetworkImage('$urlDir$_fondoTablero'),
+                                      fit: BoxFit.fill),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                // ),
+                              ),
+                            ),
+                            Stack(
                               children: [
+                                //C72
                                 Transform.translate(
-                                  offset: const Offset(-145, -129),
-                                  child: Container(
-                                    width: 360,
-                                    height: 360,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          image: NetworkImage(
-                                              '$urlDir/$_fondoTablero'),
-                                          fit: BoxFit.fill),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    // ),
+                                  offset: const Offset(0, 0),
+                                  child: HexagonButton(
+                                    color: casillaCambia[72] == true
+                                        ? colorVariado[72]
+                                        : colorCasillas[72],
+                                    onPressed: () {
+                                      //_cambiardecolor2();
+                                      // setState(() {
+                                      //   _countdownTime = 10;
+                                      // });
+                                      // startTimer();
+                                      // pulsarCasilla(72);
+                                      // print("pulsado72");
+                                    },
                                   ),
                                 ),
-                                Stack(
-                                  children: [
-                                    //C72
-                                    Transform.translate(
-                                      offset: const Offset(0, 0),
-                                      child: HexagonButton(
-                                        color: casillaCambia[72] == true
-                                            ? colorVariado[72]
-                                            : colorCasillas[72],
-                                        onPressed: () {
-                                          //_cambiardecolor2();
-                                          // setState(() {
-                                          //   _countdownTime = 10;
-                                          // });
-                                          // startTimer();
-                                          // pulsarCasilla(72);
-                                          // print("pulsado72");
-                                        },
-                                      ),
-                                    ),
-                                    //C51
-                                    Transform.rotate(
-                                      angle: -27 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(19, 66),
-                                        child: RectangleButton(
-                                          color: casillaCambia[51] == true
-                                              ? colorVariado[51]
-                                              : colorCasillas[51],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                            // print("pulsado51");
-                                          },
-                                        ),
-                                      ),
-                                    ),
-
-                                    //C50
-                                    Transform.rotate(
-                                      angle: -27 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(19, 87),
-                                        child: RectangleButton(
-                                          color: casillaCambia[50] == true
-                                              ? colorVariado[50]
-                                              : colorCasillas[50],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                            // print("pulsado52");
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C49
-                                    Transform.rotate(
-                                      angle: -27 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(19, 108),
-                                        child: RectangleButton(
-                                          color: casillaCambia[49] == true
-                                              ? colorVariado[49]
-                                              : colorCasillas[49],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C48
-                                    Transform.rotate(
-                                      angle: -27 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(19, 129),
-                                        child: RectangleButton(
-                                          color: casillaCambia[48] == true
-                                              ? colorVariado[48]
-                                              : colorCasillas[48],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C47
-                                    Transform.rotate(
-                                      angle: -27 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(19, 150),
-                                        child: RectangleButton(
-                                          color: casillaCambia[47] == true
-                                              ? colorVariado[47]
-                                              : colorCasillas[47],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C46
-                                    Transform.rotate(
-                                      angle: -154 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(18, -17),
-                                        child: RectangleButton(
-                                          color: casillaCambia[46] == true
-                                              ? colorVariado[46]
-                                              : colorCasillas[46],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C45
-                                    Transform.rotate(
-                                      angle: -154 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(18, -37),
-                                        child: RectangleButton(
-                                          color: casillaCambia[45] == true
-                                              ? colorVariado[45]
-                                              : colorCasillas[45],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C44
-                                    Transform.rotate(
-                                      angle: -154 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(18, -57),
-                                        child: RectangleButton(
-                                          color: casillaCambia[44] == true
-                                              ? colorVariado[44]
-                                              : colorCasillas[44],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C43
-                                    Transform.rotate(
-                                      angle: -154 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(18, -77),
-                                        child: RectangleButton(
-                                          color: casillaCambia[43] == true
-                                              ? colorVariado[43]
-                                              : colorCasillas[43],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C42
-                                    Transform.rotate(
-                                      angle: -154 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(18, -98),
-                                        child: RectangleButton(
-                                          color: casillaCambia[42] == true
-                                              ? colorVariado[42]
-                                              : colorCasillas[42],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                            // print("pulsado42");
-                                          },
-                                        ),
-                                      ),
-                                    ),
-
-                                    //C6
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-150, 75),
-                                        child: RectangleButton(
-                                          color: casillaCambia[6] == true
-                                              ? colorVariado[6]
-                                              : colorCasillas[6],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                            // pulsarCasilla(6);
-                                            // print("pulsado6");
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C5
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-150, 55),
-                                        child: RectangleButton(
-                                          color: casillaCambia[5] == true
-                                              ? colorVariado[5]
-                                              : colorCasillas[5],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                            // pulsarCasilla(5);
-                                            // print("pulsado5");
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C4
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-150, 35),
-                                        child: RectangleButton(
-                                          color: casillaCambia[4] == true
-                                              ? colorVariado[4]
-                                              : colorCasillas[4],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                            // pulsarCasilla(4);
-                                            // print("pulsado4");
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C3
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-150, 15),
-                                        child: RectangleButton(
-                                          color: casillaCambia[3] == true
-                                              ? colorVariado[3]
-                                              : colorCasillas[3],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                            // pulsarCasilla(3);
-                                            // print("pulsado3");
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C2
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-150, -5),
-                                        child: RectangleButton(
-                                          color: casillaCambia[2] == true
-                                              ? colorVariado[2]
-                                              : colorCasillas[2],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                            // pulsarCasilla(2);
-                                            // print("pulsado2");
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C1
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-150, -25),
-                                        child: RectangleButton(
-                                          color: casillaCambia[1] == true
-                                              ? colorVariado[1]
-                                              : colorCasillas[1],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                            // pulsarCasilla(1);
-                                            // print("pulsado1");
-                                          },
-                                        ),
-                                      ),
-                                    ),
-
-                                    //C8
-                                    Transform.rotate(
-                                      angle: -148 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-142, -23),
-                                        child: RectangleButton(
-                                          color: casillaCambia[8] == true
-                                              ? colorVariado[8]
-                                              : colorCasillas[8],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C9
-                                    Transform.rotate(
-                                      angle: -148 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-142, -5),
-                                        child: RectangleButton(
-                                          color: casillaCambia[9] == true
-                                              ? colorVariado[9]
-                                              : colorCasillas[9],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C10
-                                    Transform.rotate(
-                                      angle: -148 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-142, 15),
-                                        child: RectangleButton(
-                                          color: casillaCambia[10] == true
-                                              ? colorVariado[10]
-                                              : colorCasillas[10],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C11
-                                    Transform.rotate(
-                                      angle: -148 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-142, 35),
-                                        child: RectangleButton(
-                                          color: casillaCambia[11] == true
-                                              ? colorVariado[11]
-                                              : colorCasillas[11],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C12
-                                    Transform.rotate(
-                                      angle: -148 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-142, 55),
-                                        child: RectangleButton(
-                                          color: casillaCambia[12] == true
-                                              ? colorVariado[12]
-                                              : colorCasillas[12],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C13
-                                    Transform.rotate(
-                                      angle: -148 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-142, 75),
-                                        child: RectangleButton(
-                                          color: casillaCambia[13] == true
-                                              ? colorVariado[13]
-                                              : colorCasillas[13],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-
-                                    //C7
-                                    Transform.rotate(
-                                      angle: -207 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(37, -158),
-                                        child: Esquina2Button(
-                                          color: casillaCambia[7] == true
-                                              ? colorVariado[7]
-                                              : colorCasillas[7],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C56
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(13, 70),
-                                        child: RectangleButton(
-                                          color: casillaCambia[56] == true
-                                              ? colorVariado[56]
-                                              : colorCasillas[56],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C55
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(13, 91),
-                                        child: RectangleButton(
-                                          color: casillaCambia[55] == true
-                                              ? colorVariado[55]
-                                              : colorCasillas[55],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C54
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(13, 111),
-                                        child: RectangleButton(
-                                          color: casillaCambia[54] == true
-                                              ? colorVariado[54]
-                                              : colorCasillas[54],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C53
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(13, 131),
-                                        child: RectangleButton(
-                                          color: casillaCambia[53] == true
-                                              ? colorVariado[53]
-                                              : colorCasillas[53],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C52
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(13, 151),
-                                        child: RectangleButton(
-                                          color: casillaCambia[52] == true
-                                              ? colorVariado[52]
-                                              : colorCasillas[52],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C71
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(13, -20),
-                                        child: RectangleButton(
-                                          color: casillaCambia[71] == true
-                                              ? colorVariado[71]
-                                              : colorCasillas[71],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C70
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(13, -40),
-                                        child: RectangleButton(
-                                          color: casillaCambia[70] == true
-                                              ? colorVariado[70]
-                                              : colorCasillas[70],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C69
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(13, -60),
-                                        child: RectangleButton(
-                                          color: casillaCambia[69] == true
-                                              ? colorVariado[69]
-                                              : colorCasillas[69],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C68
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(13, -80),
-                                        child: RectangleButton(
-                                          color: casillaCambia[68] == true
-                                              ? colorVariado[68]
-                                              : colorCasillas[68],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C67
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(13, -100),
-                                        child: RectangleButton(
-                                          color: casillaCambia[67] == true
-                                              ? colorVariado[67]
-                                              : colorCasillas[67],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-
-                                    //C41
-                                    Transform.rotate(
-                                      angle: 330 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-148, 88),
-                                        child: RectangleButton(
-                                          color: casillaCambia[41] == true
-                                              ? colorVariado[41]
-                                              : colorCasillas[41],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C40
-                                    Transform.rotate(
-                                      angle: 330 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-148, 68),
-                                        child: RectangleButton(
-                                          color: casillaCambia[40] == true
-                                              ? colorVariado[40]
-                                              : colorCasillas[40],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C39
-                                    Transform.rotate(
-                                      angle: 330 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-148, 48),
-                                        child: RectangleButton(
-                                          color: casillaCambia[39] == true
-                                              ? colorVariado[39]
-                                              : colorCasillas[39],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C38
-                                    Transform.rotate(
-                                      angle: 330 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-148, 28),
-                                        child: RectangleButton(
-                                          color: casillaCambia[38] == true
-                                              ? colorVariado[38]
-                                              : colorCasillas[38],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C37
-                                    Transform.rotate(
-                                      angle: 330 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-148, 8),
-                                        child: RectangleButton(
-                                          color: casillaCambia[37] == true
-                                              ? colorVariado[37]
-                                              : colorCasillas[37],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C36
-                                    Transform.rotate(
-                                      angle: 330 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-148, -13),
-                                        child: RectangleButton(
-                                          color: casillaCambia[36] == true
-                                              ? colorVariado[36]
-                                              : colorCasillas[36],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                            // print("pulsado36");
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C0
-                                    Transform.rotate(
-                                      angle: 207 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(30, -178),
-                                        child: Esquina3Button(
-                                          color: casillaCambia[0] == true
-                                              ? colorVariado[0]
-                                              : colorCasillas[0],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                            // pulsarCasilla(faslse,);
-                                          },
-                                        ),
-                                      ),
-                                    ),
-
-                                    //C66
-                                    Transform.rotate(
-                                      angle: -207 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(19, 66),
-                                        child: RectangleButton(
-                                          color: casillaCambia[66] == true
-                                              ? colorVariado[66]
-                                              : colorCasillas[66],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C65
-                                    Transform.rotate(
-                                      angle: -207 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(19, 86),
-                                        child: RectangleButton(
-                                          color: casillaCambia[65] == true
-                                              ? colorVariado[65]
-                                              : colorCasillas[65],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C64
-                                    Transform.rotate(
-                                      angle: -207 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(19, 106),
-                                        child: RectangleButton(
-                                          color: casillaCambia[64] == true
-                                              ? colorVariado[64]
-                                              : colorCasillas[64],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C63
-                                    Transform.rotate(
-                                      angle: -207 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(19, 126),
-                                        child: RectangleButton(
-                                          color: casillaCambia[63] == true
-                                              ? colorVariado[63]
-                                              : colorCasillas[63],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C62
-                                    Transform.rotate(
-                                      angle: -207 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(19, 146),
-                                        child: RectangleButton(
-                                          color: casillaCambia[62] == true
-                                              ? colorVariado[62]
-                                              : colorCasillas[62],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-
-                                    //C29
-                                    Transform.rotate(
-                                      angle: -329 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-142, -23),
-                                        child: RectangleButton(
-                                          color: casillaCambia[29] == true
-                                              ? colorVariado[29]
-                                              : colorCasillas[29],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C30
-                                    Transform.rotate(
-                                      angle: -329 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-142, -5),
-                                        child: RectangleButton(
-                                          color: casillaCambia[30] == true
-                                              ? colorVariado[30]
-                                              : colorCasillas[30],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C31
-                                    Transform.rotate(
-                                      angle: -329 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-142, 15),
-                                        child: RectangleButton(
-                                          color: casillaCambia[31] == true
-                                              ? colorVariado[31]
-                                              : colorCasillas[31],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C32
-                                    Transform.rotate(
-                                      angle: -329 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-142, 35),
-                                        child: RectangleButton(
-                                          color: casillaCambia[32] == true
-                                              ? colorVariado[32]
-                                              : colorCasillas[32],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C33
-                                    Transform.rotate(
-                                      angle: -329 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-142, 55),
-                                        child: RectangleButton(
-                                          color: casillaCambia[33] == true
-                                              ? colorVariado[33]
-                                              : colorCasillas[33],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C34
-                                    Transform.rotate(
-                                      angle: -329 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-142, 75),
-                                        child: RectangleButton(
-                                          color: casillaCambia[34] == true
-                                              ? colorVariado[34]
-                                              : colorCasillas[34],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-
-                                    //C61
-                                    Transform.rotate(
-                                      angle: -331 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(18, -17),
-                                        child: RectangleButton(
-                                          color: casillaCambia[61] == true
-                                              ? colorVariado[61]
-                                              : colorCasillas[61],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C60
-                                    Transform.rotate(
-                                      angle: -331 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(18, -37),
-                                        child: RectangleButton(
-                                          color: casillaCambia[60] == true
-                                              ? colorVariado[60]
-                                              : colorCasillas[60],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C59
-                                    Transform.rotate(
-                                      angle: -331 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(18, -57),
-                                        child: RectangleButton(
-                                          color: casillaCambia[59] == true
-                                              ? colorVariado[59]
-                                              : colorCasillas[59],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C58
-                                    Transform.rotate(
-                                      angle: -331 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(18, -77),
-                                        child: RectangleButton(
-                                          color: casillaCambia[58] == true
-                                              ? colorVariado[58]
-                                              : colorCasillas[58],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C57
-                                    Transform.rotate(
-                                      angle: -331 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(18, -98),
-                                        child: RectangleButton(
-                                          color: casillaCambia[57] == true
-                                              ? colorVariado[57]
-                                              : colorCasillas[57],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-
-                                    //C27
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-140, 73),
-                                        child: RectangleButton(
-                                          color: casillaCambia[27] == true
-                                              ? colorVariado[27]
-                                              : colorCasillas[27],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C26
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-140, 53),
-                                        child: RectangleButton(
-                                          color: casillaCambia[26] == true
-                                              ? colorVariado[26]
-                                              : colorCasillas[26],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C25
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-140, 33),
-                                        child: RectangleButton(
-                                          color: casillaCambia[25] == true
-                                              ? colorVariado[25]
-                                              : colorCasillas[25],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C24
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-140, 13),
-                                        child: RectangleButton(
-                                          color: casillaCambia[24] == true
-                                              ? colorVariado[24]
-                                              : colorCasillas[24],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C23
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-140, -8),
-                                        child: RectangleButton(
-                                          color: casillaCambia[23] == true
-                                              ? colorVariado[23]
-                                              : colorCasillas[23],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C22
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-140, -29),
-                                        child: RectangleButton(
-                                          color: casillaCambia[22] == true
-                                              ? colorVariado[22]
-                                              : colorCasillas[22],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-
-                                    //C20
-                                    Transform.rotate(
-                                      angle: 150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-145, 75),
-                                        child: RectangleButton(
-                                          color: casillaCambia[20] == true
-                                              ? colorVariado[20]
-                                              : colorCasillas[20],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C19
-                                    Transform.rotate(
-                                      angle: 150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-145, 57),
-                                        child: RectangleButton(
-                                          color: casillaCambia[19] == true
-                                              ? colorVariado[19]
-                                              : colorCasillas[19],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C18
-                                    Transform.rotate(
-                                      angle: 150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-145, 38),
-                                        child: RectangleButton(
-                                          color: casillaCambia[18] == true
-                                              ? colorVariado[18]
-                                              : colorCasillas[18],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C17
-                                    Transform.rotate(
-                                      angle: 150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-145, 18),
-                                        child: RectangleButton(
-                                          color: casillaCambia[17] == true
-                                              ? colorVariado[17]
-                                              : colorCasillas[17],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C16
-                                    Transform.rotate(
-                                      angle: 150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-145, -2),
-                                        child: RectangleButton(
-                                          color: casillaCambia[16] == true
-                                              ? colorVariado[16]
-                                              : colorCasillas[16],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C15
-                                    Transform.rotate(
-                                      angle: 150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-145, -21),
-                                        child: RectangleButton(
-                                          color: casillaCambia[15] == true
-                                              ? colorVariado[15]
-                                              : colorCasillas[15],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-
-                                    //C35
-                                    Transform.rotate(
-                                      angle: 270 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(0, -184),
-                                        child: EsquinaButton(
-                                          color: casillaCambia[35] == true
-                                              ? colorVariado[35]
-                                              : colorCasillas[35],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C28
-                                    Transform.rotate(
-                                      angle: -27 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-16, -164),
-                                        child: Esquina2Button(
-                                          color: casillaCambia[28] == true
-                                              ? colorVariado[28]
-                                              : colorCasillas[28],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C21
-                                    Transform.rotate(
-                                      angle: 30 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-8, -146),
-                                        child: Esquina3Button(
-                                          color: casillaCambia[21] == true
-                                              ? colorVariado[21]
-                                              : colorCasillas[21],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    //C14
-                                    Transform.rotate(
-                                      angle: -270 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(26, -135),
-                                        child: EsquinaButton(
-                                          color: casillaCambia[14] == true
-                                              ? colorVariado[14]
-                                              : colorCasillas[14],
-                                          onPressed: () {
-                                            //_cambiarColor2();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-
-                                    //TrianguloRojo
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(20, 137),
-                                        child: TriangleWidget(color: Rojo),
-                                      ),
-                                    ),
-
-                                    //TrianguloAzul
-                                    Transform.rotate(
-                                      angle: 152 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-5, 132),
-                                        child: TriangleWidget(color: Azul),
-                                      ),
-                                    ),
-
-                                    //TrianguloNaranja
-                                    Transform.rotate(
-                                      angle: 207 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-37, 150),
-                                        child: TriangleWidget(color: Naranja),
-                                      ),
-                                    ),
-
-                                    //TrianguloAmarillo
-                                    Transform.rotate(
-                                      angle: 270 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-22, 177),
-                                        child: TriangleWidget(color: Amarillo),
-                                      ),
-                                    ),
-
-                                    //TrianguloRosa
-                                    Transform.rotate(
-                                      angle: 332 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(10, 185),
-                                        child: TriangleWidget(color: Rosa),
-                                      ),
-                                    ),
-
-                                    //TrianguloVerde
-                                    Transform.rotate(
-                                      angle: -330 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(33, 170),
-                                        child: TriangleWidget(color: Verde),
-                                      ),
-                                    ),
-
-                                    //FICHAS---------------------------------------------------------------------------------------------
-                                    Stack(children: [
-                                      _jugadores > 0
-                                          ? Transform.translate(
-                                              //Ficha J0
-                                              offset: coordenadasFichaJ0[int.parse(_posiciones[0])], //coordenadasFichaJ1[posicionesFichas[0]],
-                                              child: Container(
-                                                width: 15,
-                                                height: 15,
-                                                child: Image.network(
-                                                  '$urlDir/${_fichas[0]}',
-                                                  fit: BoxFit.fill,
-                                                ),
-                                              ),
-                                            )
-                                          : const SizedBox.shrink(),
-                                      _jugadores > 1
-                                          ? Transform.translate(
-                                              //Ficha J1
-                                              offset: coordenadasFichaJ1[
-                                                  int.parse(_posiciones[
-                                                      1])], //coordenadasFichaJ1[posicionesFichas[0]],
-                                              child: Container(
-                                                width: 15,
-                                                height: 15,
-                                                child: Image.network(
-                                                  '$urlDir/${_fichas[1]}',
-                                                  fit: BoxFit.fill,
-                                                ),
-                                              ),
-                                            )
-                                          : const SizedBox.shrink(),
-                                      _jugadores > 2
-                                          ? Transform.translate(
-                                              //Ficha J2
-                                              offset: coordenadasFichaJ2[
-                                                  int.parse(_posiciones[
-                                                      2])], //coordenadasFichaJ1[posicionesFichas[0]],
-                                              child: Container(
-                                                width: 15,
-                                                height: 15,
-                                                child: Image.network(
-                                                  '$urlDir/${_fichas[2]}',
-                                                  fit: BoxFit.fill,
-                                                ),
-                                              ),
-                                            )
-                                          : const SizedBox.shrink(),
-                                      _jugadores > 3
-                                          ? Transform.translate(
-                                              //Ficha J3
-                                              offset: coordenadasFichaJ3[
-                                                  int.parse(_posiciones[
-                                                      3])], //coordenadasFichaJ1[posicionesFichas[0]],
-                                              child: Container(
-                                                width: 15,
-                                                height: 15,
-                                                child: Image.network(
-                                                  '$urlDir/${_fichas[3]}',
-                                                  fit: BoxFit.fill,
-                                                ),
-                                              ),
-                                            )
-                                          : const SizedBox.shrink(),
-                                      _jugadores > 4
-                                          ? Transform.translate(
-                                              //Ficha J4
-                                              offset: coordenadasFichaJ4[
-                                                  int.parse(_posiciones[
-                                                      4])], //coordenadasFichaJ1[posicionesFichas[0]],
-                                              child: Container(
-                                                width: 15,
-                                                height: 15,
-                                                child: Image.network(
-                                                  '$urlDir/${_fichas[4]}',
-                                                  fit: BoxFit.fill,
-                                                ),
-                                              ),
-                                            )
-                                          : const SizedBox.shrink(),
-                                      _jugadores > 5
-                                          ? Transform.translate(
-                                              //Ficha J5
-                                              offset: coordenadasFichaJ5[
-                                                  int.parse(_posiciones[
-                                                      5])], //coordenadasFichaJ1[posicionesFichas[0]],
-                                              child: Container(
-                                                width: 15,
-                                                height: 15,
-                                                child: Image.network(
-                                                  '$urlDir/${_fichas[5]}',
-                                                  fit: BoxFit.fill,
-                                                ),
-                                              ),
-                                            )
-                                          : const SizedBox.shrink(),
-                                    ]),
-
-                                    //BOTONES CASILLAS-------------------------------------------------------------------------------------
-                                    //c0 boton
-                                    Transform.rotate(
-                                      angle: 116 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(138, -379),
-                                        child: Ink(
-                                          width: 61,
-                                          height: 40,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(0);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c1 boton
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-320, 316),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(1);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c2 boton
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-320, 336),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(2);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c3 boton
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-320, 356),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(3);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c4 boton
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-320, 376),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(4);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c5 boton
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-320, 396),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(5);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c6 boton
-                                    Transform.rotate(
-                                      angle: -90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-320, 416),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(6);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c7 boton
-                                    Transform.rotate(
-                                      angle: -115 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-446, 273),
-                                        child: Ink(
-                                          width: 57,
-                                          height: 40,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(7);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c8 boton
-                                    Transform.rotate(
-                                      angle: 33 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(549, -22),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(8);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c9 boton
-                                    Transform.rotate(
-                                      angle: 33 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(549, -42),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(9);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c10 boton
-                                    Transform.rotate(
-                                      angle: 33 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(549, -62),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(10);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c11 boton
-                                    Transform.rotate(
-                                      angle: 33 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(549, -82),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(11);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c12 boton
-                                    Transform.rotate(
-                                      angle: 33 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(549, -102),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(12);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c13 boton
-                                    Transform.rotate(
-                                      angle: 33 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(549, -122),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(13);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c14 boton
-                                    Transform.rotate(
-                                      angle: 0 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(521, 145),
-                                        child: Ink(
-                                          width: 48,
-                                          height: 44,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(14);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c15 boton
-                                    Transform.rotate(
-                                      angle: -33 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(380, 383),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(15);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c16 boton
-                                    Transform.rotate(
-                                      angle: -33 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(381, 363),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(16);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c17 boton
-                                    Transform.rotate(
-                                      angle: -33 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(382, 343),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(17);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c18 boton
-                                    Transform.rotate(
-                                      angle: -33 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(383, 323),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(18);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c19 boton
-                                    Transform.rotate(
-                                      angle: -33 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(384, 303),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(19);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c20 boton
-                                    Transform.rotate(
-                                      angle: -33 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(384, 283),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(20);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c21 boton
-                                    Transform.rotate(
-                                      angle: -62 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(202, 390),
-                                        child: Ink(
-                                          width: 57,
-                                          height: 40,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(21);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c22 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(0, -418),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(22);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c23 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(0, -398),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(23);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c24 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(0, -378),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(24);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c25 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(0, -358),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(25);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c26 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(0, -338),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(26);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c27 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(0, -318),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(27);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c28 boton
-                                    Transform.rotate(
-                                      angle: 62 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(135, -245),
-                                        child: Ink(
-                                          width: 57,
-                                          height: 40,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(28);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c29 boton
-                                    Transform.rotate(
-                                      angle: -150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-237, 102),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(29);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c30 boton
-                                    Transform.rotate(
-                                      angle: -150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-237, 82),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(30);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c31 boton
-                                    Transform.rotate(
-                                      angle: -150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-237, 62),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(31);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c32 boton
-                                    Transform.rotate(
-                                      angle: -150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-237, 42),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(32);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c33 boton
-                                    Transform.rotate(
-                                      angle: -150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-236, 22),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(33);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c34 boton
-                                    Transform.rotate(
-                                      angle: -150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-236, 2),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(34);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c35 boton
-                                    Transform.rotate(
-                                      angle: 0 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(201, 146),
-                                        child: Ink(
-                                          width: 48,
-                                          height: 44,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(35);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c36 boton
-                                    Transform.rotate(
-                                      angle: 149 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-71, -280),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(36);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c37 boton
-                                    Transform.rotate(
-                                      angle: 149 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-71, -301),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(37);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c38 boton
-                                    Transform.rotate(
-                                      angle: 149 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-71, -322),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(38);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c39 boton
-                                    Transform.rotate(
-                                      angle: 149 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-70, -342),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(39);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c40 boton
-                                    Transform.rotate(
-                                      angle: 149 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-70, -362),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(40);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c41 boton
-                                    Transform.rotate(
-                                      angle: 149 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-70, -382),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(41);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c42 boton
-                                    Transform.rotate(
-                                      angle: 25 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(392, 109),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(42);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c43 boton
-                                    Transform.rotate(
-                                      angle: 25 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(392, 88),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(43);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c44 boton
-                                    Transform.rotate(
-                                      angle: 25 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(392, 68),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(44);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c45 boton
-                                    Transform.rotate(
-                                      angle: 25 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(392, 48),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(45);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c46 boton
-                                    Transform.rotate(
-                                      angle: 25 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(392, 28),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(46);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c47 boton
-                                    Transform.rotate(
-                                      angle: -28 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(251, 435),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(47);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c48 boton
-                                    Transform.rotate(
-                                      angle: -28 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(251, 414),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(48);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c49 boton
-                                    Transform.rotate(
-                                      angle: -28 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(251, 393),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(49);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c50 boton
-                                    Transform.rotate(
-                                      angle: -28 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(252, 372),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(50);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c51 boton
-                                    Transform.rotate(
-                                      angle: -28 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(252, 351),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(51);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c52 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(157, -492),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(52);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c53 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(157, -472),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(53);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c54 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(157, -452),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(54);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c55 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(157, -432),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(55);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c56 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(157, -412),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(56);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c57 boton
-                                    Transform.rotate(
-                                      angle: 210 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-395, 171),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(57);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c58 boton
-                                    Transform.rotate(
-                                      angle: 210 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-395, 151),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(58);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c59 boton
-                                    Transform.rotate(
-                                      angle: 210 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-395, 131),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(59);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c60 boton
-                                    Transform.rotate(
-                                      angle: 210 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-395, 110),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(60);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c61 boton
-                                    Transform.rotate(
-                                      angle: 210 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-395, 90),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(61);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c62 boton
-                                    Transform.rotate(
-                                      angle: 150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-242, -195),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(62);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c63 boton
-                                    Transform.rotate(
-                                      angle: 150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-240, -215),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(63);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c64 boton
-                                    Transform.rotate(
-                                      angle: 150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-240, -235),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(64);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c65 boton
-                                    Transform.rotate(
-                                      angle: 150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-239, -255),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(65);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c66 boton
-                                    Transform.rotate(
-                                      angle: 150 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(-238, -275),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(66);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c67 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(157, -241),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(67);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c68 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(157, -261),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(68);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c69 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(157, -281),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(69);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c70 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(157, -301),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(70);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c71 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(157, -321),
-                                        child: Ink(
-                                          width: 39,
-                                          height: 20,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(71);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //c72 boton
-                                    Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Transform.translate(
-                                        offset: const Offset(130, -364),
-                                        child: Ink(
-                                          width: 44,
-                                          height: 70,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              pulsarCasilla(72);
-                                            },
-                                            child: null,
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.transparent,
-                                              backgroundColor:
-                                                  Color.fromARGB(0, 0, 0, 0),
-                                              padding: EdgeInsets.zero,
-                                              elevation:
-                                                  0, //elimina la sombra del boton
-                                              splashFactory: NoSplash
-                                                  .splashFactory, //elimina la onda que aparece al pulsar el boton
-                                              //no consigo quitar la sombra que genera al pulsarse pero si la onda
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                //C51
+                                Transform.rotate(
+                                  angle: -27 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(19, 66),
+                                    child: RectangleButton(
+                                      color: casillaCambia[51] == true
+                                          ? colorVariado[51]
+                                          : colorCasillas[51],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                        // print("pulsado51");
+                                      },
+                                    ),
+                                  ),
                                 ),
+
+                                //C50
+                                Transform.rotate(
+                                  angle: -27 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(19, 87),
+                                    child: RectangleButton(
+                                      color: casillaCambia[50] == true
+                                          ? colorVariado[50]
+                                          : colorCasillas[50],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                        // print("pulsado52");
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C49
+                                Transform.rotate(
+                                  angle: -27 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(19, 108),
+                                    child: RectangleButton(
+                                      color: casillaCambia[49] == true
+                                          ? colorVariado[49]
+                                          : colorCasillas[49],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C48
+                                Transform.rotate(
+                                  angle: -27 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(19, 129),
+                                    child: RectangleButton(
+                                      color: casillaCambia[48] == true
+                                          ? colorVariado[48]
+                                          : colorCasillas[48],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C47
+                                Transform.rotate(
+                                  angle: -27 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(19, 150),
+                                    child: RectangleButton(
+                                      color: casillaCambia[47] == true
+                                          ? colorVariado[47]
+                                          : colorCasillas[47],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C46
+                                Transform.rotate(
+                                  angle: -154 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(18, -17),
+                                    child: RectangleButton(
+                                      color: casillaCambia[46] == true
+                                          ? colorVariado[46]
+                                          : colorCasillas[46],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C45
+                                Transform.rotate(
+                                  angle: -154 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(18, -37),
+                                    child: RectangleButton(
+                                      color: casillaCambia[45] == true
+                                          ? colorVariado[45]
+                                          : colorCasillas[45],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C44
+                                Transform.rotate(
+                                  angle: -154 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(18, -57),
+                                    child: RectangleButton(
+                                      color: casillaCambia[44] == true
+                                          ? colorVariado[44]
+                                          : colorCasillas[44],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C43
+                                Transform.rotate(
+                                  angle: -154 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(18, -77),
+                                    child: RectangleButton(
+                                      color: casillaCambia[43] == true
+                                          ? colorVariado[43]
+                                          : colorCasillas[43],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C42
+                                Transform.rotate(
+                                  angle: -154 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(18, -98),
+                                    child: RectangleButton(
+                                      color: casillaCambia[42] == true
+                                          ? colorVariado[42]
+                                          : colorCasillas[42],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                        // print("pulsado42");
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                //C6
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-150, 75),
+                                    child: RectangleButton(
+                                      color: casillaCambia[6] == true
+                                          ? colorVariado[6]
+                                          : colorCasillas[6],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                        // pulsarCasilla(6);
+                                        // print("pulsado6");
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C5
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-150, 55),
+                                    child: RectangleButton(
+                                      color: casillaCambia[5] == true
+                                          ? colorVariado[5]
+                                          : colorCasillas[5],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                        // pulsarCasilla(5);
+                                        // print("pulsado5");
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C4
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-150, 35),
+                                    child: RectangleButton(
+                                      color: casillaCambia[4] == true
+                                          ? colorVariado[4]
+                                          : colorCasillas[4],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                        // pulsarCasilla(4);
+                                        // print("pulsado4");
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C3
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-150, 15),
+                                    child: RectangleButton(
+                                      color: casillaCambia[3] == true
+                                          ? colorVariado[3]
+                                          : colorCasillas[3],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                        // pulsarCasilla(3);
+                                        // print("pulsado3");
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C2
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-150, -5),
+                                    child: RectangleButton(
+                                      color: casillaCambia[2] == true
+                                          ? colorVariado[2]
+                                          : colorCasillas[2],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                        // pulsarCasilla(2);
+                                        // print("pulsado2");
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C1
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-150, -25),
+                                    child: RectangleButton(
+                                      color: casillaCambia[1] == true
+                                          ? colorVariado[1]
+                                          : colorCasillas[1],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                        // pulsarCasilla(1);
+                                        // print("pulsado1");
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                //C8
+                                Transform.rotate(
+                                  angle: -148 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-142, -23),
+                                    child: RectangleButton(
+                                      color: casillaCambia[8] == true
+                                          ? colorVariado[8]
+                                          : colorCasillas[8],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C9
+                                Transform.rotate(
+                                  angle: -148 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-142, -5),
+                                    child: RectangleButton(
+                                      color: casillaCambia[9] == true
+                                          ? colorVariado[9]
+                                          : colorCasillas[9],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C10
+                                Transform.rotate(
+                                  angle: -148 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-142, 15),
+                                    child: RectangleButton(
+                                      color: casillaCambia[10] == true
+                                          ? colorVariado[10]
+                                          : colorCasillas[10],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C11
+                                Transform.rotate(
+                                  angle: -148 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-142, 35),
+                                    child: RectangleButton(
+                                      color: casillaCambia[11] == true
+                                          ? colorVariado[11]
+                                          : colorCasillas[11],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C12
+                                Transform.rotate(
+                                  angle: -148 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-142, 55),
+                                    child: RectangleButton(
+                                      color: casillaCambia[12] == true
+                                          ? colorVariado[12]
+                                          : colorCasillas[12],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C13
+                                Transform.rotate(
+                                  angle: -148 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-142, 75),
+                                    child: RectangleButton(
+                                      color: casillaCambia[13] == true
+                                          ? colorVariado[13]
+                                          : colorCasillas[13],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                //C7
+                                Transform.rotate(
+                                  angle: -207 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(37, -158),
+                                    child: Esquina2Button(
+                                      color: casillaCambia[7] == true
+                                          ? colorVariado[7]
+                                          : colorCasillas[7],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C56
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(13, 70),
+                                    child: RectangleButton(
+                                      color: casillaCambia[56] == true
+                                          ? colorVariado[56]
+                                          : colorCasillas[56],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C55
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(13, 91),
+                                    child: RectangleButton(
+                                      color: casillaCambia[55] == true
+                                          ? colorVariado[55]
+                                          : colorCasillas[55],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C54
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(13, 111),
+                                    child: RectangleButton(
+                                      color: casillaCambia[54] == true
+                                          ? colorVariado[54]
+                                          : colorCasillas[54],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C53
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(13, 131),
+                                    child: RectangleButton(
+                                      color: casillaCambia[53] == true
+                                          ? colorVariado[53]
+                                          : colorCasillas[53],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C52
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(13, 151),
+                                    child: RectangleButton(
+                                      color: casillaCambia[52] == true
+                                          ? colorVariado[52]
+                                          : colorCasillas[52],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C71
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(13, -20),
+                                    child: RectangleButton(
+                                      color: casillaCambia[71] == true
+                                          ? colorVariado[71]
+                                          : colorCasillas[71],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C70
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(13, -40),
+                                    child: RectangleButton(
+                                      color: casillaCambia[70] == true
+                                          ? colorVariado[70]
+                                          : colorCasillas[70],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C69
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(13, -60),
+                                    child: RectangleButton(
+                                      color: casillaCambia[69] == true
+                                          ? colorVariado[69]
+                                          : colorCasillas[69],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C68
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(13, -80),
+                                    child: RectangleButton(
+                                      color: casillaCambia[68] == true
+                                          ? colorVariado[68]
+                                          : colorCasillas[68],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C67
+                                Transform.rotate(
+                                  angle: -90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(13, -100),
+                                    child: RectangleButton(
+                                      color: casillaCambia[67] == true
+                                          ? colorVariado[67]
+                                          : colorCasillas[67],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                //C41
+                                Transform.rotate(
+                                  angle: 330 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-148, 88),
+                                    child: RectangleButton(
+                                      color: casillaCambia[41] == true
+                                          ? colorVariado[41]
+                                          : colorCasillas[41],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C40
+                                Transform.rotate(
+                                  angle: 330 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-148, 68),
+                                    child: RectangleButton(
+                                      color: casillaCambia[40] == true
+                                          ? colorVariado[40]
+                                          : colorCasillas[40],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C39
+                                Transform.rotate(
+                                  angle: 330 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-148, 48),
+                                    child: RectangleButton(
+                                      color: casillaCambia[39] == true
+                                          ? colorVariado[39]
+                                          : colorCasillas[39],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C38
+                                Transform.rotate(
+                                  angle: 330 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-148, 28),
+                                    child: RectangleButton(
+                                      color: casillaCambia[38] == true
+                                          ? colorVariado[38]
+                                          : colorCasillas[38],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C37
+                                Transform.rotate(
+                                  angle: 330 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-148, 8),
+                                    child: RectangleButton(
+                                      color: casillaCambia[37] == true
+                                          ? colorVariado[37]
+                                          : colorCasillas[37],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C36
+                                Transform.rotate(
+                                  angle: 330 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-148, -13),
+                                    child: RectangleButton(
+                                      color: casillaCambia[36] == true
+                                          ? colorVariado[36]
+                                          : colorCasillas[36],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                        // print("pulsado36");
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C0
+                                Transform.rotate(
+                                  angle: 207 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(30, -178),
+                                    child: Esquina3Button(
+                                      color: casillaCambia[0] == true
+                                          ? colorVariado[0]
+                                          : colorCasillas[0],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                        // pulsarCasilla(faslse,);
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                //C66
+                                Transform.rotate(
+                                  angle: -207 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(19, 66),
+                                    child: RectangleButton(
+                                      color: casillaCambia[66] == true
+                                          ? colorVariado[66]
+                                          : colorCasillas[66],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C65
+                                Transform.rotate(
+                                  angle: -207 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(19, 86),
+                                    child: RectangleButton(
+                                      color: casillaCambia[65] == true
+                                          ? colorVariado[65]
+                                          : colorCasillas[65],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C64
+                                Transform.rotate(
+                                  angle: -207 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(19, 106),
+                                    child: RectangleButton(
+                                      color: casillaCambia[64] == true
+                                          ? colorVariado[64]
+                                          : colorCasillas[64],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C63
+                                Transform.rotate(
+                                  angle: -207 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(19, 126),
+                                    child: RectangleButton(
+                                      color: casillaCambia[63] == true
+                                          ? colorVariado[63]
+                                          : colorCasillas[63],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C62
+                                Transform.rotate(
+                                  angle: -207 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(19, 146),
+                                    child: RectangleButton(
+                                      color: casillaCambia[62] == true
+                                          ? colorVariado[62]
+                                          : colorCasillas[62],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                //C29
+                                Transform.rotate(
+                                  angle: -329 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-142, -23),
+                                    child: RectangleButton(
+                                      color: casillaCambia[29] == true
+                                          ? colorVariado[29]
+                                          : colorCasillas[29],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C30
+                                Transform.rotate(
+                                  angle: -329 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-142, -5),
+                                    child: RectangleButton(
+                                      color: casillaCambia[30] == true
+                                          ? colorVariado[30]
+                                          : colorCasillas[30],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C31
+                                Transform.rotate(
+                                  angle: -329 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-142, 15),
+                                    child: RectangleButton(
+                                      color: casillaCambia[31] == true
+                                          ? colorVariado[31]
+                                          : colorCasillas[31],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C32
+                                Transform.rotate(
+                                  angle: -329 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-142, 35),
+                                    child: RectangleButton(
+                                      color: casillaCambia[32] == true
+                                          ? colorVariado[32]
+                                          : colorCasillas[32],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C33
+                                Transform.rotate(
+                                  angle: -329 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-142, 55),
+                                    child: RectangleButton(
+                                      color: casillaCambia[33] == true
+                                          ? colorVariado[33]
+                                          : colorCasillas[33],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C34
+                                Transform.rotate(
+                                  angle: -329 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-142, 75),
+                                    child: RectangleButton(
+                                      color: casillaCambia[34] == true
+                                          ? colorVariado[34]
+                                          : colorCasillas[34],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                //C61
+                                Transform.rotate(
+                                  angle: -331 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(18, -17),
+                                    child: RectangleButton(
+                                      color: casillaCambia[61] == true
+                                          ? colorVariado[61]
+                                          : colorCasillas[61],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C60
+                                Transform.rotate(
+                                  angle: -331 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(18, -37),
+                                    child: RectangleButton(
+                                      color: casillaCambia[60] == true
+                                          ? colorVariado[60]
+                                          : colorCasillas[60],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C59
+                                Transform.rotate(
+                                  angle: -331 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(18, -57),
+                                    child: RectangleButton(
+                                      color: casillaCambia[59] == true
+                                          ? colorVariado[59]
+                                          : colorCasillas[59],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C58
+                                Transform.rotate(
+                                  angle: -331 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(18, -77),
+                                    child: RectangleButton(
+                                      color: casillaCambia[58] == true
+                                          ? colorVariado[58]
+                                          : colorCasillas[58],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C57
+                                Transform.rotate(
+                                  angle: -331 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(18, -98),
+                                    child: RectangleButton(
+                                      color: casillaCambia[57] == true
+                                          ? colorVariado[57]
+                                          : colorCasillas[57],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                //C27
+                                Transform.rotate(
+                                  angle: 90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-140, 73),
+                                    child: RectangleButton(
+                                      color: casillaCambia[27] == true
+                                          ? colorVariado[27]
+                                          : colorCasillas[27],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C26
+                                Transform.rotate(
+                                  angle: 90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-140, 53),
+                                    child: RectangleButton(
+                                      color: casillaCambia[26] == true
+                                          ? colorVariado[26]
+                                          : colorCasillas[26],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C25
+                                Transform.rotate(
+                                  angle: 90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-140, 33),
+                                    child: RectangleButton(
+                                      color: casillaCambia[25] == true
+                                          ? colorVariado[25]
+                                          : colorCasillas[25],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C24
+                                Transform.rotate(
+                                  angle: 90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-140, 13),
+                                    child: RectangleButton(
+                                      color: casillaCambia[24] == true
+                                          ? colorVariado[24]
+                                          : colorCasillas[24],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C23
+                                Transform.rotate(
+                                  angle: 90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-140, -8),
+                                    child: RectangleButton(
+                                      color: casillaCambia[23] == true
+                                          ? colorVariado[23]
+                                          : colorCasillas[23],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C22
+                                Transform.rotate(
+                                  angle: 90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-140, -29),
+                                    child: RectangleButton(
+                                      color: casillaCambia[22] == true
+                                          ? colorVariado[22]
+                                          : colorCasillas[22],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                //C20
+                                Transform.rotate(
+                                  angle: 150 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-145, 75),
+                                    child: RectangleButton(
+                                      color: casillaCambia[20] == true
+                                          ? colorVariado[20]
+                                          : colorCasillas[20],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C19
+                                Transform.rotate(
+                                  angle: 150 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-145, 57),
+                                    child: RectangleButton(
+                                      color: casillaCambia[19] == true
+                                          ? colorVariado[19]
+                                          : colorCasillas[19],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C18
+                                Transform.rotate(
+                                  angle: 150 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-145, 38),
+                                    child: RectangleButton(
+                                      color: casillaCambia[18] == true
+                                          ? colorVariado[18]
+                                          : colorCasillas[18],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C17
+                                Transform.rotate(
+                                  angle: 150 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-145, 18),
+                                    child: RectangleButton(
+                                      color: casillaCambia[17] == true
+                                          ? colorVariado[17]
+                                          : colorCasillas[17],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C16
+                                Transform.rotate(
+                                  angle: 150 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-145, -2),
+                                    child: RectangleButton(
+                                      color: casillaCambia[16] == true
+                                          ? colorVariado[16]
+                                          : colorCasillas[16],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C15
+                                Transform.rotate(
+                                  angle: 150 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-145, -21),
+                                    child: RectangleButton(
+                                      color: casillaCambia[15] == true
+                                          ? colorVariado[15]
+                                          : colorCasillas[15],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                //C35
+                                Transform.rotate(
+                                  angle: 270 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(0, -184),
+                                    child: EsquinaButton(
+                                      color: casillaCambia[35] == true
+                                          ? colorVariado[35]
+                                          : colorCasillas[35],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C28
+                                Transform.rotate(
+                                  angle: -27 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-16, -164),
+                                    child: Esquina2Button(
+                                      color: casillaCambia[28] == true
+                                          ? colorVariado[28]
+                                          : colorCasillas[28],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C21
+                                Transform.rotate(
+                                  angle: 30 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-8, -146),
+                                    child: Esquina3Button(
+                                      color: casillaCambia[21] == true
+                                          ? colorVariado[21]
+                                          : colorCasillas[21],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                //C14
+                                Transform.rotate(
+                                  angle: -270 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(26, -135),
+                                    child: EsquinaButton(
+                                      color: casillaCambia[14] == true
+                                          ? colorVariado[14]
+                                          : colorCasillas[14],
+                                      onPressed: () {
+                                        //_cambiarColor2();
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                //TrianguloRojo
+                                Transform.rotate(
+                                  angle: 90 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(20, 137),
+                                    child: TriangleWidget(color: Rojo),
+                                  ),
+                                ),
+
+                                //TrianguloAzul
+                                Transform.rotate(
+                                  angle: 152 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-5, 132),
+                                    child: TriangleWidget(color: Azul),
+                                  ),
+                                ),
+
+                                //TrianguloNaranja
+                                Transform.rotate(
+                                  angle: 207 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-37, 150),
+                                    child: TriangleWidget(color: Naranja),
+                                  ),
+                                ),
+
+                                //TrianguloAmarillo
+                                Transform.rotate(
+                                  angle: 270 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(-22, 177),
+                                    child: TriangleWidget(color: Amarillo),
+                                  ),
+                                ),
+
+                                //TrianguloRosa
+                                Transform.rotate(
+                                  angle: 332 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(10, 185),
+                                    child: TriangleWidget(color: Rosa),
+                                  ),
+                                ),
+
+                                //TrianguloVerde
+                                Transform.rotate(
+                                  angle: -330 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(33, 170),
+                                    child: TriangleWidget(color: Verde),
+                                  ),
+                                ),
+
+                                //FICHAS---------------------------------------------------------------------------------------------
+                                Stack(children: [
+                                  _jugadores > 0
+                                      ? Transform.translate(
+                                          //Ficha J0
+                                          offset: coordenadasFichaJ0[int.parse(
+                                              _posiciones[
+                                                  0])], //coordenadasFichaJ1[posicionesFichas[0]],
+                                          child: Container(
+                                            width: 15,
+                                            height: 15,
+                                            child: Image.network(
+                                              '$urlDir${_fichas[0]}',
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox.shrink(),
+                                  _jugadores > 1
+                                      ? Transform.translate(
+                                          //Ficha J1
+                                          offset: coordenadasFichaJ1[int.parse(
+                                              _posiciones[
+                                                  1])], //coordenadasFichaJ1[posicionesFichas[0]],
+                                          child: Container(
+                                            width: 15,
+                                            height: 15,
+                                            child: Image.network(
+                                              '$urlDir${_fichas[1]}',
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox.shrink(),
+                                  _jugadores > 2
+                                      ? Transform.translate(
+                                          //Ficha J2
+                                          offset: coordenadasFichaJ2[int.parse(
+                                              _posiciones[
+                                                  2])], //coordenadasFichaJ1[posicionesFichas[0]],
+                                          child: Container(
+                                            width: 15,
+                                            height: 15,
+                                            child: Image.network(
+                                              '$urlDir${_fichas[2]}',
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox.shrink(),
+                                  _jugadores > 3
+                                      ? Transform.translate(
+                                          //Ficha J3
+                                          offset: coordenadasFichaJ3[int.parse(
+                                              _posiciones[
+                                                  3])], //coordenadasFichaJ1[posicionesFichas[0]],
+                                          child: Container(
+                                            width: 15,
+                                            height: 15,
+                                            child: Image.network(
+                                              '$urlDir${_fichas[3]}',
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox.shrink(),
+                                  _jugadores > 4
+                                      ? Transform.translate(
+                                          //Ficha J4
+                                          offset: coordenadasFichaJ4[int.parse(
+                                              _posiciones[
+                                                  4])], //coordenadasFichaJ1[posicionesFichas[0]],
+                                          child: Container(
+                                            width: 15,
+                                            height: 15,
+                                            child: Image.network(
+                                              '$urlDir${_fichas[4]}',
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox.shrink(),
+                                  _jugadores > 5
+                                      ? Transform.translate(
+                                          //Ficha J5
+                                          offset: coordenadasFichaJ5[int.parse(
+                                              _posiciones[
+                                                  5])], //coordenadasFichaJ1[posicionesFichas[0]],
+                                          child: Container(
+                                            width: 15,
+                                            height: 15,
+                                            child: Image.network(
+                                              '$urlDir${_fichas[5]}',
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox.shrink(),
+                                ]),
                               ],
                             ),
-                          ),
-                          Stack(
-                            children: [
-                              // J0
-                              _jugadores > 0
-                                  ? Stack(
-                                      children: [
-                                        Transform.translate(
-                                          //Texto J0
-                                          offset: const Offset(-262, -128),
-                                          child: Text(
-                                            _nombresJugadores[0],
-                                            style: const TextStyle(
-                                                fontFamily: "Baskerville",
-                                                fontSize: 12.0,
-                                                //color: Color(0xFFc9c154),
-                                                color: Color.fromARGB(
-                                                    255, 255, 255, 255),
-                                                fontWeight: FontWeight.bold,
-                                                decoration:
-                                                    TextDecoration.none),
-                                          ),
-                                        ),
-                                        Transform.translate(
-                                          //Imagen J0
-                                          offset: const Offset(-265, -110),
-                                          child: Container(
-                                            width: 70,
-                                            height: 70,
-                                            child: const Image(
-                                              image: AssetImage(
-                                                imagenJugador,
-                                              ),
-                                              fit: BoxFit.fill,
+                            Stack(
+                              children: [
+                                // J0
+                                _jugadores > 0
+                                    ? Stack(
+                                        children: [
+                                          Transform.translate(
+                                            //Texto J0
+                                            offset: const Offset(-262, -128),
+                                            child: Text(
+                                              _nombresJugadores[0],
+                                              style: const TextStyle(
+                                                  fontFamily: "Baskerville",
+                                                  fontSize: 12.0,
+                                                  //color: Color(0xFFc9c154),
+                                                  color: Color.fromARGB(
+                                                      255, 255, 255, 255),
+                                                  fontWeight: FontWeight.bold,
+                                                  decoration:
+                                                      TextDecoration.none),
                                             ),
                                           ),
-                                        ),
-                                        _turno == _nombresJugadores[0]
-                                            ? Transform.translate(
-                                                //Imagen turno J0
-                                                offset:
-                                                    const Offset(-265, -110),
-                                                child: Container(
-                                                  width: 70,
-                                                  height: 70,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        imagenJugadorTurno),
-                                                    fit: BoxFit.fill,
-                                                  ),
+                                          Transform.translate(
+                                            //Imagen J0
+                                            offset: const Offset(-265, -110),
+                                            child: Container(
+                                              width: 70,
+                                              height: 70,
+                                              child: const Image(
+                                                image: AssetImage(
+                                                  imagenJugador,
                                                 ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Transform.translate(
-                                          //Imagen turno J0
-                                          offset: const Offset(-285, -52),
-                                          child: Container(
-                                            width: 30,
-                                            height: 30,
-                                            child: Image(
-                                              image: NetworkImage(
-                                                  '$urlDir/${_fichas[0]}'),
-                                              fit: BoxFit.fill,
-                                            ),
-                                          ),
-                                        ),
-                                        Transform.translate(
-                                          //Putos J0
-                                          offset: const Offset(-205, -60),
-                                          child: Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: const BoxDecoration(
-                                              image: DecorationImage(
-                                                image:
-                                                    AssetImage(quesitosGeneral),
                                                 fit: BoxFit.fill,
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        _quesitos[0][_tematicasQuesitos
-                                                .indexOf(HISTORIA)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J0
-                                                offset: const Offset(-205, -60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image: AssetImage(
-                                                        quesitoHistoria),
-                                                    fit: BoxFit.fill,
+                                          _turno == _nombresJugadores[0]
+                                              ? Transform.translate(
+                                                  //Imagen turno J0
+                                                  offset:
+                                                      const Offset(-265, -110),
+                                                  child: Container(
+                                                    width: 70,
+                                                    height: 70,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          imagenJugadorTurno),
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[0][_tematicasQuesitos
-                                                .indexOf(ARTE)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J0
-                                                offset: const Offset(-205, -60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image:
-                                                        AssetImage(quesitoArte),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[0][_tematicasQuesitos
-                                                .indexOf(DEPORTES)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J0
-                                                offset: const Offset(-205, -60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image: AssetImage(
-                                                        quesitoDeportes),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[0][_tematicasQuesitos
-                                                .indexOf(CIENCIA)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J0
-                                                offset: const Offset(-205, -60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoCiencia),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[0][_tematicasQuesitos
-                                                .indexOf(ENTRETENIMIENTO)]
-                                            ? Transform.translate(
-                                                //QuesitoEntretenimiento J0
-                                                offset: const Offset(-205, -60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoEntretenimiento),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[0][_tematicasQuesitos
-                                                .indexOf(GEOGRAFIA)]
-                                            ? Transform.translate(
-                                                //QuesitoGeografia J0
-                                                offset: const Offset(-205, -60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoGeografia),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                      ],
-                                    )
-                                  : const SizedBox.shrink(),
-
-                              //J1
-                              _jugadores > 1
-                                  ? Stack(
-                                      children: [
-                                        Transform.translate(
-                                          //Texto J1
-                                          offset: const Offset(-262, -8),
-                                          child: Text(
-                                            _nombresJugadores[1],
-                                            style: const TextStyle(
-                                                fontFamily: "Baskerville",
-                                                fontSize: 12.0,
-                                                //color: Color(0xFFc9c154),
-                                                color: Color.fromARGB(
-                                                    255, 255, 255, 255),
-                                                fontWeight: FontWeight.bold,
-                                                decoration:
-                                                    TextDecoration.none),
-                                          ),
-                                        ),
-                                        Transform.translate(
-                                          //Imagen J1
-                                          offset: const Offset(-265, 10),
-                                          child: Container(
-                                            width: 70,
-                                            height: 70,
-                                            child: const Image(
-                                              image: AssetImage(
-                                                imagenJugador,
-                                              ),
-                                              fit: BoxFit.fill,
-                                            ),
-                                          ),
-                                        ),
-                                        _turno == _nombresJugadores[1]
-                                            ? Transform.translate(
-                                                //Imagen turno J1
-                                                offset: const Offset(-265, 10),
-                                                child: Container(
-                                                  width: 70,
-                                                  height: 70,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        imagenJugadorTurno),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Transform.translate(
-                                          //Imagen turno J0
-                                          offset: const Offset(-285, 68),
-                                          child: Container(
-                                            width: 30,
-                                            height: 30,
-                                            child: Image(
-                                              image: NetworkImage(
-                                                  '$urlDir/${_fichas[1]}'),
-                                              fit: BoxFit.fill,
-                                            ),
-                                          ),
-                                        ),
-                                        Transform.translate(
-                                          //Putos J1
-                                          offset: const Offset(-205, 60),
-                                          child: Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: const BoxDecoration(
-                                              image: DecorationImage(
-                                                image:
-                                                    AssetImage(quesitosGeneral),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          Transform.translate(
+                                            //Imagen turno J0
+                                            offset: const Offset(-285, -52),
+                                            child: Container(
+                                              width: 30,
+                                              height: 30,
+                                              child: Image(
+                                                image: NetworkImage(
+                                                    '$urlDir${_fichas[0]}'),
                                                 fit: BoxFit.fill,
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        _quesitos[1][_tematicasQuesitos
-                                                .indexOf(HISTORIA)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J1
-                                                offset: const Offset(-205, 60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image: AssetImage(
-                                                        quesitoHistoria),
-                                                    fit: BoxFit.fill,
-                                                  ),
+                                          Transform.translate(
+                                            //Putos J0
+                                            offset: const Offset(-205, -60),
+                                            child: Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: const BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: AssetImage(
+                                                      quesitosGeneral),
+                                                  fit: BoxFit.fill,
                                                 ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[1][_tematicasQuesitos
-                                                .indexOf(ARTE)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J1
-                                                offset: const Offset(-205, 60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image:
-                                                        AssetImage(quesitoArte),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[1][_tematicasQuesitos
-                                                .indexOf(DEPORTES)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J1
-                                                offset: const Offset(-205, 60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image: AssetImage(
-                                                        quesitoDeportes),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[1][_tematicasQuesitos
-                                                .indexOf(CIENCIA)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J1
-                                                offset: const Offset(-205, 60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoCiencia),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[1][_tematicasQuesitos
-                                                .indexOf(ENTRETENIMIENTO)]
-                                            ? Transform.translate(
-                                                //QuesitoEntretenimiento J1
-                                                offset: const Offset(-205, 60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoEntretenimiento),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[1][_tematicasQuesitos
-                                                .indexOf(GEOGRAFIA)]
-                                            ? Transform.translate(
-                                                //QuesitoGeografia J1
-                                                offset: const Offset(-205, 60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoGeografia),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                      ],
-                                    )
-                                  : const SizedBox.shrink(),
-
-                              // J2
-                              _jugadores > 2
-                                  ? Stack(
-                                      children: [
-                                        Transform.translate(
-                                          //Texto J2
-                                          offset: const Offset(-262, 112),
-                                          child: Text(
-                                            _nombresJugadores[2],
-                                            style: const TextStyle(
-                                                fontFamily: "Baskerville",
-                                                fontSize: 12.0,
-                                                //color: Color(0xFFc9c154),
-                                                color: Color.fromARGB(
-                                                    255, 255, 255, 255),
-                                                fontWeight: FontWeight.bold,
-                                                decoration:
-                                                    TextDecoration.none),
-                                          ),
-                                        ),
-                                        Transform.translate(
-                                          //Imagen J2
-                                          offset: const Offset(-265, 130),
-                                          child: Container(
-                                            width: 70,
-                                            height: 70,
-                                            child: const Image(
-                                              image: AssetImage(
-                                                imagenJugador,
                                               ),
-                                              fit: BoxFit.fill,
                                             ),
                                           ),
-                                        ),
-                                        _turno == _nombresJugadores[2]
-                                            ? Transform.translate(
-                                                //Imagen turno J2
-                                                offset: const Offset(-265, 130),
-                                                child: Container(
-                                                  width: 70,
-                                                  height: 70,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        imagenJugadorTurno),
-                                                    fit: BoxFit.fill,
+                                          _quesitos[0][_tematicasQuesitos
+                                                  .indexOf(HISTORIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J0
+                                                  offset:
+                                                      const Offset(-205, -60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoHistoria),
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Transform.translate(
-                                          //Imagen turno J0
-                                          offset: const Offset(-285, 188),
-                                          child: Container(
-                                            width: 30,
-                                            height: 30,
-                                            child: Image(
-                                              image: NetworkImage(
-                                                  '$urlDir/${_fichas[2]}'),
-                                              fit: BoxFit.fill,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[0][_tematicasQuesitos
+                                                  .indexOf(ARTE)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J0
+                                                  offset:
+                                                      const Offset(-205, -60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoArte),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[0][_tematicasQuesitos
+                                                  .indexOf(DEPORTES)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J0
+                                                  offset:
+                                                      const Offset(-205, -60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoDeportes),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[0][_tematicasQuesitos
+                                                  .indexOf(CIENCIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J0
+                                                  offset:
+                                                      const Offset(-205, -60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoCiencia),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[0][_tematicasQuesitos
+                                                  .indexOf(ENTRETENIMIENTO)]
+                                              ? Transform.translate(
+                                                  //QuesitoEntretenimiento J0
+                                                  offset:
+                                                      const Offset(-205, -60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoEntretenimiento),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[0][_tematicasQuesitos
+                                                  .indexOf(GEOGRAFIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoGeografia J0
+                                                  offset:
+                                                      const Offset(-205, -60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoGeografia),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                        ],
+                                      )
+                                    : const SizedBox.shrink(),
+
+                                //J1
+                                _jugadores > 1
+                                    ? Stack(
+                                        children: [
+                                          Transform.translate(
+                                            //Texto J1
+                                            offset: const Offset(-262, -8),
+                                            child: Text(
+                                              _nombresJugadores[1],
+                                              style: const TextStyle(
+                                                  fontFamily: "Baskerville",
+                                                  fontSize: 12.0,
+                                                  //color: Color(0xFFc9c154),
+                                                  color: Color.fromARGB(
+                                                      255, 255, 255, 255),
+                                                  fontWeight: FontWeight.bold,
+                                                  decoration:
+                                                      TextDecoration.none),
                                             ),
                                           ),
-                                        ),
-                                        Transform.translate(
-                                          //Putos J2
-                                          offset: const Offset(-205, 180),
-                                          child: Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: const BoxDecoration(
-                                              image: DecorationImage(
-                                                image:
-                                                    AssetImage(quesitosGeneral),
+                                          Transform.translate(
+                                            //Imagen J1
+                                            offset: const Offset(-265, 10),
+                                            child: Container(
+                                              width: 70,
+                                              height: 70,
+                                              child: const Image(
+                                                image: AssetImage(
+                                                  imagenJugador,
+                                                ),
                                                 fit: BoxFit.fill,
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        _quesitos[2][_tematicasQuesitos
-                                                .indexOf(HISTORIA)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J2
-                                                offset: const Offset(-205, 180),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image: AssetImage(
-                                                        quesitoHistoria),
-                                                    fit: BoxFit.fill,
+                                          _turno == _nombresJugadores[1]
+                                              ? Transform.translate(
+                                                  //Imagen turno J1
+                                                  offset:
+                                                      const Offset(-265, 10),
+                                                  child: Container(
+                                                    width: 70,
+                                                    height: 70,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          imagenJugadorTurno),
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[2][_tematicasQuesitos
-                                                .indexOf(ARTE)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J2
-                                                offset: const Offset(-205, 180),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image:
-                                                        AssetImage(quesitoArte),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[2][_tematicasQuesitos
-                                                .indexOf(DEPORTES)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J2
-                                                offset: const Offset(-205, 180),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image: AssetImage(
-                                                        quesitoDeportes),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[2][_tematicasQuesitos
-                                                .indexOf(CIENCIA)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J2
-                                                offset: const Offset(-205, 180),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoCiencia),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[2][_tematicasQuesitos
-                                                .indexOf(ENTRETENIMIENTO)]
-                                            ? Transform.translate(
-                                                //QuesitoEntretenimiento J2
-                                                offset: const Offset(-205, 180),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoEntretenimiento),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[2][_tematicasQuesitos
-                                                .indexOf(GEOGRAFIA)]
-                                            ? Transform.translate(
-                                                //QuesitoGeografia J2
-                                                offset: const Offset(-205, 180),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoGeografia),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                      ],
-                                    )
-                                  : const SizedBox.shrink(),
-
-                              // J3
-                              _jugadores > 3
-                                  ? Stack(
-                                      children: [
-                                        Transform.translate(
-                                          //Texto J3
-                                          offset: const Offset(293, -128),
-                                          child: Text(
-                                            _nombresJugadores[3],
-                                            style: const TextStyle(
-                                                fontFamily: "Baskerville",
-                                                fontSize: 12.0,
-                                                //color: Color(0xFFc9c154),
-                                                color: Color.fromARGB(
-                                                    255, 255, 255, 255),
-                                                fontWeight: FontWeight.bold,
-                                                decoration:
-                                                    TextDecoration.none),
-                                          ),
-                                        ),
-                                        Transform.translate(
-                                          //Imagen J3
-                                          offset: const Offset(290, -110),
-                                          child: Container(
-                                            width: 70,
-                                            height: 70,
-                                            child: const Image(
-                                              image: AssetImage(
-                                                imagenJugador,
-                                              ),
-                                              fit: BoxFit.fill,
-                                            ),
-                                          ),
-                                        ),
-                                        _turno == _nombresJugadores[3]
-                                            ? Transform.translate(
-                                                //Imagen turno J3
-                                                offset: const Offset(290, -110),
-                                                child: Container(
-                                                  width: 70,
-                                                  height: 70,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        imagenJugadorTurno),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Transform.translate(
-                                          //Putos J3
-                                          offset: const Offset(260, -60),
-                                          child: Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: const BoxDecoration(
-                                              image: DecorationImage(
-                                                image:
-                                                    AssetImage(quesitosGeneral),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          Transform.translate(
+                                            //Imagen turno J0
+                                            offset: const Offset(-285, 68),
+                                            child: Container(
+                                              width: 30,
+                                              height: 30,
+                                              child: Image(
+                                                image: NetworkImage(
+                                                    '$urlDir${_fichas[1]}'),
                                                 fit: BoxFit.fill,
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        Transform.translate(
-                                          //Imagen turno J3
-                                          offset: const Offset(355, -52),
-                                          child: Container(
-                                            width: 30,
-                                            height: 30,
-                                            child: Image(
-                                              image: NetworkImage(
-                                                  '$urlDir/${_fichas[3]}'),
-                                              fit: BoxFit.fill,
-                                            ),
-                                          ),
-                                        ),
-                                        _quesitos[3][_tematicasQuesitos
-                                                .indexOf(HISTORIA)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J3
-                                                offset: const Offset(260, -60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image: AssetImage(
-                                                        quesitoHistoria),
-                                                    fit: BoxFit.fill,
-                                                  ),
+                                          Transform.translate(
+                                            //Putos J1
+                                            offset: const Offset(-205, 60),
+                                            child: Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: const BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: AssetImage(
+                                                      quesitosGeneral),
+                                                  fit: BoxFit.fill,
                                                 ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[3][_tematicasQuesitos
-                                                .indexOf(ARTE)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J3
-                                                offset: const Offset(260, -60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image:
-                                                        AssetImage(quesitoArte),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[3][_tematicasQuesitos
-                                                .indexOf(DEPORTES)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J3
-                                                offset: const Offset(260, -60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image: AssetImage(
-                                                        quesitoDeportes),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[3][_tematicasQuesitos
-                                                .indexOf(CIENCIA)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J3
-                                                offset: const Offset(260, -60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoCiencia),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[3][_tematicasQuesitos
-                                                .indexOf(ENTRETENIMIENTO)]
-                                            ? Transform.translate(
-                                                //QuesitoEntretenimiento J3
-                                                offset: const Offset(260, -60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoEntretenimiento),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[3][_tematicasQuesitos
-                                                .indexOf(GEOGRAFIA)]
-                                            ? Transform.translate(
-                                                //QuesitoGeografia J3
-                                                offset: const Offset(260, -60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoGeografia),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                      ],
-                                    )
-                                  : const SizedBox.shrink(),
-
-                              //J4
-                              _jugadores > 4
-                                  ? Stack(
-                                      children: [
-                                        Transform.translate(
-                                          //Texto J4
-                                          offset: const Offset(293, -8),
-                                          child: Text(
-                                            _nombresJugadores[4],
-                                            style: const TextStyle(
-                                                fontFamily: "Baskerville",
-                                                fontSize: 12.0,
-                                                //color: Color(0xFFc9c154),
-                                                color: Color.fromARGB(
-                                                    255, 255, 255, 255),
-                                                fontWeight: FontWeight.bold,
-                                                decoration:
-                                                    TextDecoration.none),
-                                          ),
-                                        ),
-                                        Transform.translate(
-                                          //Imagen J4
-                                          offset: const Offset(290, 10),
-                                          child: Container(
-                                            width: 70,
-                                            height: 70,
-                                            child: const Image(
-                                              image: AssetImage(
-                                                imagenJugador,
                                               ),
-                                              fit: BoxFit.fill,
                                             ),
                                           ),
-                                        ),
-                                        _turno == _nombresJugadores[4]
-                                            ? Transform.translate(
-                                                //Imagen turno J4
-                                                offset: const Offset(290, 10),
-                                                child: Container(
-                                                  width: 70,
-                                                  height: 70,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        imagenJugadorTurno),
-                                                    fit: BoxFit.fill,
+                                          _quesitos[1][_tematicasQuesitos
+                                                  .indexOf(HISTORIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J1
+                                                  offset:
+                                                      const Offset(-205, 60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoHistoria),
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[1][_tematicasQuesitos
+                                                  .indexOf(ARTE)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J1
+                                                  offset:
+                                                      const Offset(-205, 60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoArte),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[1][_tematicasQuesitos
+                                                  .indexOf(DEPORTES)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J1
+                                                  offset:
+                                                      const Offset(-205, 60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoDeportes),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[1][_tematicasQuesitos
+                                                  .indexOf(CIENCIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J1
+                                                  offset:
+                                                      const Offset(-205, 60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoCiencia),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[1][_tematicasQuesitos
+                                                  .indexOf(ENTRETENIMIENTO)]
+                                              ? Transform.translate(
+                                                  //QuesitoEntretenimiento J1
+                                                  offset:
+                                                      const Offset(-205, 60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoEntretenimiento),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[1][_tematicasQuesitos
+                                                  .indexOf(GEOGRAFIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoGeografia J1
+                                                  offset:
+                                                      const Offset(-205, 60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoGeografia),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                        ],
+                                      )
+                                    : const SizedBox.shrink(),
+
+                                // J2
+                                _jugadores > 2
+                                    ? Stack(
+                                        children: [
+                                          Transform.translate(
+                                            //Texto J2
+                                            offset: const Offset(-262, 112),
+                                            child: Text(
+                                              _nombresJugadores[2],
+                                              style: const TextStyle(
+                                                  fontFamily: "Baskerville",
+                                                  fontSize: 12.0,
+                                                  //color: Color(0xFFc9c154),
+                                                  color: Color.fromARGB(
+                                                      255, 255, 255, 255),
+                                                  fontWeight: FontWeight.bold,
+                                                  decoration:
+                                                      TextDecoration.none),
+                                            ),
+                                          ),
+                                          Transform.translate(
+                                            //Imagen J2
+                                            offset: const Offset(-265, 130),
+                                            child: Container(
+                                              width: 70,
+                                              height: 70,
+                                              child: const Image(
+                                                image: AssetImage(
+                                                  imagenJugador,
                                                 ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Transform.translate(
-                                          //Putos J4
-                                          offset: const Offset(260, 60),
-                                          child: Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: const BoxDecoration(
-                                              image: DecorationImage(
-                                                image:
-                                                    AssetImage(quesitosGeneral),
                                                 fit: BoxFit.fill,
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        Transform.translate(
-                                          //Imagen turno J3
-                                          offset: const Offset(355, 70),
-                                          child: Container(
-                                            width: 30,
-                                            height: 30,
-                                            child: Image(
-                                              image: NetworkImage(
-                                                  '$urlDir/${_fichas[4]}'),
-                                              fit: BoxFit.fill,
-                                            ),
-                                          ),
-                                        ),
-                                        _quesitos[4][_tematicasQuesitos
-                                                .indexOf(HISTORIA)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J4
-                                                offset: const Offset(260, 60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image: AssetImage(
-                                                        quesitoHistoria),
-                                                    fit: BoxFit.fill,
+                                          _turno == _nombresJugadores[2]
+                                              ? Transform.translate(
+                                                  //Imagen turno J2
+                                                  offset:
+                                                      const Offset(-265, 130),
+                                                  child: Container(
+                                                    width: 70,
+                                                    height: 70,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          imagenJugadorTurno),
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[4][_tematicasQuesitos
-                                                .indexOf(ARTE)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J4
-                                                offset: const Offset(260, 60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image:
-                                                        AssetImage(quesitoArte),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[4][_tematicasQuesitos
-                                                .indexOf(DEPORTES)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J4
-                                                offset: const Offset(260, 60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image: AssetImage(
-                                                        quesitoDeportes),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[4][_tematicasQuesitos
-                                                .indexOf(CIENCIA)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J4
-                                                offset: const Offset(260, 60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoCiencia),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[4][_tematicasQuesitos
-                                                .indexOf(ENTRETENIMIENTO)]
-                                            ? Transform.translate(
-                                                //QuesitoEntretenimiento J4
-                                                offset: const Offset(260, 60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoEntretenimiento),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[4][_tematicasQuesitos
-                                                .indexOf(GEOGRAFIA)]
-                                            ? Transform.translate(
-                                                //QuesitoGeografia J4
-                                                offset: const Offset(260, 60),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoGeografia),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                      ],
-                                    )
-                                  : const SizedBox.shrink(),
-
-                              // J5
-                              _jugadores > 5
-                                  ? Stack(
-                                      children: [
-                                        Transform.translate(
-                                          //Texto J5
-
-                                          offset: const Offset(293, 112),
-                                          child: Text(
-                                            _nombresJugadores[5],
-                                            style: const TextStyle(
-                                                fontFamily: "Baskerville",
-                                                fontSize: 12.0,
-                                                //color: Color(0xFFc9c154),
-                                                color: Color.fromARGB(
-                                                    255, 255, 255, 255),
-                                                fontWeight: FontWeight.bold,
-                                                decoration:
-                                                    TextDecoration.none),
-                                          ),
-                                        ),
-                                        Transform.translate(
-                                          //Imagen J5
-                                          offset: const Offset(290, 130),
-                                          child: Container(
-                                            width: 70,
-                                            height: 70,
-                                            child: const Image(
-                                              image: AssetImage(
-                                                imagenJugador,
-                                              ),
-                                              fit: BoxFit.fill,
-                                            ),
-                                          ),
-                                        ),
-                                        _turno == _nombresJugadores[5]
-                                            ? Transform.translate(
-                                                //Imagen turno J5
-                                                offset: const Offset(290, 130),
-                                                child: Container(
-                                                  width: 70,
-                                                  height: 70,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        imagenJugadorTurno),
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Transform.translate(
-                                          //Putos J5
-                                          offset: const Offset(260, 180),
-                                          child: Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: const BoxDecoration(
-                                              image: DecorationImage(
-                                                image:
-                                                    AssetImage(quesitosGeneral),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          Transform.translate(
+                                            //Imagen turno J0
+                                            offset: const Offset(-285, 188),
+                                            child: Container(
+                                              width: 30,
+                                              height: 30,
+                                              child: Image(
+                                                image: NetworkImage(
+                                                    '$urlDir${_fichas[2]}'),
                                                 fit: BoxFit.fill,
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        Transform.translate(
-                                          //Imagen turno J5
-                                          offset: const Offset(355, 185),
-                                          child: Container(
-                                            width: 30,
-                                            height: 30,
-                                            child: Image(
-                                              image: NetworkImage(
-                                                  '$urlDir/${_fichas[5]}'),
-                                              fit: BoxFit.fill,
+                                          Transform.translate(
+                                            //Putos J2
+                                            offset: const Offset(-205, 180),
+                                            child: Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: const BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: AssetImage(
+                                                      quesitosGeneral),
+                                                  fit: BoxFit.fill,
+                                                ),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        _quesitos[5][_tematicasQuesitos
-                                                .indexOf(HISTORIA)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J5
-                                                offset: const Offset(260, 180),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image: AssetImage(
-                                                        quesitoHistoria),
-                                                    fit: BoxFit.fill,
+                                          _quesitos[2][_tematicasQuesitos
+                                                  .indexOf(HISTORIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J2
+                                                  offset:
+                                                      const Offset(-205, 180),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoHistoria),
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[5][_tematicasQuesitos
-                                                .indexOf(ARTE)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J5
-                                                offset: const Offset(260, 180),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image:
-                                                        AssetImage(quesitoArte),
-                                                    fit: BoxFit.fill,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[2][_tematicasQuesitos
+                                                  .indexOf(ARTE)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J2
+                                                  offset:
+                                                      const Offset(-205, 180),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoArte),
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[0][_tematicasQuesitos
-                                                .indexOf(DEPORTES)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J5
-                                                offset: const Offset(260, 180),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Image(
-                                                    image: AssetImage(
-                                                        quesitoDeportes),
-                                                    fit: BoxFit.fill,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[2][_tematicasQuesitos
+                                                  .indexOf(DEPORTES)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J2
+                                                  offset:
+                                                      const Offset(-205, 180),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoDeportes),
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[5][_tematicasQuesitos
-                                                .indexOf(CIENCIA)]
-                                            ? Transform.translate(
-                                                //QuesitoHistoria J5
-                                                offset: const Offset(260, 180),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoCiencia),
-                                                    fit: BoxFit.fill,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[2][_tematicasQuesitos
+                                                  .indexOf(CIENCIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J2
+                                                  offset:
+                                                      const Offset(-205, 180),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoCiencia),
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[5][_tematicasQuesitos
-                                                .indexOf(ENTRETENIMIENTO)]
-                                            ? Transform.translate(
-                                                //QuesitoEntretenimiento J5
-                                                offset: const Offset(260, 180),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoEntretenimiento),
-                                                    fit: BoxFit.fill,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[2][_tematicasQuesitos
+                                                  .indexOf(ENTRETENIMIENTO)]
+                                              ? Transform.translate(
+                                                  //QuesitoEntretenimiento J2
+                                                  offset:
+                                                      const Offset(-205, 180),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoEntretenimiento),
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        _quesitos[5][_tematicasQuesitos
-                                                .indexOf(GEOGRAFIA)]
-                                            ? Transform.translate(
-                                                //QuesitoGeografia J5
-                                                offset: const Offset(260, 180),
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        quesitoGeografia),
-                                                    fit: BoxFit.fill,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[2][_tematicasQuesitos
+                                                  .indexOf(GEOGRAFIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoGeografia J2
+                                                  offset:
+                                                      const Offset(-205, 180),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoGeografia),
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                        ],
+                                      )
+                                    : const SizedBox.shrink(),
+
+                                // J3
+                                _jugadores > 3
+                                    ? Stack(
+                                        children: [
+                                          Transform.translate(
+                                            //Texto J3
+                                            offset: const Offset(293, -128),
+                                            child: Text(
+                                              _nombresJugadores[3],
+                                              style: const TextStyle(
+                                                  fontFamily: "Baskerville",
+                                                  fontSize: 12.0,
+                                                  //color: Color(0xFFc9c154),
+                                                  color: Color.fromARGB(
+                                                      255, 255, 255, 255),
+                                                  fontWeight: FontWeight.bold,
+                                                  decoration:
+                                                      TextDecoration.none),
+                                            ),
+                                          ),
+                                          Transform.translate(
+                                            //Imagen J3
+                                            offset: const Offset(290, -110),
+                                            child: Container(
+                                              width: 70,
+                                              height: 70,
+                                              child: const Image(
+                                                image: AssetImage(
+                                                  imagenJugador,
                                                 ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                      ],
-                                    )
-                                  : const SizedBox.shrink(),
-                            ],
-                          ),
-                          Stack(
-                            children: [
-                              // Contador
-                              Transform.translate(
-                                offset: Offset(-145, -120),
-                                child: Container(
-                                  width: 55,
-                                  height: 55,
-                                  decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '$_contadorDado',
-                                      style: const TextStyle(fontSize: 40),
+                                                fit: BoxFit.fill,
+                                              ),
+                                            ),
+                                          ),
+                                          _turno == _nombresJugadores[3]
+                                              ? Transform.translate(
+                                                  //Imagen turno J3
+                                                  offset:
+                                                      const Offset(290, -110),
+                                                  child: Container(
+                                                    width: 70,
+                                                    height: 70,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          imagenJugadorTurno),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          Transform.translate(
+                                            //Putos J3
+                                            offset: const Offset(260, -60),
+                                            child: Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: const BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: AssetImage(
+                                                      quesitosGeneral),
+                                                  fit: BoxFit.fill,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Transform.translate(
+                                            //Imagen turno J3
+                                            offset: const Offset(355, -52),
+                                            child: Container(
+                                              width: 30,
+                                              height: 30,
+                                              child: Image(
+                                                image: NetworkImage(
+                                                    '$urlDir${_fichas[3]}'),
+                                                fit: BoxFit.fill,
+                                              ),
+                                            ),
+                                          ),
+                                          _quesitos[3][_tematicasQuesitos
+                                                  .indexOf(HISTORIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J3
+                                                  offset:
+                                                      const Offset(260, -60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoHistoria),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[3][_tematicasQuesitos
+                                                  .indexOf(ARTE)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J3
+                                                  offset:
+                                                      const Offset(260, -60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoArte),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[3][_tematicasQuesitos
+                                                  .indexOf(DEPORTES)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J3
+                                                  offset:
+                                                      const Offset(260, -60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoDeportes),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[3][_tematicasQuesitos
+                                                  .indexOf(CIENCIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J3
+                                                  offset:
+                                                      const Offset(260, -60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoCiencia),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[3][_tematicasQuesitos
+                                                  .indexOf(ENTRETENIMIENTO)]
+                                              ? Transform.translate(
+                                                  //QuesitoEntretenimiento J3
+                                                  offset:
+                                                      const Offset(260, -60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoEntretenimiento),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[3][_tematicasQuesitos
+                                                  .indexOf(GEOGRAFIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoGeografia J3
+                                                  offset:
+                                                      const Offset(260, -60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoGeografia),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                        ],
+                                      )
+                                    : const SizedBox.shrink(),
+
+                                //J4
+                                _jugadores > 4
+                                    ? Stack(
+                                        children: [
+                                          Transform.translate(
+                                            //Texto J4
+                                            offset: const Offset(293, -8),
+                                            child: Text(
+                                              _nombresJugadores[4],
+                                              style: const TextStyle(
+                                                  fontFamily: "Baskerville",
+                                                  fontSize: 12.0,
+                                                  //color: Color(0xFFc9c154),
+                                                  color: Color.fromARGB(
+                                                      255, 255, 255, 255),
+                                                  fontWeight: FontWeight.bold,
+                                                  decoration:
+                                                      TextDecoration.none),
+                                            ),
+                                          ),
+                                          Transform.translate(
+                                            //Imagen J4
+                                            offset: const Offset(290, 10),
+                                            child: Container(
+                                              width: 70,
+                                              height: 70,
+                                              child: const Image(
+                                                image: AssetImage(
+                                                  imagenJugador,
+                                                ),
+                                                fit: BoxFit.fill,
+                                              ),
+                                            ),
+                                          ),
+                                          _turno == _nombresJugadores[4]
+                                              ? Transform.translate(
+                                                  //Imagen turno J4
+                                                  offset: const Offset(290, 10),
+                                                  child: Container(
+                                                    width: 70,
+                                                    height: 70,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          imagenJugadorTurno),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          Transform.translate(
+                                            //Putos J4
+                                            offset: const Offset(260, 60),
+                                            child: Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: const BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: AssetImage(
+                                                      quesitosGeneral),
+                                                  fit: BoxFit.fill,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Transform.translate(
+                                            //Imagen turno J3
+                                            offset: const Offset(355, 70),
+                                            child: Container(
+                                              width: 30,
+                                              height: 30,
+                                              child: Image(
+                                                image: NetworkImage(
+                                                    '$urlDir${_fichas[4]}'),
+                                                fit: BoxFit.fill,
+                                              ),
+                                            ),
+                                          ),
+                                          _quesitos[4][_tematicasQuesitos
+                                                  .indexOf(HISTORIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J4
+                                                  offset: const Offset(260, 60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoHistoria),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[4][_tematicasQuesitos
+                                                  .indexOf(ARTE)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J4
+                                                  offset: const Offset(260, 60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoArte),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[4][_tematicasQuesitos
+                                                  .indexOf(DEPORTES)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J4
+                                                  offset: const Offset(260, 60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoDeportes),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[4][_tematicasQuesitos
+                                                  .indexOf(CIENCIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J4
+                                                  offset: const Offset(260, 60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoCiencia),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[4][_tematicasQuesitos
+                                                  .indexOf(ENTRETENIMIENTO)]
+                                              ? Transform.translate(
+                                                  //QuesitoEntretenimiento J4
+                                                  offset: const Offset(260, 60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoEntretenimiento),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[4][_tematicasQuesitos
+                                                  .indexOf(GEOGRAFIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoGeografia J4
+                                                  offset: const Offset(260, 60),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoGeografia),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                        ],
+                                      )
+                                    : const SizedBox.shrink(),
+
+                                // J5
+                                _jugadores > 5
+                                    ? Stack(
+                                        children: [
+                                          Transform.translate(
+                                            //Texto J5
+
+                                            offset: const Offset(293, 112),
+                                            child: Text(
+                                              _nombresJugadores[5],
+                                              style: const TextStyle(
+                                                  fontFamily: "Baskerville",
+                                                  fontSize: 12.0,
+                                                  //color: Color(0xFFc9c154),
+                                                  color: Color.fromARGB(
+                                                      255, 255, 255, 255),
+                                                  fontWeight: FontWeight.bold,
+                                                  decoration:
+                                                      TextDecoration.none),
+                                            ),
+                                          ),
+                                          Transform.translate(
+                                            //Imagen J5
+                                            offset: const Offset(290, 130),
+                                            child: Container(
+                                              width: 70,
+                                              height: 70,
+                                              child: const Image(
+                                                image: AssetImage(
+                                                  imagenJugador,
+                                                ),
+                                                fit: BoxFit.fill,
+                                              ),
+                                            ),
+                                          ),
+                                          _turno == _nombresJugadores[5]
+                                              ? Transform.translate(
+                                                  //Imagen turno J5
+                                                  offset:
+                                                      const Offset(290, 130),
+                                                  child: Container(
+                                                    width: 70,
+                                                    height: 70,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          imagenJugadorTurno),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          Transform.translate(
+                                            //Putos J5
+                                            offset: const Offset(260, 180),
+                                            child: Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: const BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: AssetImage(
+                                                      quesitosGeneral),
+                                                  fit: BoxFit.fill,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Transform.translate(
+                                            //Imagen turno J5
+                                            offset: const Offset(355, 185),
+                                            child: Container(
+                                              width: 30,
+                                              height: 30,
+                                              child: Image(
+                                                image: NetworkImage(
+                                                    '$urlDir${_fichas[5]}'),
+                                                fit: BoxFit.fill,
+                                              ),
+                                            ),
+                                          ),
+                                          _quesitos[5][_tematicasQuesitos
+                                                  .indexOf(HISTORIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J5
+                                                  offset:
+                                                      const Offset(260, 180),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoHistoria),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[5][_tematicasQuesitos
+                                                  .indexOf(ARTE)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J5
+                                                  offset:
+                                                      const Offset(260, 180),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoArte),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[0][_tematicasQuesitos
+                                                  .indexOf(DEPORTES)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J5
+                                                  offset:
+                                                      const Offset(260, 180),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: const Image(
+                                                      image: AssetImage(
+                                                          quesitoDeportes),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[5][_tematicasQuesitos
+                                                  .indexOf(CIENCIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoHistoria J5
+                                                  offset:
+                                                      const Offset(260, 180),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoCiencia),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[5][_tematicasQuesitos
+                                                  .indexOf(ENTRETENIMIENTO)]
+                                              ? Transform.translate(
+                                                  //QuesitoEntretenimiento J5
+                                                  offset:
+                                                      const Offset(260, 180),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoEntretenimiento),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          _quesitos[5][_tematicasQuesitos
+                                                  .indexOf(GEOGRAFIA)]
+                                              ? Transform.translate(
+                                                  //QuesitoGeografia J5
+                                                  offset:
+                                                      const Offset(260, 180),
+                                                  child: Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          quesitoGeografia),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                        ],
+                                      )
+                                    : const SizedBox.shrink(),
+                              ],
+                            ),
+                            Stack(
+                              children: [
+                                // Contador
+                                Transform.translate(
+                                  offset: Offset(-175, -120),
+                                  child: Container(
+                                    width: 55,
+                                    height: 55,
+                                    decoration: BoxDecoration(
+                                      color: Color.fromARGB(255, 255, 255, 255),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        '$_contadorDado',
+                                        style: const TextStyle(fontSize: 40),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              //ImagenDado
-                              Transform.translate(
-                                offset: const Offset(190, -120),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    if (_esperandoDado) {
-                                      _ejecutarAccion(ACCION_PULSARDADO);
-                                    }
-                                  },
+                                //ImagenDado
+                                Transform.translate(
+                                  offset: const Offset(190, -120),
                                   child: Image.asset(
                                     'assets/cara$_valorDado.png',
                                     height: 50,
                                   ),
                                 ),
-                              ),
+                                Transform.rotate(
+                                  angle: 0 * pi / 180,
+                                  child: Transform.translate(
+                                    offset: const Offset(190, -120),
+                                    child: Ink(
+                                      width: 50,
+                                      height: 50,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          print("Hola");
+                                          if (_esperandoDado) {
+                                            _ejecutarAccion(ACCION_PULSARDADO);
+                                          }
+                                        },
+                                        child: null,
+                                        style: ElevatedButton.styleFrom(
+                                          foregroundColor: Colors.transparent,
+                                          backgroundColor:
+                                              Color.fromARGB(255, 0, 0, 0),
+                                          padding: EdgeInsets.zero,
+                                          elevation: 0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
 
-                              //BotonDado
-                              _preguntaActiva && _turno == _yo
-                                  ? Transform.translate(
-                                      offset: const Offset(170, 180),
-                                      child: Boton1(
-                                        'Pausar',
-                                        onPressed: () {
-                                          _ejecutarAccion(ACCION_PAUSARPARTIDA);
-                                        },
-                                      ),
-                                    )
-                                  : const SizedBox.shrink(),
-                              _turno == _yo
-                                  ? Transform.translate(
-                                      offset: const Offset(-155, 180),
-                                      child: Boton1(
-                                        'Salir',
-                                        onPressed: () {
-                                          _ejecutarAccion(
-                                              ACCION_ABANDONARPARTIDA);
-                                        },
-                                      ),
-                                    )
-                                  : const SizedBox.shrink(),
-                            ],
+                                //BotonDado
+                                !_preguntaActiva && _turno == _yo
+                                    ? Transform.translate(
+                                        offset: const Offset(160, 180),
+                                        child: Boton1(
+                                          'Pausar',
+                                          onPressed: () {
+                                            _ejecutarAccion(
+                                                ACCION_PAUSARPARTIDA);
+                                          },
+                                        ),
+                                      )
+                                    : const SizedBox.shrink(),
+                                _turno != _yo
+                                    ? Transform.translate(
+                                        offset: const Offset(-165, 180),
+                                        child: Boton1(
+                                          'Salir',
+                                          onPressed: () {
+                                            _ejecutarAccion(
+                                                ACCION_ABANDONARPARTIDA);
+                                          },
+                                        ),
+                                      )
+                                    : const SizedBox.shrink(),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Stack(
+                        children: [
+                          //BOTONES CASILLAS-------------------------------------------------------------------------------------
+                          //c0 boton
+                          Transform.rotate(
+                            angle: 116 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(138, -379),
+                              child: Ink(
+                                width: 61,
+                                height: 40,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(0);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-                          _preguntaActiva
-                              ? Stack(
-                                  children: [
-                                    Center(
-                                      child: BackdropFilter(
-                                        filter: ImageFilter.blur(
-                                            sigmaX: 5, sigmaY: 5),
+
+                          //c1 boton
+                          Transform.rotate(
+                            angle: -90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-320, 316),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(1);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c2 boton
+                          Transform.rotate(
+                            angle: -90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-320, 336),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(2);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c3 boton
+                          Transform.rotate(
+                            angle: -90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-320, 356),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(3);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c4 boton
+                          Transform.rotate(
+                            angle: -90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-320, 376),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(4);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c5 boton
+                          Transform.rotate(
+                            angle: -90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-320, 396),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(5);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c6 boton
+                          Transform.rotate(
+                            angle: -90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-320, 416),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(6);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c7 boton
+                          Transform.rotate(
+                            angle: -115 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-446, 273),
+                              child: Ink(
+                                width: 57,
+                                height: 40,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(7);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c8 boton
+                          Transform.rotate(
+                            angle: 33 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(549, -22),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(8);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c9 boton
+                          Transform.rotate(
+                            angle: 33 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(549, -42),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(9);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c10 boton
+                          Transform.rotate(
+                            angle: 33 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(549, -62),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(10);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c11 boton
+                          Transform.rotate(
+                            angle: 33 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(549, -82),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(11);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c12 boton
+                          Transform.rotate(
+                            angle: 33 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(549, -102),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(12);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c13 boton
+                          Transform.rotate(
+                            angle: 33 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(549, -122),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(13);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c14 boton
+                          Transform.rotate(
+                            angle: 0 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(521, 145),
+                              child: Ink(
+                                width: 48,
+                                height: 44,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(14);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c15 boton
+                          Transform.rotate(
+                            angle: -33 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(380, 383),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(15);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c16 boton
+                          Transform.rotate(
+                            angle: -33 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(381, 363),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(16);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c17 boton
+                          Transform.rotate(
+                            angle: -33 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(382, 343),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(17);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c18 boton
+                          Transform.rotate(
+                            angle: -33 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(383, 323),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(18);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c19 boton
+                          Transform.rotate(
+                            angle: -33 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(384, 303),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(19);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c20 boton
+                          Transform.rotate(
+                            angle: -33 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(384, 283),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(20);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c21 boton
+                          Transform.rotate(
+                            angle: -62 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(202, 390),
+                              child: Ink(
+                                width: 57,
+                                height: 40,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(21);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c22 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(0, -418),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(22);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c23 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(0, -398),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(23);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c24 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(0, -378),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(24);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c25 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(0, -358),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(25);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c26 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(0, -338),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(26);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c27 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(0, -318),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(27);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c28 boton
+                          Transform.rotate(
+                            angle: 62 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(135, -245),
+                              child: Ink(
+                                width: 57,
+                                height: 40,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(28);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c29 boton
+                          Transform.rotate(
+                            angle: -150 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-237, 102),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(29);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c30 boton
+                          Transform.rotate(
+                            angle: -150 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-237, 82),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(30);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c31 boton
+                          Transform.rotate(
+                            angle: -150 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-237, 62),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(31);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c32 boton
+                          Transform.rotate(
+                            angle: -150 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-237, 42),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(32);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c33 boton
+                          Transform.rotate(
+                            angle: -150 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-236, 22),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(33);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c34 boton
+                          Transform.rotate(
+                            angle: -150 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-236, 2),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(34);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c35 boton
+                          Transform.rotate(
+                            angle: 0 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(201, 146),
+                              child: Ink(
+                                width: 48,
+                                height: 44,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(35);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c36 boton
+                          Transform.rotate(
+                            angle: 149 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-71, -280),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(36);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c37 boton
+                          Transform.rotate(
+                            angle: 149 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-71, -301),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(37);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c38 boton
+                          Transform.rotate(
+                            angle: 149 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-71, -322),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(38);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c39 boton
+                          Transform.rotate(
+                            angle: 149 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-70, -342),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(39);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c40 boton
+                          Transform.rotate(
+                            angle: 149 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-70, -362),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(40);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c41 boton
+                          Transform.rotate(
+                            angle: 149 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-70, -382),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(41);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c42 boton
+                          Transform.rotate(
+                            angle: 25 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(392, 109),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(42);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c43 boton
+                          Transform.rotate(
+                            angle: 25 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(392, 88),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(43);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c44 boton
+                          Transform.rotate(
+                            angle: 25 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(392, 68),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(44);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c45 boton
+                          Transform.rotate(
+                            angle: 25 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(392, 48),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(45);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c46 boton
+                          Transform.rotate(
+                            angle: 25 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(392, 28),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(46);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c47 boton
+                          Transform.rotate(
+                            angle: -28 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(251, 435),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(47);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c48 boton
+                          Transform.rotate(
+                            angle: -28 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(251, 414),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(48);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c49 boton
+                          Transform.rotate(
+                            angle: -28 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(251, 393),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(49);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c50 boton
+                          Transform.rotate(
+                            angle: -28 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(252, 372),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(50);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c51 boton
+                          Transform.rotate(
+                            angle: -28 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(252, 351),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(51);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c52 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(157, -492),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(52);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c53 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(157, -472),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(53);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c54 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(157, -452),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(54);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c55 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(157, -432),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(55);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c56 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(157, -412),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(56);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c57 boton
+                          Transform.rotate(
+                            angle: 210 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-395, 171),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(57);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c58 boton
+                          Transform.rotate(
+                            angle: 210 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-395, 151),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(58);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c59 boton
+                          Transform.rotate(
+                            angle: 210 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-395, 131),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(59);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c60 boton
+                          Transform.rotate(
+                            angle: 210 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-395, 110),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(60);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c61 boton
+                          Transform.rotate(
+                            angle: 210 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-395, 90),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(61);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c62 boton
+                          Transform.rotate(
+                            angle: 150 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-242, -195),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(62);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c63 boton
+                          Transform.rotate(
+                            angle: 150 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-240, -215),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(63);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c64 boton
+                          Transform.rotate(
+                            angle: 150 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-240, -235),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(64);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c65 boton
+                          Transform.rotate(
+                            angle: 150 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-239, -255),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(65);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c66 boton
+                          Transform.rotate(
+                            angle: 150 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(-238, -275),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(66);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c67 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(157, -241),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(67);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c68 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(157, -261),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(68);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c69 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(157, -281),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(69);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c70 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(157, -301),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(70);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c71 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(157, -321),
+                              child: Ink(
+                                width: 39,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(71);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          //c72 boton
+                          Transform.rotate(
+                            angle: 90 * pi / 180,
+                            child: Transform.translate(
+                              offset: const Offset(130, -364),
+                              child: Ink(
+                                width: 44,
+                                height: 70,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    pulsarCasilla(72);
+                                  },
+                                  child: null,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.transparent,
+                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0, //elimina la sombra del boton
+                                    splashFactory: NoSplash
+                                        .splashFactory, //elimina la onda que aparece al pulsar el boton
+                                    //no consigo quitar la sombra que genera al pulsarse pero si la onda
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      _preguntaActiva
+                          ? Stack(
+                              children: [
+                                Center(
+                                  child: BackdropFilter(
+                                    filter:
+                                        ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                    child: Container(
+                                      width: screenSize.width,
+                                      height: screenSize.height,
+                                      decoration: BoxDecoration(
+                                        color: Color.fromARGB(68, 0, 0, 0),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Center(
                                         child: Container(
-                                          width: screenSize.width,
-                                          height: screenSize.height,
+                                          width: 470,
+                                          height: 280,
                                           decoration: BoxDecoration(
-                                            color: Color.fromARGB(68, 0, 0, 0),
+                                            color: colorPregunta,
                                             borderRadius:
                                                 BorderRadius.circular(20),
+                                            border:
+                                                Border.all(color: Colors.black),
                                           ),
-                                          child: Center(
-                                            child: Container(
-                                              width: 470,
-                                              height: 280,
-                                              decoration: BoxDecoration(
-                                                color: colorPregunta,
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                border: Border.all(
-                                                    color: Colors.black),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 20.0,
+                                                    left: 160,
+                                                    bottom: 240),
+                                                child: Text(
+                                                  _preguntaTema,
+                                                  style: const TextStyle(
+                                                    fontSize: 15.0,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromARGB(
+                                                        255, 255, 255, 255),
+                                                    fontFamily: "Baskerville",
+                                                  ),
+                                                ),
                                               ),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 20.0,
-                                                            left: 160,
-                                                            bottom: 240),
-                                                    child: Text(
-                                                      _preguntaTema,
-                                                      style: const TextStyle(
-                                                        fontSize: 15.0,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Color.fromARGB(
-                                                            255, 255, 255, 255),
-                                                        fontFamily:
-                                                            "Baskerville",
+                                              Expanded(
+                                                child: Align(
+                                                  alignment: Alignment.topRight,
+                                                  child: Container(
+                                                    width: 60,
+                                                    height: 50,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                      border: Border.all(
+                                                        width: 4,
+                                                        color: colorPregunta,
+                                                      ),
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        '$_contadorPregunta',
+                                                        style: const TextStyle(
+                                                            fontSize: 24),
                                                       ),
                                                     ),
                                                   ),
-                                                  Expanded(
-                                                    child: Align(
-                                                      alignment:
-                                                          Alignment.topRight,
-                                                      child: Container(
-                                                        width: 60,
-                                                        height: 50,
-                                                        decoration:
-                                                            BoxDecoration(
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 210, bottom: 120),
+                                    child: SizedBox(
+                                      width: 380,
+                                      height: 40,
+                                      child: Text(
+                                        _pregunta,
+                                        style: const TextStyle(
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontFamily: "Baskerville",
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 150, left: 205),
+                                  child: Container(
+                                    width: 390,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color: _colorR1,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: Colors.black),
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (!_contestada) {
+                                          _respuestaContestada = '1';
+                                          _ejecutarAccion(
+                                              ACCION_CONTESTARPREGUNTA);
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 10, left: 10),
+                                        child: Text(
+                                          _respuesta1,
+                                          style: const TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontFamily: "Baskerville",
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 190, left: 205),
+                                  child: Container(
+                                    width: 390,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color: _colorR2,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: Colors.black),
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (!_contestada) {
+                                          _respuestaContestada = '2';
+                                          _ejecutarAccion(
+                                              ACCION_CONTESTARPREGUNTA);
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 10, left: 10),
+                                        child: Text(
+                                          _respuesta2,
+                                          style: const TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontFamily: "Baskerville",
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 230, left: 205),
+                                  child: Container(
+                                    width: 390,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color: _colorR3,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: Colors.black),
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (!_contestada) {
+                                          _respuestaContestada = '3';
+                                          _ejecutarAccion(
+                                              ACCION_CONTESTARPREGUNTA);
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 10, left: 10),
+                                        child: Text(
+                                          _respuesta3,
+                                          style: const TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontFamily: "Baskerville",
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 270, left: 205),
+                                  child: Container(
+                                    width: 390,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color: _colorR4,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: Colors.black),
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (!_contestada) {
+                                          _respuestaContestada = '4';
+                                          _ejecutarAccion(
+                                              ACCION_CONTESTARPREGUNTA);
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 10, left: 10),
+                                        child: Text(
+                                          _respuesta4,
+                                          style: const TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontFamily: "Baskerville",
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox.shrink(),
+                      Stack(
+                        children: [
+                          _mostrarChat
+                              ? Container(
+                                  width: screenSize.width,
+                                  height: screenSize.height,
+                                  decoration: const BoxDecoration(
+                                      color: Color(0x60444444)),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 0),
+                                      child: Container(
+                                        width: screenSize.width / 2.0,
+                                        height: screenSize.height / 1.2,
+                                        decoration: BoxDecoration(
+                                            color: Colors.black12,
+                                            border: Border.all(
+                                                color: Colors.black)),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.black12,
+                                                  border: Border.all(
+                                                      color: Colors.black)),
+                                              child: Stack(
+                                                children: [
+                                                  TextFormField(
+                                                    focusNode: f,
+                                                    controller: c,
+                                                    decoration: InputDecoration(
+                                                      focusedBorder:
+                                                          InputBorder.none,
+                                                      suffixIcon: IconButton(
+                                                        icon: const Icon(
+                                                          // Based on passwordVisible state choose the icon
+                                                          Icons.send,
                                                           color: Colors.white,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(20),
-                                                          border: Border.all(
-                                                            width: 4,
-                                                            color:
-                                                                colorPregunta,
-                                                          ),
                                                         ),
-                                                        child: Center(
-                                                          child: Text(
-                                                            '$_contadorPregunta',
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        24),
-                                                          ),
-                                                        ),
+                                                        onPressed: () {
+                                                          if (c.text != "") {
+                                                            _enviarChat =
+                                                                c.text;
+                                                            c.clear();
+                                                            f.unfocus();
+                                                            _ejecutarAccion(
+                                                                ACCION_ENVIARCHAT);
+                                                          }
+                                                        },
                                                       ),
+                                                      contentPadding:
+                                                          const EdgeInsets.all(
+                                                              12),
+                                                      hintStyle:
+                                                          const TextStyle(
+                                                        fontSize: 16.0,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        color:
+                                                            Color(0xFFf7f6f6),
+                                                        fontFamily: "Bona Nova",
+                                                      ),
+                                                      hintText: "Mensaje",
+                                                    ),
+                                                    style: const TextStyle(
+                                                      fontSize: 16.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Color(0xFFf7f6f6),
+                                                      fontFamily: "Bona Nova",
                                                     ),
                                                   ),
                                                 ],
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 210, bottom: 120),
-                                        child: SizedBox(
-                                          width: 380,
-                                          height: 40,
-                                          child: Text(
-                                            _pregunta,
-                                            style: const TextStyle(
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              fontFamily: "Baskerville",
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 150, left: 205),
-                                      child: Container(
-                                        width: 390,
-                                        height: 35,
-                                        decoration: BoxDecoration(
-                                          color: _colorR1,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border:
-                                              Border.all(color: Colors.black),
-                                        ),
-                                        child: InkWell(
-                                          onTap: () {
-                                            if (!_contestada) {
-                                              _respuestaContestada = '1';
-                                              _ejecutarAccion(
-                                                  ACCION_CONTESTARPREGUNTA);
-                                            }
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 10, left: 10),
-                                            child: Text(
-                                              _respuesta1,
-                                              style: const TextStyle(
-                                                fontSize: 12.0,
-                                                fontWeight: FontWeight.bold,
-                                                color: Color.fromARGB(
-                                                    255, 0, 0, 0),
-                                                fontFamily: "Baskerville",
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 190, left: 205),
-                                      child: Container(
-                                        width: 390,
-                                        height: 35,
-                                        decoration: BoxDecoration(
-                                          color: _colorR2,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border:
-                                              Border.all(color: Colors.black),
-                                        ),
-                                        child: InkWell(
-                                          onTap: () {
-                                            if (!_contestada) {
-                                              _respuestaContestada = '2';
-                                              _ejecutarAccion(
-                                                  ACCION_CONTESTARPREGUNTA);
-                                            }
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 10, left: 10),
-                                            child: Text(
-                                              _respuesta2,
-                                              style: const TextStyle(
-                                                fontSize: 12.0,
-                                                fontWeight: FontWeight.bold,
-                                                color: Color.fromARGB(
-                                                    255, 0, 0, 0),
-                                                fontFamily: "Baskerville",
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 230, left: 205),
-                                      child: Container(
-                                        width: 390,
-                                        height: 35,
-                                        decoration: BoxDecoration(
-                                          color: _colorR3,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border:
-                                              Border.all(color: Colors.black),
-                                        ),
-                                        child: InkWell(
-                                          onTap: () {
-                                            if (!_contestada) {
-                                              _respuestaContestada = '3';
-                                              _ejecutarAccion(
-                                                  ACCION_CONTESTARPREGUNTA);
-                                            }
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 10, left: 10),
-                                            child: Text(
-                                              _respuesta3,
-                                              style: const TextStyle(
-                                                fontSize: 12.0,
-                                                fontWeight: FontWeight.bold,
-                                                color: Color.fromARGB(
-                                                    255, 0, 0, 0),
-                                                fontFamily: "Baskerville",
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 270, left: 205),
-                                      child: Container(
-                                        width: 390,
-                                        height: 35,
-                                        decoration: BoxDecoration(
-                                          color: _colorR4,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border:
-                                              Border.all(color: Colors.black),
-                                        ),
-                                        child: InkWell(
-                                          onTap: () {
-                                            if (!_contestada) {
-                                              _respuestaContestada = '4';
-                                              _ejecutarAccion(
-                                                  ACCION_CONTESTARPREGUNTA);
-                                            }
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 10, left: 10),
-                                            child: Text(
-                                              _respuesta4,
-                                              style: const TextStyle(
-                                                fontSize: 12.0,
-                                                fontWeight: FontWeight.bold,
-                                                color: Color.fromARGB(
-                                                    255, 0, 0, 0),
-                                                fontFamily: "Baskerville",
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox.shrink(),
-                          Stack(
-                            children: [
-                              _mostrarChat
-                                  ? Container(
-                                      width: constraints.maxWidth,
-                                      height: constraints.maxHeight,
-                                      decoration: const BoxDecoration(
-                                          color: Color(0x60444444)),
-                                      child: Align(
-                                        alignment: Alignment.center,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 0),
-                                          child: Container(
-                                            width: constraints.maxWidth / 2.0,
-                                            height: constraints.maxHeight / 1.2,
-                                            decoration: BoxDecoration(
-                                                color: Colors.black12,
-                                                border: Border.all(
-                                                    color: Colors.black)),
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                      color: Colors.black12,
-                                                      border: Border.all(
-                                                          color: Colors.black)),
-                                                  child: Stack(
-                                                    children: [
-                                                      TextFormField(
-                                                        focusNode: f,
-                                                        controller: c,
-                                                        decoration:
-                                                            InputDecoration(
-                                                          focusedBorder:
-                                                              InputBorder.none,
-                                                          suffixIcon:
-                                                              IconButton(
-                                                            icon: const Icon(
-                                                              // Based on passwordVisible state choose the icon
-                                                              Icons.send,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                            onPressed: () {
-                                                              if (c.text !=
-                                                                  "") {
-                                                                _enviarChat =
-                                                                    c.text;
-                                                                c.clear();
-                                                                f.unfocus();
-                                                                _ejecutarAccion(
-                                                                    ACCION_ENVIARCHAT);
-                                                              }
-                                                            },
-                                                          ),
-                                                          contentPadding:
-                                                              const EdgeInsets
-                                                                  .all(12),
-                                                          hintStyle:
-                                                              const TextStyle(
-                                                            fontSize: 16.0,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                            color: Color(
-                                                                0xFFf7f6f6),
-                                                            fontFamily:
-                                                                "Bona Nova",
-                                                          ),
-                                                          hintText: "Mensaje",
-                                                        ),
-                                                        style: const TextStyle(
-                                                          fontSize: 16.0,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color:
-                                                              Color(0xFFf7f6f6),
-                                                          fontFamily:
-                                                              "Bona Nova",
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: ListView.builder(
-                                                    controller:
-                                                        _scrollController,
-                                                    itemCount: _chat.length,
-                                                    itemBuilder:
-                                                        (context, index) =>
-                                                            Align(
-                                                      alignment: _chat[index]
-                                                              .enviadoPorMi
-                                                          ? Alignment
-                                                              .centerRight
-                                                          : Alignment
-                                                              .centerLeft,
-                                                      child: Card(
-                                                        elevation: 8,
-                                                        color: _chat[index]
-                                                                .enviadoPorMi
-                                                            ? const Color
-                                                                    .fromARGB(
-                                                                255,
-                                                                134,
-                                                                189,
-                                                                235)
-                                                            : Colors.white,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8),
-                                                          child: Stack(
-                                                            children: [
-                                                              _chat[index]
-                                                                      .enviadoPorMi
-                                                                  ? const SizedBox
-                                                                      .shrink()
-                                                                  : Text(
-                                                                      _chat[index]
-                                                                          .escritor,
-                                                                      style: const TextStyle(
-                                                                          fontWeight:
-                                                                              FontWeight.bold),
-                                                                    ),
-                                                              Padding(
-                                                                padding: _chat[
-                                                                            index]
-                                                                        .enviadoPorMi
-                                                                    ? const EdgeInsets
-                                                                            .only(
-                                                                        top: 0)
-                                                                    : const EdgeInsets
-                                                                            .only(
-                                                                        top:
-                                                                            18),
-                                                                child: Text(
-                                                                    _chat[index]
-                                                                        .text),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  : const SizedBox.shrink(),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Transform.translate(
-                                  offset: const Offset(365, -155),
-                                  child: GestureDetector(
-                                      child: Container(
-                                        width: 80,
-                                        height: 50,
-                                        decoration: const BoxDecoration(
-                                          image: DecorationImage(
-                                            image:
-                                                AssetImage('assets/Chat.png'),
-                                            fit: BoxFit.fill,
-                                          ),
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        print("hola");
-                                        _mostrarChat
-                                            ? _ejecutarAccion(ACCION_CERRARCHAT)
-                                            : _ejecutarAccion(ACCION_ABRIRCHAT);
-                                      }),
-                                ),
-                              ),
-                            ],
-                          ),
-                          _partidaPausada
-                              ? Stack(
-                                  children: [
-                                    Center(
-                                      child: Container(
-                                        width: screenSize.width,
-                                        height: screenSize.height,
-                                        decoration: BoxDecoration(
-                                          color: Color.fromARGB(68, 0, 0, 0),
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        child: Stack(
-                                          children: [
-                                            Center(
-                                              child: BackdropFilter(
-                                                filter: ImageFilter.blur(
-                                                    sigmaX: 5, sigmaY: 5),
-                                                child: Container(
-                                                  width: screenSize.width,
-                                                  height: screenSize.height,
-                                                  decoration: BoxDecoration(
-                                                    color: Color.fromARGB(
-                                                        68, 0, 0, 0),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                  ),
-                                                  child: Center(
-                                                    child: Container(
-                                                      width: 300,
-                                                      height: 280,
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20),
-                                                        border: Border.all(
-                                                            color:
-                                                                Colors.black),
-                                                      ),
+                                            Expanded(
+                                              child: ListView.builder(
+                                                controller: _scrollController,
+                                                itemCount: _chat.length,
+                                                itemBuilder: (context, index) =>
+                                                    Align(
+                                                  alignment: _chat[index]
+                                                          .enviadoPorMi
+                                                      ? Alignment.centerRight
+                                                      : Alignment.centerLeft,
+                                                  child: Card(
+                                                    elevation: 8,
+                                                    color: _chat[index]
+                                                            .enviadoPorMi
+                                                        ? const Color.fromARGB(
+                                                            255, 134, 189, 235)
+                                                        : Colors.white,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
                                                       child: Stack(
                                                         children: [
-                                                          const Align(
-                                                            alignment: Alignment
-                                                                .topCenter,
-                                                            child: Padding(
-                                                              padding: EdgeInsets
-                                                                  .only(
-                                                                      top: 50),
-                                                              child: Text(
-                                                                'Partida pausada',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize:
-                                                                      20.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Colors
-                                                                      .black,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Align(
-                                                            alignment: Alignment
-                                                                .center,
-                                                            child: Container(
-                                                              width: 60,
-                                                              height: 50,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                color: Colors
-                                                                    .white,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            20),
-                                                                border:
-                                                                    Border.all(
-                                                                  width: 4,
-                                                                  color: Colors
-                                                                      .black,
-                                                                ),
-                                                              ),
-                                                              child: Center(
-                                                                child: Text(
-                                                                  '$_contadorPausa',
+                                                          _chat[index]
+                                                                  .enviadoPorMi
+                                                              ? const SizedBox
+                                                                  .shrink()
+                                                              : Text(
+                                                                  _chat[index]
+                                                                      .escritor,
                                                                   style: const TextStyle(
-                                                                      fontSize:
-                                                                          24),
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
                                                                 ),
-                                                              ),
-                                                            ),
+                                                          Padding(
+                                                            padding: _chat[
+                                                                        index]
+                                                                    .enviadoPorMi
+                                                                ? const EdgeInsets
+                                                                        .only(
+                                                                    top: 0)
+                                                                : const EdgeInsets
+                                                                        .only(
+                                                                    top: 18),
+                                                            child: Text(
+                                                                _chat[index]
+                                                                    .text),
                                                           ),
                                                         ],
                                                       ),
@@ -6319,35 +6071,159 @@ class _JuegoState extends State<Juego> {
                                                 ),
                                               ),
                                             ),
-                                            (_turno == _yo)
-                                                ? Align(
-                                                    alignment:
-                                                        Alignment.bottomCenter,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              bottom: 80),
-                                                      child: Boton1('Continuar',
-                                                          onPressed: () {
-                                                        _ejecutarAccion(
-                                                            ACCION_CONTINUARPARTIDA);
-                                                      }),
-                                                    ),
-                                                  )
-                                                : const SizedBox.shrink()
                                           ],
                                         ),
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 )
                               : const SizedBox.shrink(),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Transform.translate(
+                              offset: const Offset(365, -155),
+                              child: GestureDetector(
+                                  child: Container(
+                                    width: 80,
+                                    height: 50,
+                                    decoration: const BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage('assets/Chat.png'),
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    _mostrarChat
+                                        ? _ejecutarAccion(ACCION_CERRARCHAT)
+                                        : _ejecutarAccion(ACCION_ABRIRCHAT);
+                                  }),
+                            ),
+                          ),
                         ],
-                      );
-              },
-            ),
-          ],
-        ),
+                      ),
+                      _partidaPausada
+                          ? Stack(
+                              children: [
+                                Center(
+                                  child: Container(
+                                    width: screenSize.width,
+                                    height: screenSize.height,
+                                    decoration: BoxDecoration(
+                                      color: Color.fromARGB(68, 0, 0, 0),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Center(
+                                          child: BackdropFilter(
+                                            filter: ImageFilter.blur(
+                                                sigmaX: 5, sigmaY: 5),
+                                            child: Container(
+                                              width: screenSize.width,
+                                              height: screenSize.height,
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    Color.fromARGB(68, 0, 0, 0),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Center(
+                                                child: Container(
+                                                  width: 300,
+                                                  height: 280,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    border: Border.all(
+                                                        color: Colors.black),
+                                                  ),
+                                                  child: Stack(
+                                                    children: [
+                                                      const Align(
+                                                        alignment:
+                                                            Alignment.topCenter,
+                                                        child: Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  top: 50),
+                                                          child: Text(
+                                                            'Partida pausada',
+                                                            style: TextStyle(
+                                                              fontSize: 20.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Align(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: Container(
+                                                          width: 60,
+                                                          height: 50,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.white,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                            border: Border.all(
+                                                              width: 4,
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                          child: Center(
+                                                            child: Text(
+                                                              '$_contadorPausa',
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          24),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        (_turno == _yo)
+                                            ? Align(
+                                                alignment:
+                                                    Alignment.bottomCenter,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 80),
+                                                  child: Boton1('Continuar',
+                                                      onPressed: () {
+                                                    _ejecutarAccion(
+                                                        ACCION_CONTINUARPARTIDA);
+                                                  }),
+                                                ),
+                                              )
+                                            : const SizedBox.shrink()
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox.shrink(),
+                    ],
+                  ),
       ),
     );
   }

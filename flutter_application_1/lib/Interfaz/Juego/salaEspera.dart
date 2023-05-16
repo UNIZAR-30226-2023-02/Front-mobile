@@ -55,7 +55,6 @@ class _SalaEsperaState extends State<SalaEspera> {
     try {
       _socket = IOWebSocketChannel.connect(_wS);
     } catch (error) {
-      print("error $_wS");
       return;
     }
 
@@ -91,7 +90,6 @@ class _SalaEsperaState extends State<SalaEspera> {
 
   void _leerMensaje(String mensaje) {
     Map<String, dynamic> mensajeDecodificado = json.decode(mensaje);
-    print(mensajeDecodificado);
     String accion = mensajeDecodificado[ACCION_KEY];
     if (accion == ACCION_AL) {
      if(_esperandoJugadores){ String l = mensajeDecodificado[USERNAMES_KEY];

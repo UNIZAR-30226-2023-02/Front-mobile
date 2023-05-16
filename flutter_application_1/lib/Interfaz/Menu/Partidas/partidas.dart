@@ -110,7 +110,6 @@ class _PartidasState extends State<Partidas> {
 
   @override
   void dispose() {
-    print("dipose");
     _timer.cancel();
     super.dispose();
   }
