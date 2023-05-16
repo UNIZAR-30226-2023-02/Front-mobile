@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 
 const String urlDir = 'http://51.142.118.71:8000';
 const String wsDir = 'ws://51.142.118.71:8000';
-const String serverDir = 'http://51.142.118.71';
 
 class MyHttpOverrides extends HttpOverrides {
   @override

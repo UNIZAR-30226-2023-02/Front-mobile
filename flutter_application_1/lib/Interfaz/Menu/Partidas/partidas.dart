@@ -12,7 +12,6 @@ import 'package:flutter_application_1/Interfaz/Menu/Estilo/index.dart';
 import '../../../../Data_types/index.dart';
 
 import '../../../../API/index.dart';
-import '../../Juego/juego.dart';
 import '../../Juego/juego_copia.dart';
 
 //ignore: must_be_immutable
