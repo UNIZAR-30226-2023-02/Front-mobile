@@ -580,8 +580,69 @@ class _JuegoState extends State<Juego> {
     }
   }
 
+  void cambiarColor(String tematica) {
+    Color r = Blanco;
+    switch (tematica) {
+      case GEOGRAFIA:
+        r = Azul;
+        break;
+
+      case HISTORIA:
+        r = Amarillo;
+        break;
+
+      case CIENCIA:
+        r = Verde;
+        break;
+
+      case DEPORTES:
+        r = Naranja;
+        break;
+
+      case ENTRETENIMIENTO:
+        r = Rosa;
+        break;
+
+      case ARTE:
+        r = Rojo;
+        break;
+    }
+
+    colorCasillas = List.generate(73, (index) => r);
+    List<int> l = <int>[
+      0,
+      2,
+      5,
+      7,
+      9,
+      12,
+      14,
+      16,
+      19,
+      21,
+      23,
+      26,
+      28,
+      30,
+      33,
+      35,
+      37,
+      40,
+      44,
+      49,
+      54,
+      59,
+      64,
+      69,
+      72
+    ];
+    for (var i in l) {
+      colorCasillas[i] = Blanco;
+    }
+  }
+
   void pulsarCasilla(int index) {
-    if (_turno == _yo) {
+    if (_turno == _yo && casillaCambia[index]) {
       _casillaElegida = index.toString();
       _ejecutarAccion(ACCION_MOVERFICHA);
     }
@@ -693,7 +754,7 @@ class _JuegoState extends State<Juego> {
       ACCION_SALIR = 'Salir';
 
   static const String TRUE = 'true', FALSE = 'false';
-
+  String _tematica = "";
   String _yo = "";
   int _jugadores = 0;
   List<String> _nombresJugadores = <String>[];
@@ -882,7 +943,13 @@ class _JuegoState extends State<Juego> {
       /* Acciones pregunta */
       //--------------------------------
       case ACCION_MOSTRARPREGUNTA:
-        switch (_preguntaTema) {
+        String s;
+        if (_tP == "Tematico") {
+          s = _tematica;
+        } else {
+          s = _preguntaTema;
+        }
+        switch (s) {
           case GEOGRAFIA:
             colorPregunta = Azul;
             break;
@@ -902,6 +969,7 @@ class _JuegoState extends State<Juego> {
             colorPregunta = Naranja;
             break;
         }
+
         _colorR1 = Blanco;
         _colorR2 = Blanco;
         _colorR3 = Blanco;
@@ -981,7 +1049,7 @@ class _JuegoState extends State<Juego> {
 
           int index1 = _tematicasQuesitos.indexOf(_preguntaTema);
           int index2 = _nombresJugadores.indexOf(_turno);
-          if (!_quesitos[index2][index1]) {
+          if (!_quesitos[index2][index1] && _preguntaQuesito) {
             _quesitos[index2][index1] = true;
           }
         } else {
@@ -1138,6 +1206,8 @@ class _JuegoState extends State<Juego> {
         if (_timerDado != null) {
           _timerDado!.cancel();
         }
+        _preguntaActiva = false;
+        _mostrarChat = false;
         setState(() {});
         break;
 
@@ -1269,6 +1339,10 @@ class _JuegoState extends State<Juego> {
         _posiciones.add(datosJugador[POSICION_KEY]);
         _quesitos.add(List.generate(6, (_) => false));
         _fichas.add(datosJugador[FICHA_KEY]);
+        if (_tP == 'Tematico') {
+          _tematica = mensajeDecodificado[TEMATICA_KEY];
+          cambiarColor(_tematica);
+        }
       }
 
       setState(() {});
@@ -1432,20 +1506,24 @@ class _JuegoState extends State<Juego> {
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     final Size screenSize = MediaQuery.of(context).size;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Container(
-        width: screenSize.width,
-        height: screenSize.height,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/tapete.png'),
-            fit: BoxFit.fill,
+    return MaterialApp(
+      home: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          width: screenSize.width,
+          height: screenSize.height,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/tapete.png'),
+              fit: BoxFit.fill,
+            ),
           ),
-        ),
-        child: _mensajeInicial
-                ? const SizedBox.shrink()
-                : Stack(
+          child: _mensajeInicial
+              ? const SizedBox.shrink()
+              : SizedBox(
+                  width: screenSize.width,
+                  height: screenSize.height,
+                  child: Stack(
                     children: [
                       Positioned(
                         top: screenSize.height / 2 -
@@ -3875,1828 +3953,1926 @@ class _JuegoState extends State<Juego> {
                                   ),
                                 ),
                                 //ImagenDado
-                                Transform.translate(
-                                  offset: const Offset(190, -120),
-                                  child: Image.asset(
-                                    'assets/cara$_valorDado.png',
-                                    height: 50,
-                                  ),
-                                ),
-                                Transform.rotate(
-                                  angle: 0 * pi / 180,
-                                  child: Transform.translate(
-                                    offset: const Offset(190, -120),
-                                    child: Ink(
-                                      width: 50,
-                                      height: 50,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          print("Hola");
-                                          if (_esperandoDado) {
-                                            _ejecutarAccion(ACCION_PULSARDADO);
-                                          }
-                                        },
-                                        child: null,
-                                        style: ElevatedButton.styleFrom(
-                                          foregroundColor: Colors.transparent,
-                                          backgroundColor:
-                                              Color.fromARGB(255, 0, 0, 0),
-                                          padding: EdgeInsets.zero,
-                                          elevation: 0,
+
+                                GestureDetector(
+                                  onTap: () {
+                                    print("gucci");
+                                  },
+                                  child: Transform.rotate(
+                                    angle: 0 * pi / 180,
+                                    child: Transform.translate(
+                                      offset: const Offset(190, -120),
+                                      child: Ink(
+                                        width: 50,
+                                        height: 50,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            print("Hola");
+                                            if (_esperandoDado) {
+                                              _ejecutarAccion(
+                                                  ACCION_PULSARDADO);
+                                            }
+                                          },
+                                          child: null,
+                                          style: ElevatedButton.styleFrom(
+                                            foregroundColor: Colors.transparent,
+                                            backgroundColor:
+                                                Color.fromARGB(255, 0, 0, 0),
+                                            padding: EdgeInsets.zero,
+                                            elevation: 0,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-
-                                //BotonDado
-                                !_preguntaActiva && _turno == _yo
-                                    ? Transform.translate(
-                                        offset: const Offset(160, 180),
-                                        child: Boton1(
-                                          'Pausar',
-                                          onPressed: () {
-                                            _ejecutarAccion(
-                                                ACCION_PAUSARPARTIDA);
-                                          },
-                                        ),
-                                      )
-                                    : const SizedBox.shrink(),
-                                _turno != _yo
-                                    ? Transform.translate(
-                                        offset: const Offset(-165, 180),
-                                        child: Boton1(
-                                          'Salir',
-                                          onPressed: () {
-                                            _ejecutarAccion(
-                                                ACCION_ABANDONARPARTIDA);
-                                          },
-                                        ),
-                                      )
-                                    : const SizedBox.shrink(),
                               ],
                             ),
                           ],
                         ),
                       ),
-                      Stack(
-                        children: [
-                          //BOTONES CASILLAS-------------------------------------------------------------------------------------
-                          //c0 boton
-                          Transform.rotate(
-                            angle: 116 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(138, -379),
-                              child: Ink(
-                                width: 61,
-                                height: 40,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(0);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c1 boton
-                          Transform.rotate(
-                            angle: -90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-320, 316),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(1);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c2 boton
-                          Transform.rotate(
-                            angle: -90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-320, 336),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(2);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c3 boton
-                          Transform.rotate(
-                            angle: -90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-320, 356),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(3);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c4 boton
-                          Transform.rotate(
-                            angle: -90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-320, 376),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(4);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c5 boton
-                          Transform.rotate(
-                            angle: -90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-320, 396),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(5);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c6 boton
-                          Transform.rotate(
-                            angle: -90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-320, 416),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(6);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c7 boton
-                          Transform.rotate(
-                            angle: -115 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-446, 273),
-                              child: Ink(
-                                width: 57,
-                                height: 40,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(7);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c8 boton
-                          Transform.rotate(
-                            angle: 33 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(549, -22),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(8);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c9 boton
-                          Transform.rotate(
-                            angle: 33 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(549, -42),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(9);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c10 boton
-                          Transform.rotate(
-                            angle: 33 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(549, -62),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(10);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c11 boton
-                          Transform.rotate(
-                            angle: 33 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(549, -82),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(11);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c12 boton
-                          Transform.rotate(
-                            angle: 33 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(549, -102),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(12);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c13 boton
-                          Transform.rotate(
-                            angle: 33 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(549, -122),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(13);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c14 boton
-                          Transform.rotate(
-                            angle: 0 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(521, 145),
-                              child: Ink(
-                                width: 48,
-                                height: 44,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(14);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c15 boton
-                          Transform.rotate(
-                            angle: -33 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(380, 383),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(15);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c16 boton
-                          Transform.rotate(
-                            angle: -33 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(381, 363),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(16);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c17 boton
-                          Transform.rotate(
-                            angle: -33 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(382, 343),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(17);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c18 boton
-                          Transform.rotate(
-                            angle: -33 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(383, 323),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(18);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c19 boton
-                          Transform.rotate(
-                            angle: -33 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(384, 303),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(19);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c20 boton
-                          Transform.rotate(
-                            angle: -33 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(384, 283),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(20);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c21 boton
-                          Transform.rotate(
-                            angle: -62 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(202, 390),
-                              child: Ink(
-                                width: 57,
-                                height: 40,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(21);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c22 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(0, -418),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(22);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c23 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(0, -398),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(23);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c24 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(0, -378),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(24);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c25 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(0, -358),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(25);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c26 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(0, -338),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(26);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c27 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(0, -318),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(27);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c28 boton
-                          Transform.rotate(
-                            angle: 62 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(135, -245),
-                              child: Ink(
-                                width: 57,
-                                height: 40,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(28);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c29 boton
-                          Transform.rotate(
-                            angle: -150 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-237, 102),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(29);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c30 boton
-                          Transform.rotate(
-                            angle: -150 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-237, 82),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(30);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c31 boton
-                          Transform.rotate(
-                            angle: -150 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-237, 62),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(31);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c32 boton
-                          Transform.rotate(
-                            angle: -150 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-237, 42),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(32);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c33 boton
-                          Transform.rotate(
-                            angle: -150 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-236, 22),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(33);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c34 boton
-                          Transform.rotate(
-                            angle: -150 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-236, 2),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(34);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c35 boton
-                          Transform.rotate(
-                            angle: 0 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(201, 146),
-                              child: Ink(
-                                width: 48,
-                                height: 44,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(35);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c36 boton
-                          Transform.rotate(
-                            angle: 149 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-71, -280),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(36);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c37 boton
-                          Transform.rotate(
-                            angle: 149 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-71, -301),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(37);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c38 boton
-                          Transform.rotate(
-                            angle: 149 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-71, -322),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(38);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c39 boton
-                          Transform.rotate(
-                            angle: 149 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-70, -342),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(39);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c40 boton
-                          Transform.rotate(
-                            angle: 149 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-70, -362),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(40);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c41 boton
-                          Transform.rotate(
-                            angle: 149 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-70, -382),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(41);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c42 boton
-                          Transform.rotate(
-                            angle: 25 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(392, 109),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(42);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c43 boton
-                          Transform.rotate(
-                            angle: 25 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(392, 88),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(43);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c44 boton
-                          Transform.rotate(
-                            angle: 25 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(392, 68),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(44);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c45 boton
-                          Transform.rotate(
-                            angle: 25 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(392, 48),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(45);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c46 boton
-                          Transform.rotate(
-                            angle: 25 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(392, 28),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(46);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c47 boton
-                          Transform.rotate(
-                            angle: -28 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(251, 435),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(47);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c48 boton
-                          Transform.rotate(
-                            angle: -28 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(251, 414),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(48);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c49 boton
-                          Transform.rotate(
-                            angle: -28 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(251, 393),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(49);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c50 boton
-                          Transform.rotate(
-                            angle: -28 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(252, 372),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(50);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c51 boton
-                          Transform.rotate(
-                            angle: -28 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(252, 351),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(51);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c52 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(157, -492),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(52);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c53 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(157, -472),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(53);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c54 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(157, -452),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(54);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c55 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(157, -432),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(55);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c56 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(157, -412),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(56);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c57 boton
-                          Transform.rotate(
-                            angle: 210 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-395, 171),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(57);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c58 boton
-                          Transform.rotate(
-                            angle: 210 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-395, 151),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(58);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c59 boton
-                          Transform.rotate(
-                            angle: 210 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-395, 131),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(59);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c60 boton
-                          Transform.rotate(
-                            angle: 210 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-395, 110),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(60);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c61 boton
-                          Transform.rotate(
-                            angle: 210 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-395, 90),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(61);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c62 boton
-                          Transform.rotate(
-                            angle: 150 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-242, -195),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(62);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c63 boton
-                          Transform.rotate(
-                            angle: 150 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-240, -215),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(63);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c64 boton
-                          Transform.rotate(
-                            angle: 150 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-240, -235),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(64);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c65 boton
-                          Transform.rotate(
-                            angle: 150 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-239, -255),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(65);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c66 boton
-                          Transform.rotate(
-                            angle: 150 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(-238, -275),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(66);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c67 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(157, -241),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(67);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c68 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(157, -261),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(68);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c69 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(157, -281),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(69);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c70 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(157, -301),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(70);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //c71 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(157, -321),
-                              child: Ink(
-                                width: 39,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(71);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                      GestureDetector(
+                        onTap: () {
+                          print("Hola");
+                          if (_esperandoDado) {
+                            _ejecutarAccion(ACCION_PULSARDADO);
+                          }
+                        },
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 10, left: 330),
+                            child: Image.asset(
+                              'assets/cara$_valorDado.png',
+                              height: 50,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(bottom: 10, right: 360),
+                          child: _turno != _yo
+                              ? Boton1(
+                                  'Salir',
+                                  onPressed: () {
+                                    _ejecutarAccion(ACCION_ABANDONARPARTIDA);
+                                  },
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ),
+                      !_preguntaActiva && _turno == _yo
+                          ? Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 10, left: 330),
+                            child:Boton1(
+                                'Pausar',
+                                onPressed: () {
+                                  _ejecutarAccion(ACCION_PAUSARPARTIDA);
+                                },
+                              ),),
+                            )
+                          : const SizedBox.shrink(),
+                      SizedBox(
+                        width: screenSize.width,
+                        height: screenSize.height,
+                        child: Stack(
+                          children: [
+                            //BOTONES CASILLAS-------------------------------------------------------------------------------------
+                            //c0 boton
+                            Transform.rotate(
+                              angle: 116 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(138, -379),
+                                child: Ink(
+                                  width: 61,
+                                  height: 40,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(0);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c1 boton
+                            Transform.rotate(
+                              angle: -90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-320, 316),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(1);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
 
-                          //c72 boton
-                          Transform.rotate(
-                            angle: 90 * pi / 180,
-                            child: Transform.translate(
-                              offset: const Offset(130, -364),
-                              child: Ink(
-                                width: 44,
-                                height: 70,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    pulsarCasilla(72);
-                                  },
-                                  child: null,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.transparent,
-                                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                                    padding: EdgeInsets.zero,
-                                    elevation: 0, //elimina la sombra del boton
-                                    splashFactory: NoSplash
-                                        .splashFactory, //elimina la onda que aparece al pulsar el boton
-                                    //no consigo quitar la sombra que genera al pulsarse pero si la onda
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                            //c2 boton
+                            Transform.rotate(
+                              angle: -90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-320, 336),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(2);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c3 boton
+                            Transform.rotate(
+                              angle: -90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-320, 356),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(3);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c4 boton
+                            Transform.rotate(
+                              angle: -90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-320, 376),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(4);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c5 boton
+                            Transform.rotate(
+                              angle: -90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-320, 396),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(5);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c6 boton
+                            Transform.rotate(
+                              angle: -90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-320, 416),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(6);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c7 boton
+                            Transform.rotate(
+                              angle: -115 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-446, 273),
+                                child: Ink(
+                                  width: 57,
+                                  height: 40,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(7);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c8 boton
+                            Transform.rotate(
+                              angle: 33 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(549, -22),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(8);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c9 boton
+                            Transform.rotate(
+                              angle: 33 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(549, -42),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(9);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c10 boton
+                            Transform.rotate(
+                              angle: 33 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(549, -62),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(10);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c11 boton
+                            Transform.rotate(
+                              angle: 33 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(549, -82),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(11);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c12 boton
+                            Transform.rotate(
+                              angle: 33 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(549, -102),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(12);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c13 boton
+                            Transform.rotate(
+                              angle: 33 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(549, -122),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(13);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c14 boton
+                            Transform.rotate(
+                              angle: 0 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(521, 145),
+                                child: Ink(
+                                  width: 48,
+                                  height: 44,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(14);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c15 boton
+                            Transform.rotate(
+                              angle: -33 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(380, 383),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(15);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c16 boton
+                            Transform.rotate(
+                              angle: -33 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(381, 363),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(16);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c17 boton
+                            Transform.rotate(
+                              angle: -33 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(382, 343),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(17);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c18 boton
+                            Transform.rotate(
+                              angle: -33 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(383, 323),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(18);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c19 boton
+                            Transform.rotate(
+                              angle: -33 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(384, 303),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(19);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c20 boton
+                            Transform.rotate(
+                              angle: -33 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(384, 283),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(20);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c21 boton
+                            Transform.rotate(
+                              angle: -62 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(202, 390),
+                                child: Ink(
+                                  width: 57,
+                                  height: 40,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(21);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c22 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(0, -418),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(22);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c23 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(0, -398),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(23);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c24 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(0, -378),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(24);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c25 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(0, -358),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(25);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c26 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(0, -338),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(26);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c27 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(0, -318),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(27);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c28 boton
+                            Transform.rotate(
+                              angle: 62 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(135, -245),
+                                child: Ink(
+                                  width: 57,
+                                  height: 40,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(28);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c29 boton
+                            Transform.rotate(
+                              angle: -150 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-237, 102),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(29);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c30 boton
+                            Transform.rotate(
+                              angle: -150 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-237, 82),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(30);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c31 boton
+                            Transform.rotate(
+                              angle: -150 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-237, 62),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(31);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c32 boton
+                            Transform.rotate(
+                              angle: -150 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-237, 42),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(32);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c33 boton
+                            Transform.rotate(
+                              angle: -150 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-236, 22),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(33);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c34 boton
+                            Transform.rotate(
+                              angle: -150 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-236, 2),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(34);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c35 boton
+                            Transform.rotate(
+                              angle: 0 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(201, 146),
+                                child: Ink(
+                                  width: 48,
+                                  height: 44,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(35);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c36 boton
+                            Transform.rotate(
+                              angle: 149 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-71, -280),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(36);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c37 boton
+                            Transform.rotate(
+                              angle: 149 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-71, -301),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(37);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c38 boton
+                            Transform.rotate(
+                              angle: 149 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-71, -322),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(38);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c39 boton
+                            Transform.rotate(
+                              angle: 149 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-70, -342),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(39);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c40 boton
+                            Transform.rotate(
+                              angle: 149 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-70, -362),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(40);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c41 boton
+                            Transform.rotate(
+                              angle: 149 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-70, -382),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(41);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c42 boton
+                            Transform.rotate(
+                              angle: 25 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(392, 109),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(42);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c43 boton
+                            Transform.rotate(
+                              angle: 25 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(392, 88),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(43);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c44 boton
+                            Transform.rotate(
+                              angle: 25 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(392, 68),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(44);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c45 boton
+                            Transform.rotate(
+                              angle: 25 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(392, 48),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(45);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c46 boton
+                            Transform.rotate(
+                              angle: 25 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(392, 28),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(46);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c47 boton
+                            Transform.rotate(
+                              angle: -28 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(251, 435),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(47);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c48 boton
+                            Transform.rotate(
+                              angle: -28 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(251, 414),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(48);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c49 boton
+                            Transform.rotate(
+                              angle: -28 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(251, 393),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(49);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c50 boton
+                            Transform.rotate(
+                              angle: -28 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(252, 372),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(50);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c51 boton
+                            Transform.rotate(
+                              angle: -28 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(252, 351),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(51);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c52 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(157, -492),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(52);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c53 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(157, -472),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(53);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c54 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(157, -452),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(54);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c55 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(157, -432),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(55);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c56 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(157, -412),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(56);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c57 boton
+                            Transform.rotate(
+                              angle: 210 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-395, 171),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(57);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c58 boton
+                            Transform.rotate(
+                              angle: 210 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-395, 151),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(58);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c59 boton
+                            Transform.rotate(
+                              angle: 210 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-395, 131),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(59);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c60 boton
+                            Transform.rotate(
+                              angle: 210 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-395, 110),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(60);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c61 boton
+                            Transform.rotate(
+                              angle: 210 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-395, 90),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(61);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c62 boton
+                            Transform.rotate(
+                              angle: 150 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-242, -195),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(62);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c63 boton
+                            Transform.rotate(
+                              angle: 150 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-240, -215),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(63);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c64 boton
+                            Transform.rotate(
+                              angle: 150 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-240, -235),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(64);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c65 boton
+                            Transform.rotate(
+                              angle: 150 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-239, -255),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(65);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c66 boton
+                            Transform.rotate(
+                              angle: 150 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(-238, -275),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(66);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c67 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(157, -241),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(67);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c68 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(157, -261),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(68);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c69 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(157, -281),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(69);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c70 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(157, -301),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(70);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c71 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(157, -321),
+                                child: Ink(
+                                  width: 39,
+                                  height: 20,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(71);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //c72 boton
+                            Transform.rotate(
+                              angle: 90 * pi / 180,
+                              child: Transform.translate(
+                                offset: const Offset(130, -364),
+                                child: Ink(
+                                  width: 44,
+                                  height: 70,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      pulsarCasilla(72);
+                                    },
+                                    child: null,
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.transparent,
+                                      backgroundColor:
+                                          Color.fromARGB(0, 0, 0, 0),
+                                      padding: EdgeInsets.zero,
+                                      elevation:
+                                          0, //elimina la sombra del boton
+                                      splashFactory: NoSplash
+                                          .splashFactory, //elimina la onda que aparece al pulsar el boton
+                                      //no consigo quitar la sombra que genera al pulsarse pero si la onda
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       _preguntaActiva
                           ? Stack(
@@ -5733,7 +5909,9 @@ class _JuegoState extends State<Juego> {
                                                     left: 160,
                                                     bottom: 240),
                                                 child: Text(
-                                                  _preguntaTema,
+                                                  _tP == "Tematico"
+                                                      ? _tematica
+                                                      : _preguntaTema,
                                                   style: const TextStyle(
                                                     fontSize: 15.0,
                                                     fontWeight: FontWeight.bold,
@@ -5809,7 +5987,7 @@ class _JuegoState extends State<Juego> {
                                     ),
                                     child: InkWell(
                                       onTap: () {
-                                        if (!_contestada) {
+                                        if (!_contestada && _turno == _yo) {
                                           _respuestaContestada = '1';
                                           _ejecutarAccion(
                                               ACCION_CONTESTARPREGUNTA);
@@ -5844,7 +6022,7 @@ class _JuegoState extends State<Juego> {
                                     ),
                                     child: InkWell(
                                       onTap: () {
-                                        if (!_contestada) {
+                                        if (!_contestada  && _turno == _yo) {
                                           _respuestaContestada = '2';
                                           _ejecutarAccion(
                                               ACCION_CONTESTARPREGUNTA);
@@ -5879,7 +6057,7 @@ class _JuegoState extends State<Juego> {
                                     ),
                                     child: InkWell(
                                       onTap: () {
-                                        if (!_contestada) {
+                                        if (!_contestada  && _turno == _yo) {
                                           _respuestaContestada = '3';
                                           _ejecutarAccion(
                                               ACCION_CONTESTARPREGUNTA);
@@ -5914,7 +6092,7 @@ class _JuegoState extends State<Juego> {
                                     ),
                                     child: InkWell(
                                       onTap: () {
-                                        if (!_contestada) {
+                                        if (!_contestada  && _turno == _yo) {
                                           _respuestaContestada = '4';
                                           _ejecutarAccion(
                                               ACCION_CONTESTARPREGUNTA);
@@ -6222,8 +6400,98 @@ class _JuegoState extends State<Juego> {
                               ],
                             )
                           : const SizedBox.shrink(),
+                          _finPartida
+                          ? Stack(
+                              children: [
+                                Center(
+                                  child: Container(
+                                    width: screenSize.width,
+                                    height: screenSize.height,
+                                    decoration: BoxDecoration(
+                                      color: Color.fromARGB(68, 0, 0, 0),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Center(
+                                          child: BackdropFilter(
+                                            filter: ImageFilter.blur(
+                                                sigmaX: 5, sigmaY: 5),
+                                            child: Container(
+                                              width: screenSize.width,
+                                              height: screenSize.height,
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    Color.fromARGB(68, 0, 0, 0),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Center(
+                                                child: Container(
+                                                  width: 300,
+                                                  height: 280,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    border: Border.all(
+                                                        color: Colors.black),
+                                                  ),
+                                                  child: Stack(
+                                                    children: [
+                                                       Align(
+                                                        alignment:
+                                                            Alignment.topCenter,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets.only(
+                                                                  top: 50),
+                                                          child: Text(
+                                                            'Ha ganado $_turno',
+                                                            style: const TextStyle(
+                                                              fontSize: 20.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                     
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),Align(
+                                                alignment:
+                                                    Alignment.bottomCenter,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 80),
+                                                  child: Boton1('Volver al menú',
+                                                      onPressed: () {
+                                                    _ejecutarAccion(
+                                                        ACCION_SALIR);
+                                                  }),
+                                                ),
+                                              ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox.shrink(),
                     ],
                   ),
+                ),
+        ),
       ),
     );
   }
